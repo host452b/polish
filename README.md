@@ -42,7 +42,7 @@ Send your raw question to a Claude that has the skill loaded, e.g. *"Polish this
 3. **Rewrite** — express each strategy as concrete role lines / steps / answer anchors and fill in your question.
 4. **Output the prompt only** — a single code block, nothing outside it.
 
-It ships **14 text-only strategies** (chain-of-thought, tree-of-thoughts, self-contrast verification, symbolic answer anchors, role + rules double-bind, flipped interaction, layered prompting, and more). Three strategies that need API / decoding control or multiple runs (dynamic few-shot, self-consistency, temperature-decay) are deliberately excluded, so the output is always one self-contained, copy-paste prompt.
+It ships **15 text-only strategies** (chain-of-thought, step-back, tree-of-thoughts, self-contrast verification, symbolic answer anchors, role + rules double-bind, flipped interaction, layered prompting, and more). Three strategies that need API / decoding control or multiple runs (dynamic few-shot, self-consistency, temperature-decay) are deliberately excluded, so the output is always one self-contained, copy-paste prompt.
 
 ## Structure
 
@@ -105,7 +105,7 @@ ln -s "$(pwd)/prompt-polish" ~/.claude/skills/prompt-polish
 3. **重构** —— 把策略写成提示词里的具体角色句 / 步骤 / 答案锚点，并填入原始问题。
 4. **只输出提示词** —— 一个代码块，块外零字符。
 
-共内置 **14 项纯文本策略**（链式思考、思维树、反向验证、符号占位符、角色规则双保险、翻转交互、分层提示等）。需要 API / 解码控制或多次运行的 3 项策略（动态少样本、自洽性、温度衰减解码）已排除，以保证输出始终是一条自包含、可直接复制的提示词。
+共内置 **15 项纯文本策略**（链式思考、退一步提示、思维树、反向验证、符号占位符、角色规则双保险、翻转交互、分层提示等）。需要 API / 解码控制或多次运行的 3 项策略（动态少样本、自洽性、温度衰减解码）已排除，以保证输出始终是一条自包含、可直接复制的提示词。
 
 ## 结构
 
