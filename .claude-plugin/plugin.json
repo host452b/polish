@@ -1,4 +1,4 @@
 {
   "name": "prompt-polish",
-  "description": "提示词策略优化：把原始问题判类型后选用纯文本提示词策略组合，输出重构后的提示词（只输出提示词本身）。Classify a raw question/task and rewrite it into a stronger, more reliable LLM prompt; outputs only the reconstructed prompt."
+  "description": "Turn a rough question into a high-performing LLM prompt. prompt-polish detects the task type, applies a matching combo of research-backed prompt-engineering strategies (chain-of-thought, self-verification, role + rules, answer anchors, layered structure, and more), and returns one ready-to-paste rewritten prompt. Prompt engineering, prompt optimization, prompt rewriting."
 }
