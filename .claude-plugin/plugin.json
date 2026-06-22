@@ -1,0 +1,4 @@
+{
+  "name": "prompt-polish",
+  "description": "提示词策略优化：把原始问题判类型后选用纯文本提示词策略组合，输出重构后的提示词（只输出提示词本身）。Classify a raw question/task and rewrite it into a stronger, more reliable LLM prompt; outputs only the reconstructed prompt."
+}
