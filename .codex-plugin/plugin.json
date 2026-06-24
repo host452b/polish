@@ -1,0 +1,33 @@
+{
+  "name": "prompt-polish",
+  "version": "0.1.0",
+  "description": "Turn a rough question into a high-performing, ready-to-paste LLM prompt.",
+  "author": {
+    "name": "host452b"
+  },
+  "homepage": "https://github.com/host452b/prompt-polish",
+  "repository": "https://github.com/host452b/prompt-polish",
+  "keywords": [
+    "prompt-engineering",
+    "prompt-optimization",
+    "prompt-rewriting",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Prompt Polish",
+    "shortDescription": "Rewrite rough questions into stronger LLM prompts",
+    "longDescription": "Prompt Polish detects the task type, applies a matching set of text-only prompt-engineering strategies, and returns one ready-to-paste rewritten prompt.",
+    "developerName": "host452b",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "defaultPrompt": [
+      "Polish this prompt: ...",
+      "Rewrite this question for a better LLM answer."
+    ],
+    "brandColor": "#2563EB"
+  }
+}
