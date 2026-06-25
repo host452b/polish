@@ -1,7 +1,7 @@
 {
   "name": "prompt-polish",
   "version": "0.1.0",
-  "description": "Turn a rough question into a high-performing, ready-to-paste LLM prompt.",
+  "description": "Turn a rough question into high-performing bilingual, ready-to-paste LLM prompts.",
   "author": {
     "name": "host452b"
   },
@@ -16,8 +16,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Prompt Polish",
-    "shortDescription": "Rewrite rough questions into stronger LLM prompts",
-    "longDescription": "Prompt Polish detects the task type, applies a matching set of text-only prompt-engineering strategies, and returns one ready-to-paste rewritten prompt.",
+    "shortDescription": "Rewrite rough questions into stronger bilingual LLM prompts",
+    "longDescription": "Prompt Polish detects the task type, applies a matching set of text-only prompt-engineering strategies, and returns one code block containing an English prompt and a Chinese prompt.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [

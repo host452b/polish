@@ -7,7 +7,7 @@
     {
       "name": "prompt-polish",
       "source": "./",
-      "description": "Rewrite a raw question into a stronger, ready-to-paste LLM prompt by auto-selecting a matched combo of research-backed prompt-engineering strategies. Prompt optimization / prompt engineering."
+      "description": "Rewrite a raw question into stronger, ready-to-paste bilingual LLM prompts by auto-selecting a matched combo of research-backed prompt-engineering strategies. Prompt optimization / prompt engineering."
     }
   ]
 }

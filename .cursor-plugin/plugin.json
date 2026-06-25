@@ -1,7 +1,7 @@
 {
   "name": "prompt-polish",
   "displayName": "Prompt Polish",
-  "description": "Turn a rough question into a high-performing, ready-to-paste LLM prompt.",
+  "description": "Turn a rough question into high-performing bilingual, ready-to-paste LLM prompts.",
   "version": "0.1.0",
   "author": {
     "name": "host452b"

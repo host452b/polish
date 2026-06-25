@@ -1,4 +1,4 @@
 {
   "name": "prompt-polish",
-  "description": "Turn a rough question into a high-performing LLM prompt. prompt-polish detects the task type, applies a matching combo of research-backed prompt-engineering strategies (chain-of-thought, self-verification, role + rules, answer anchors, layered structure, and more), and returns one ready-to-paste rewritten prompt. Prompt engineering, prompt optimization, prompt rewriting."
+  "description": "Turn a rough question into high-performing bilingual LLM prompts. prompt-polish detects the task type, applies a matching combo of research-backed prompt-engineering strategies (Chain-of-Thought, Self-Contrast, Role-Rule Double Bind, answer anchors, Layered Prompt, and more), and returns one code block with English Prompt and 中文提示词. Prompt engineering, prompt optimization, prompt rewriting."
 }
