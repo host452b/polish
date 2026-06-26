@@ -1,13 +1,13 @@
 {
-  "name": "prompt-polish",
+  "name": "polish",
   "owner": {
     "name": "host452b"
   },
   "plugins": [
     {
-      "name": "prompt-polish",
+      "name": "polish",
       "source": "./",
-      "description": "Rewrite a raw question into stronger, ready-to-paste bilingual LLM prompts by auto-selecting a matched combo of research-backed prompt-engineering strategies. Prompt optimization / prompt engineering."
+      "description": "Personal collection of curated, self-made agent skills. Currently includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts."
     }
   ]
 }
