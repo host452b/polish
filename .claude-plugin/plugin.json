@@ -1,4 +1,4 @@
 {
-  "name": "prompt-polish",
-  "description": "Turn a rough question into high-performing bilingual LLM prompts. prompt-polish detects the task type, applies a matching combo of research-backed prompt-engineering strategies (Chain-of-Thought, Self-Contrast, Role-Rule Double Bind, answer anchors, Layered Prompt, and more), and returns one code block with English Prompt and 中文提示词. Prompt engineering, prompt optimization, prompt rewriting."
+  "name": "polish",
+  "description": "Personal collection of curated, self-made agent skills. The polish plugin currently includes prompt-polish, which rewrites rough questions into stronger bilingual LLM prompts."
 }

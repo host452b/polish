@@ -1,80 +1,90 @@
-# prompt-polish
+# polish
 
-> Turn a rough question into high-performing, ready-to-paste bilingual LLM prompts.
+> Personal collection of curated, self-made agent skills.
 
 **English** | [中文](#中文版)
 
-`prompt-polish` is a Claude Code, Codex CLI, and Cursor CLI skill / plugin. Give it a raw question or task; it detects the task type, selects a matching combo of research-backed, **text-only** prompt-engineering strategies, and returns **only bilingual rewritten prompts** — one code block with an English prompt and a Chinese prompt you can copy and paste.
+`polish` is a Claude Code, Codex CLI, and Cursor CLI skill/plugin collection for selected personal skills. The repo/plugin package is named `polish`; individual skill names stay stable so existing triggers and installs do not break.
 
-> It builds you a better prompt; it does **not** answer the question for you.
+Currently included:
+
+- `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 
 ## Install
 
-### Claude Code — as a plugin
+### Claude Code - as a plugin
 
 ```text
-/plugin marketplace add host452b/prompt-polish
-/plugin install prompt-polish@prompt-polish
+/plugin marketplace add host452b/polish
+/plugin install polish@polish
 ```
 
-- After install, invoke `/prompt-polish:prompt-polish`, or just hand Claude your raw question and let it trigger automatically.
-- Updates: this repo pins no `version`, so every new commit counts as an update — run `/plugin update` to get the latest.
+- Invoke the current skill with `/polish:prompt-polish`, or hand Claude a raw prompt and let the skill trigger automatically.
+- Updates: this repo pins no `version`, so every new commit counts as an update. Run `/plugin update` to get the latest.
 
-### Codex CLI — as a plugin
+### Codex CLI - as a plugin
 
 ```bash
-codex plugin marketplace add host452b/prompt-polish
-codex plugin add prompt-polish@prompt-polish
+codex plugin marketplace add host452b/polish
+codex plugin add polish@polish
 ```
 
-Start a new Codex thread after installing so the `prompt-polish` skill is available for automatic triggering.
+Start a new Codex thread after installing so the skills in this collection are available for automatic triggering.
 
-### Cursor CLI — as a skill
+### Cursor CLI - as a skill
+
+For the current `prompt-polish` skill:
 
 ```bash
-git clone https://github.com/host452b/prompt-polish.git
+git clone https://github.com/host452b/polish.git
 mkdir -p ~/.cursor/skills
-ln -s "$(pwd)/prompt-polish" ~/.cursor/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 ```
 
 The repo also includes `.cursor-plugin/plugin.json` for Cursor plugin consumers that read Cursor plugin manifests.
 
 ### Manual skill install
 
+For the current `prompt-polish` skill:
+
 ```bash
-git clone https://github.com/host452b/prompt-polish.git
-ln -s "$(pwd)/prompt-polish" ~/.claude/skills/prompt-polish
-ln -s "$(pwd)/prompt-polish" ~/.agents/skills/prompt-polish
-ln -s "$(pwd)/prompt-polish" ~/.cursor/skills/prompt-polish
+git clone https://github.com/host452b/polish.git
+mkdir -p ~/.claude/skills ~/.agents/skills ~/.cursor/skills
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.claude/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.agents/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 ```
 
-Create the destination directory first if needed. Drop or symlink the folder into a project's `.claude/skills/`, `.agents/skills/`, or `.cursor/skills/` to scope it to that project.
+Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
-> Note: there is no `npx`-style installer for these skill files — use the plugin commands where supported, or symlink the cloned repo.
+## Skills
 
-## Usage
+### `prompt-polish`
 
-Send your raw question to an agent that has the skill loaded, e.g. *"Polish this prompt: …"*. Its **entire reply is one code block** — `English Prompt` followed by `中文提示词`, with no commentary, and it won't solve the original problem for you.
+Give it a raw question or task. It detects the task type, selects a matching combo of research-backed, text-only prompt-engineering strategies, and returns only bilingual rewritten prompts: one code block with `English Prompt` and `中文提示词`.
 
-## How it works
+It builds a better prompt; it does not answer the question for you.
 
-1. **Classify** — reasoning, multiple-choice, professional / compliance, structured output, vague-requirement, etc.
-2. **Select** — pick a 2–4 strategy combo from a task-type → combo table.
-3. **Rewrite** — express each strategy as concrete role lines / steps / answer anchors and fill in your question.
-4. **Output prompts only** — a single code block containing `English Prompt` and `中文提示词`, nothing outside it.
+How it works:
 
-It ships **15 text-only strategies** (`Chain-of-Thought (CoT)`, `Step-Back Prompting`, `Tree of Thoughts (ToT)`, `Self-Contrast`, `Symbolic Placeholder`, `Role-Rule Double Bind`, `Flipped Interaction`, `Layered Prompt`, and more). Three strategies that need API / decoding control or multiple runs (`Dynamic Few-Shot`, `Self-Consistency`, `Temp-Decay Sampling`) are deliberately excluded, so the output is always one self-contained code block containing bilingual, copy-paste prompts.
+1. **Classify** - reasoning, multiple-choice, professional/compliance, structured output, vague requirements, etc.
+2. **Select** - pick a 2-4 strategy combo from a task-type to combo table.
+3. **Rewrite** - express each strategy as concrete role lines, steps, answer anchors, and fill in the original question.
+4. **Output prompts only** - a single code block containing `English Prompt` and `中文提示词`, nothing outside it.
+
+It ships 15 text-only strategies such as `Chain-of-Thought (CoT)`, `Step-Back Prompting`, `Tree of Thoughts (ToT)`, `Self-Contrast`, `Symbolic Placeholder`, `Role-Rule Double Bind`, `Flipped Interaction`, and `Layered Prompt`. Strategies that need API/decoding control or multiple runs are deliberately excluded so the output stays copy-pasteable.
+
+See [references/strategies.md](references/strategies.md) for full strategy templates, rationale, and sources.
 
 ## Structure
 
 ```text
-prompt-polish/
-├── SKILL.md                  # output contract + workflow + type→combo table + cheat sheet + example
-├── references/strategies.md  # full strategy library (15) + combo change log + the 3 excluded ones
+polish/
+├── references/strategies.md  # prompt-polish strategy library
 ├── skills/prompt-polish/
-│   └── SKILL.md              # Codex/Cursor wrapper that points to the root skill
+│   └── SKILL.md              # canonical prompt-polish skill contract
 ├── .claude-plugin/
-│   ├── plugin.json           # plugin manifest (single-skill plugin)
+│   ├── plugin.json           # Claude plugin manifest
 │   └── marketplace.json      # self-contained marketplace catalog
 ├── .codex-plugin/
 │   └── plugin.json           # Codex CLI plugin manifest
@@ -82,7 +92,7 @@ prompt-polish/
     └── plugin.json           # Cursor plugin manifest
 ```
 
-See [references/strategies.md](references/strategies.md) for full strategy templates, rationale, and sources.
+When adding new personal skills, keep each skill name stable under `skills/<skill-name>/`. The repo/plugin package can remain `polish` while skills inside it grow independently.
 
 ---
 
@@ -90,81 +100,91 @@ See [references/strategies.md](references/strategies.md) for full strategy templ
 
 # 中文版
 
-> 把一个粗糙的问题，变成一组高质量、可直接粘贴使用的中英双语 LLM 提示词。
+> 个人精选自制 agent skills 集合。
 
-[English](#prompt-polish) | **中文**
+[English](#polish) | **中文**
 
-`prompt-polish` 是一个支持 Claude Code、Codex CLI 和 Cursor CLI 的 skill / plugin：输入一个**原始问题 / 任务**，它会判断任务类型 → 选用一组**纯文本**提示词策略组合 → **只输出中英双语重构提示词**（一个代码块，内含 English Prompt 和中文提示词，复制即用）。
+`polish` 是一个面向 Claude Code、Codex CLI 和 Cursor CLI 的个人 skill/plugin 集合。repo/plugin 包名叫 `polish`；里面每个 skill 的名字保持稳定，避免已有触发方式和安装路径失效。
 
-> 它在帮你造一个更好用的提示词，而不是替你回答问题。
+当前包含：
+
+- `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 
 ## 安装
 
 ### Claude Code：作为插件安装
 
 ```text
-/plugin marketplace add host452b/prompt-polish
-/plugin install prompt-polish@prompt-polish
+/plugin marketplace add host452b/polish
+/plugin install polish@polish
 ```
 
-- 安装后调用 `/prompt-polish:prompt-polish`，或直接把原始问题交给 Claude，由它按描述自动触发。
+- 当前 skill 可用 `/polish:prompt-polish` 调用，也可以直接把原始 prompt 交给 Claude，由它按描述自动触发。
 - 更新：本仓库未固定 `version`，因此每个新 commit 都算一次更新，运行 `/plugin update` 即可获取最新版。
 
 ### Codex CLI：作为插件安装
 
 ```bash
-codex plugin marketplace add host452b/prompt-polish
-codex plugin add prompt-polish@prompt-polish
+codex plugin marketplace add host452b/polish
+codex plugin add polish@polish
 ```
 
-安装后开启新的 Codex 对话，让 `prompt-polish` skill 进入可触发列表。
+安装后开启新的 Codex 对话，让这个集合里的 skills 进入可触发列表。
 
 ### Cursor CLI：作为 skill 安装
 
+安装当前 `prompt-polish` skill：
+
 ```bash
-git clone https://github.com/host452b/prompt-polish.git
+git clone https://github.com/host452b/polish.git
 mkdir -p ~/.cursor/skills
-ln -s "$(pwd)/prompt-polish" ~/.cursor/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 ```
 
 仓库也包含 `.cursor-plugin/plugin.json`，供能读取 Cursor plugin manifest 的插件消费者使用。
 
 ### 手动安装（clone + 软链）
 
+安装当前 `prompt-polish` skill：
+
 ```bash
-git clone https://github.com/host452b/prompt-polish.git
-ln -s "$(pwd)/prompt-polish" ~/.claude/skills/prompt-polish
-ln -s "$(pwd)/prompt-polish" ~/.agents/skills/prompt-polish
-ln -s "$(pwd)/prompt-polish" ~/.cursor/skills/prompt-polish
+git clone https://github.com/host452b/polish.git
+mkdir -p ~/.claude/skills ~/.agents/skills ~/.cursor/skills
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.claude/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.agents/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 ```
 
-如果目标目录不存在，先创建它。也可以把目录放进某个项目的 `.claude/skills/`、`.agents/skills/` 或 `.cursor/skills/` 下，仅在该项目内可用。
+如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
-> 注：这些 skill 文件没有 `npx` 形式的安装方式；支持插件命令的平台用插件命令，否则使用 clone + 软链。
+## Skills
 
-## 用法
+### `prompt-polish`
 
-把原始问题发给已加载本 skill 的 agent，例如「帮我优化这个提示词：……」。它的**整条回复就是一个代码块**——先 `English Prompt`，再 `中文提示词`，块外不写任何说明，也不会替你解出原题答案。
+输入一个原始问题或任务。它会判断任务类型，选择一组匹配的、纯文本提示词工程策略，然后只输出中英双语重构提示词：一个代码块，内含 `English Prompt` 和 `中文提示词`。
 
-## 工作原理
+它是在帮你造更好的 prompt，不会替你回答原题。
 
-1. **判类型** —— 选择题、复杂推理、专业 / 合规、结构化输出、需求模糊等。
-2. **选组合** —— 按「任务类型 → 策略组合」表取一组 2–4 个纯文本策略。
-3. **重构** —— 把策略写成提示词里的具体角色句 / 步骤 / 答案锚点，并填入原始问题。
-4. **只输出提示词** —— 一个代码块，内含 `English Prompt` 和 `中文提示词`，块外零字符。
+工作流程：
 
-共内置 **15 项纯文本策略**（`Chain-of-Thought (CoT)`、`Step-Back Prompting`、`Tree of Thoughts (ToT)`、`Self-Contrast`、`Symbolic Placeholder`、`Role-Rule Double Bind`、`Flipped Interaction`、`Layered Prompt` 等）。需要 API / 解码控制或多次运行的 3 项策略（`Dynamic Few-Shot`、`Self-Consistency`、`Temp-Decay Sampling`）已排除，以保证输出始终是一个自包含代码块，内含可直接复制的中英双语提示词。
+1. **判类型** - 复杂推理、选择题、专业/合规、结构化输出、需求模糊等。
+2. **选组合** - 按任务类型选择 2-4 个策略组合。
+3. **重构** - 把策略写成具体角色句、步骤、答案锚点，并填入原始问题。
+4. **只输出提示词** - 一个代码块，包含 `English Prompt` 和 `中文提示词`，块外零说明。
+
+当前内置 15 项纯文本策略，例如 `Chain-of-Thought (CoT)`、`Step-Back Prompting`、`Tree of Thoughts (ToT)`、`Self-Contrast`、`Symbolic Placeholder`、`Role-Rule Double Bind`、`Flipped Interaction`、`Layered Prompt`。需要 API/解码控制或多次运行的策略被排除，保证输出始终可直接复制使用。
+
+完整策略模板、原理与来源见 [references/strategies.md](references/strategies.md)。
 
 ## 结构
 
 ```text
-prompt-polish/
-├── SKILL.md                  # 主文件：输出契约 + 工作流 + 类型→组合表 + 策略速查 + 示例
-├── references/strategies.md  # 完整策略库（15 项）+ 组合改动说明 + 被排除的 3 项
+polish/
+├── references/strategies.md  # prompt-polish 策略库
 ├── skills/prompt-polish/
-│   └── SKILL.md              # Codex/Cursor wrapper，指向根目录主 skill
+│   └── SKILL.md              # prompt-polish 的主行为契约
 ├── .claude-plugin/
-│   ├── plugin.json           # 插件清单（单技能插件）
+│   ├── plugin.json           # Claude 插件清单
 │   └── marketplace.json      # 自带 marketplace 目录
 ├── .codex-plugin/
 │   └── plugin.json           # Codex CLI 插件清单
@@ -172,4 +192,4 @@ prompt-polish/
     └── plugin.json           # Cursor 插件清单
 ```
 
-完整的策略模板、原理与来源见 [references/strategies.md](references/strategies.md)。
+以后新增个人 skills 时，把每个 skill 的稳定入口放在 `skills/<skill-name>/` 下。外层 repo/plugin 包名继续叫 `polish`，里面的 skills 可以独立增长。

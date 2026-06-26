@@ -1,23 +1,24 @@
 {
-  "name": "prompt-polish",
+  "name": "polish",
   "version": "0.1.0",
-  "description": "Turn a rough question into high-performing bilingual, ready-to-paste LLM prompts.",
+  "description": "Personal collection of curated, self-made agent skills.",
   "author": {
     "name": "host452b"
   },
-  "homepage": "https://github.com/host452b/prompt-polish",
-  "repository": "https://github.com/host452b/prompt-polish",
+  "homepage": "https://github.com/host452b/polish",
+  "repository": "https://github.com/host452b/polish",
   "keywords": [
     "prompt-engineering",
     "prompt-optimization",
     "prompt-rewriting",
+    "personal-skills",
     "skills"
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Prompt Polish",
-    "shortDescription": "Rewrite rough questions into stronger bilingual LLM prompts",
-    "longDescription": "Prompt Polish detects the task type, applies a matching set of text-only prompt-engineering strategies, and returns one code block containing an English prompt and a Chinese prompt.",
+    "displayName": "Polish",
+    "shortDescription": "Curated personal skills for agent workflows",
+    "longDescription": "Polish is a personal collection of curated, self-made agent skills. It currently includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -25,7 +26,7 @@
       "Read"
     ],
     "defaultPrompt": [
-      "Polish this prompt: ...",
+      "Use prompt-polish to rewrite this prompt: ...",
       "Rewrite this question for a better LLM answer."
     ],
     "brandColor": "#2563EB"

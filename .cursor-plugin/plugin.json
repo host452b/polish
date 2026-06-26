@@ -1,17 +1,18 @@
 {
-  "name": "prompt-polish",
-  "displayName": "Prompt Polish",
-  "description": "Turn a rough question into high-performing bilingual, ready-to-paste LLM prompts.",
+  "name": "polish",
+  "displayName": "Polish",
+  "description": "Personal collection of curated, self-made agent skills.",
   "version": "0.1.0",
   "author": {
     "name": "host452b"
   },
-  "homepage": "https://github.com/host452b/prompt-polish",
-  "repository": "https://github.com/host452b/prompt-polish",
+  "homepage": "https://github.com/host452b/polish",
+  "repository": "https://github.com/host452b/polish",
   "keywords": [
     "prompt-engineering",
     "prompt-optimization",
     "prompt-rewriting",
+    "personal-skills",
     "skills"
   ],
   "skills": "./skills/"
