@@ -72,7 +72,34 @@ def parse_args(argv=None):
                    help="Substring; paths containing it are preferred as canonical.")
     p.add_argument("--max-pairwise", type=int, default=2000,
                    help="Cap on pairwise directory comparisons per coarse bucket.")
+    p.add_argument("--target-os", choices=["auto", "macos", "linux", "windows"],
+                   default="auto",
+                   help="OS to generate recommended commands for (auto-detected by default).")
+    p.add_argument("--target-shell",
+                   choices=["auto", "bash", "zsh", "fish", "powershell", "cmd"],
+                   default="auto",
+                   help="Shell syntax for recommended commands (auto-detected by default).")
     return p.parse_args(argv)
+
+
+def detect_env(target_os, target_shell):
+    """Resolve (os_name, shell_name) from flags or the runtime environment."""
+    import platform
+    if target_os == "auto":
+        sysname = platform.system()
+        os_name = {"Darwin": "macos", "Windows": "windows"}.get(sysname, "linux")
+    else:
+        os_name = target_os
+    if target_shell == "auto":
+        if os_name == "windows":
+            # PSModulePath is set in PowerShell sessions; fall back to cmd otherwise.
+            shell_name = "powershell" if os.environ.get("PSModulePath") else "cmd"
+        else:
+            base = os.path.basename(os.environ.get("SHELL", "/bin/bash"))
+            shell_name = base if base in ("bash", "zsh", "fish") else "bash"
+    else:
+        shell_name = target_shell
+    return os_name, shell_name
 
 
 # --------------------------------------------------------------------------- #
@@ -410,6 +437,82 @@ def build_mapping(file_groups, action_mode, prefer, flags):
 
 
 # --------------------------------------------------------------------------- #
+# Recommended follow-up commands (generated, NEVER executed).
+# --------------------------------------------------------------------------- #
+def _quote(path, shell):
+    if shell == "powershell":
+        return '"' + path.replace('"', '`"') + '"'
+    if shell == "cmd":
+        return '"' + path + '"'
+    return '"' + path.replace('\\', '\\\\').replace('"', '\\"') + '"'  # posix
+
+
+def recommended_commands(mapping, os_name, shell_name, action_mode):
+    """Top-4 scenario-ranked command suggestions, safest first. Generated only.
+
+    Returns a list of dicts; callers MUST present these as suggestions and let a
+    human review/run them. This function never executes anything.
+    """
+    if not mapping:
+        return [{
+            "rank": 1, "archetype": "none", "risk": "none",
+            "label": "No confirmed duplicates to act on",
+            "command": "",
+            "note": "Nothing to reclaim. Re-run with --hash-algorithm both for "
+                    "stricter confirmation, or widen --scan-mode / scope.",
+        }]
+    rep_row = next((r for r in mapping if r.get("confidence") == "confirmed"), mapping[0])
+    dup = _quote(rep_row["duplicate_path"], shell_name)
+    can = _quote(rep_row["canonical_path"], shell_name)
+    qdir = _quote("./singlify_quarantine", shell_name)
+
+    if shell_name in ("powershell",):
+        verify = f"Get-FileHash {can},{dup} -Algorithm SHA256"
+        quarantine = f"New-Item -ItemType Directory -Force {qdir}; Move-Item {dup} {qdir}"
+        hardlink = f"Remove-Item {dup}; New-Item -ItemType HardLink -Path {dup} -Target {can}"
+        symlink_alt = "symlink alt: New-Item -ItemType SymbolicLink (needs admin / Developer Mode)"
+        delete = f"Remove-Item -Confirm {dup}"
+    elif shell_name == "cmd":
+        verify = f"certutil -hashfile {can} SHA256 & certutil -hashfile {dup} SHA256"
+        quarantine = f"mkdir singlify_quarantine & move {dup} singlify_quarantine\\"
+        hardlink = f"del {dup} & mklink /H {dup} {can}"
+        symlink_alt = "symlink alt: mklink (without /H)"
+        delete = f"del /p {dup}"
+    else:  # posix: bash / zsh / fish
+        hashtool = "shasum -a 256" if os_name == "macos" else "sha256sum"
+        verify = f"{hashtool} {can} {dup}"
+        quarantine = f"mkdir -p {qdir} && mv -i {dup} {qdir}/"
+        hardlink = f"rm {dup} && ln {can} {dup}"
+        symlink_alt = f"symlink alt (cross-volume ok): rm {dup} && ln -s {can} {dup}"
+        delete = f"rm -i {dup}"
+
+    cmds = [
+        {"rank": 1, "archetype": "verify", "risk": "safe",
+         "label": "Verify the pair is byte-identical before trusting the plan",
+         "command": verify, "note": "Non-destructive. Confirms the hash match first."},
+        {"rank": 2, "archetype": "quarantine", "risk": "reversible",
+         "label": "Move duplicate aside (keep / fine-tune, undo by moving back)",
+         "command": quarantine,
+         "note": "Reclaims space without deleting. Best when unsure or for sensitive dirs."},
+        {"rank": 3, "archetype": "hardlink", "risk": "destructive",
+         "label": "Replace duplicate with a hardlink to the canonical copy (same volume)",
+         "command": hardlink,
+         "note": "Reclaims space; both paths keep working. " + symlink_alt},
+        {"rank": 4, "archetype": "delete", "risk": "irreversible",
+         "label": "Delete the duplicate (irreversible space reclaim)",
+         "command": delete,
+         "note": "Only after verifying. Prefer quarantine if any doubt."},
+    ]
+    chosen = ACTION_FOR_MODE.get(action_mode, "")
+    for c in cmds:
+        c["matches_action_mode"] = (
+            (c["archetype"] == "delete" and chosen == "delete_duplicate")
+            or (c["archetype"] == "hardlink" and chosen == "replace_with_hardlink")
+        )
+    return cmds
+
+
+# --------------------------------------------------------------------------- #
 # Reporting.
 # --------------------------------------------------------------------------- #
 def human(n):
@@ -421,7 +524,8 @@ def human(n):
 
 
 def assemble_report(args, files, dir_count, exact_groups, suspected,
-                    file_groups, mapping, name_conflicts, errors, skipped, sigs):
+                    file_groups, mapping, name_conflicts, errors, skipped, sigs,
+                    os_name, shell_name):
     total_size = sum(r["size"] for r in files)
     saving = sum(r["duplicate_size"] for r in mapping
                  if r["suggested_action"] != "manual_review")
@@ -437,6 +541,8 @@ def assemble_report(args, files, dir_count, exact_groups, suspected,
             "action_mode": args.action_mode,
             "dir_match_threshold": args.dir_match_threshold,
             "prefer": args.prefer,
+            "target_os": os_name,
+            "target_shell": shell_name,
         },
         "totals": {
             "files": len(files),
@@ -460,6 +566,8 @@ def assemble_report(args, files, dir_count, exact_groups, suspected,
         "space_saving_estimate_bytes": saving,
         "space_saving_estimate_human": human(saving),
         "canonical_mapping": mapping,
+        "recommended_commands": recommended_commands(
+            mapping, os_name, shell_name, args.action_mode),
         "name_size_conflicts": name_conflicts,
         "errors": errors,
         "skipped": skipped,
@@ -521,11 +629,20 @@ def render_markdown(rep):
     w(f"- {len(rep['skipped'])} path(s) skipped (symlinks, zero-byte, special, excluded, below-min-size).\n")
     w(f"- {len(rep['errors'])} path(s) had read/permission/cycle errors.\n")
     w("- Suspected directory pairs are candidates only; confirm with file hashes before acting.\n")
-    w("\n## 10. Recommended next step\n\n")
-    w("- Review groups above, then confirm a canonical per group.\n")
-    w("- Re-run with `--hash-algorithm both` for strict confirmation before any deletion.\n")
-    w("- Ask the user for explicit approval before executing any delete/hardlink/symlink. "
-      "This tool will not perform those actions.\n")
+    p = rep["parameters"]
+    w(f"\n## 10. Recommended next-step commands (top 4, for {p['target_os']} / "
+      f"{p['target_shell']})\n\n")
+    w("> **DO NOT auto-run these.** They are generated suggestions, ordered "
+      "safest-first, using one representative pair from the mapping. Review, "
+      "then apply per row only after a human confirms.\n\n")
+    for c in rep["recommended_commands"]:
+        w(f"{c['rank']}. **{c['label']}** _(risk: {c['risk']}"
+          f"{', matches --action-mode' if c.get('matches_action_mode') else ''})_\n")
+        if c["command"]:
+            w(f"   ```\n   {c['command']}\n   ```\n")
+        w(f"   {c['note']}\n")
+    w("\n- Re-run with `--hash-algorithm both` for strict confirmation before any deletion.\n")
+    w("- This tool never performs delete/hardlink/symlink; execution is a separate human step.\n")
     return out.getvalue()
 
 
@@ -572,8 +689,10 @@ def main(argv=None):
     file_groups, name_conflicts = group_files(files, args.hash_algorithm, errors, hash_cache)
     mapping = build_mapping(file_groups, args.action_mode, args.prefer, flags)
 
+    os_name, shell_name = detect_env(args.target_os, args.target_shell)
     rep = assemble_report(args, files, dir_count, exact_groups, suspected,
-                          file_groups, mapping, name_conflicts, errors, skipped, sigs)
+                          file_groups, mapping, name_conflicts, errors, skipped, sigs,
+                          os_name, shell_name)
 
     if args.output_format == "json":
         print(json.dumps(rep, indent=2, ensure_ascii=False))

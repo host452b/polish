@@ -26,7 +26,8 @@ metadata:
 1. **路径与权限检查** — 确认当前环境能否访问 `root_path`。**能访问就运行脚本；不能访问则要求用户提供目录清单 / 目录树 / 压缩包 / 可访问挂载路径。绝不虚构扫描结果。**
 2. **运行脚本（directory-first）** — 先按目录一致性找冗余，再用 hash 确认文件。整个目录被重复复制是最大空间浪费来源，优先展示目录级结果。
 3. **读脚本输出，整理给用户** — 优先讲重复目录组，再讲重复文件组、canonical 映射、节省空间、风险项。对脚本标为 `uncertain` / `manual_review` 的项，**向用户提问澄清**，不要替他决定。
-4. **destructive 操作前再确认** — 用户要真正删除 / 换链接时，先复述计划并要求明确确认；脚本不会执行，需用户自行执行或另行授权。
+4. **给出 top-4 后续命令** — 脚本会按当前 OS/shell 生成 top-4 推荐命令（安全优先：verify → quarantine → hardlink → delete），见报告第 10 节 / JSON 的 `recommended_commands`。把它们呈现给用户，并按用户**真实的** OS 与 shell 调整语法；脚本默认自动探测，必要时用 `--target-os` / `--target-shell` 覆盖。**只给命令，不执行。** 命令里用的是代表性样本路径，需逐行套用到映射表。
+5. **destructive 操作前再确认** — 用户要真正删除 / 换链接时，先复述计划并要求明确确认；脚本不会执行，需用户自行执行或另行授权。
 
 ## 何时运行脚本
 
@@ -41,14 +42,16 @@ python3 scripts/scan_file_singlify.py <root_path> \
   --exclude-patterns ".git,node_modules,cache,temp" \
   --include-patterns "*.jpg,*.mp4" \
   --min-file-size 1024 \
-  --prefer "/Volumes/Primary"        # 优先保留此路径作 canonical
+  --prefer "/Volumes/Primary" \      # 优先保留此路径作 canonical
+  --target-os auto \                 # auto|macos|linux|windows（生成 top-4 命令用）
+  --target-shell auto                # auto|bash|zsh|fish|powershell|cmd
 ```
 
 完整参数与判定细节见脚本 `--help`、[references/matching-rules.md](references/matching-rules.md) 与 [references/safety-rules.md](references/safety-rules.md)。
 
 ## 输出格式
 
-脚本产出结构化报告，含：扫描范围、参数、总文件/目录/容量、重复目录组、疑似重复目录、重复文件组（hash 确认）、节省空间估算、canonical 映射表、风险与不确定项、下一步建议。`markdown` 给人看，`json` 给程序消费，`csv` 是 duplicate→canonical 映射表。
+脚本产出结构化报告，含：扫描范围、参数、总文件/目录/容量、重复目录组、疑似重复目录、重复文件组（hash 确认）、节省空间估算、canonical 映射表、**top-4 推荐命令（按 OS/shell 生成）**、风险与不确定项、下一步建议。`markdown` 给人看，`json` 给程序消费（含 `recommended_commands`），`csv` 是 duplicate→canonical 映射表。
 
 每个映射行带 `confidence`（confirmed / uncertain）和 `suggested_action`（keep / delete_duplicate / replace_with_hardlink / replace_with_symlink / create_manifest_reference / manual_review）。
 
