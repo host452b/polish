@@ -1,4 +1,4 @@
 {
   "name": "polish",
-  "description": "Personal collection of curated, self-made agent skills. The polish plugin currently includes prompt-polish, which rewrites rough questions into stronger bilingual LLM prompts."
+  "description": "Personal collection of curated, self-made agent skills. The polish plugin includes prompt-polish, which rewrites rough questions into stronger bilingual LLM prompts, and file-singlify, which scans disks and folders for duplicate files and directory copies and proposes a read-only single-copy plan."
 }

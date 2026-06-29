@@ -12,6 +12,9 @@
     "prompt-engineering",
     "prompt-optimization",
     "prompt-rewriting",
+    "file-deduplication",
+    "duplicate-detection",
+    "storage-cleanup",
     "personal-skills",
     "skills"
   ],
