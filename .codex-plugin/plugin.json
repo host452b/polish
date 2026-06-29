@@ -11,6 +11,9 @@
     "prompt-engineering",
     "prompt-optimization",
     "prompt-rewriting",
+    "file-deduplication",
+    "duplicate-detection",
+    "storage-cleanup",
     "personal-skills",
     "skills"
   ],
@@ -18,7 +21,7 @@
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made agent skills. It currently includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts.",
+    "longDescription": "Polish is a personal collection of curated, self-made agent skills. It includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts, and file-singlify for directory-first duplicate detection and read-only single-copy planning.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [

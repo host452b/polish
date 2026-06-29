@@ -9,6 +9,7 @@
 Currently included:
 
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
+- `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 
 ## Install
 
@@ -76,6 +77,16 @@ It ships 15 text-only strategies such as `Chain-of-Thought (CoT)`, `Step-Back Pr
 
 See [references/strategies.md](references/strategies.md) for full strategy templates, rationale, and sources.
 
+### `file-singlify`
+
+Point it at a disk, directory, or mount path. It detects duplicate files and whole duplicate directory copies left by repeated copying, backups, sync, and migration, then proposes a "singlify" plan: keep one canonical copy and map every duplicate to it.
+
+- **Read-only, dry-run by default.** It never deletes, moves, overwrites, hardlinks, or symlinks. Any destructive action is a separate, human-confirmed step.
+- **Directory-first.** A whole folder copied many times is the biggest space waste, so directory-level redundancy is detected and reported before per-file hashing.
+- **Hash-confirmed.** Name/size/mtime only shortlist candidates; final "identical" verdicts come from content hashes (`md5`, `sha256`, or `both`).
+
+The scan logic lives in `skills/file-singlify/scripts/scan_file_singlify.py` (markdown/json/csv output). See [skills/file-singlify/references/matching-rules.md](skills/file-singlify/references/matching-rules.md) and [skills/file-singlify/references/safety-rules.md](skills/file-singlify/references/safety-rules.md).
+
 ## Structure
 
 ```text
@@ -83,6 +94,11 @@ polish/
 ├── references/strategies.md  # prompt-polish strategy library
 ├── skills/prompt-polish/
 │   └── SKILL.md              # canonical prompt-polish skill contract
+├── skills/file-singlify/
+│   ├── SKILL.md              # canonical file-singlify skill contract
+│   ├── scripts/              # read-only duplicate scanner
+│   ├── references/           # matching + safety rules
+│   └── agents/               # Codex/OpenAI agent descriptor
 ├── .claude-plugin/
 │   ├── plugin.json           # Claude plugin manifest
 │   └── marketplace.json      # self-contained marketplace catalog
@@ -109,6 +125,7 @@ When adding new personal skills, keep each skill name stable under `skills/<skil
 当前包含：
 
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
+- `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 
 ## 安装
 
@@ -176,6 +193,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 完整策略模板、原理与来源见 [references/strategies.md](references/strategies.md)。
 
+### `file-singlify`
+
+把它指向某个磁盘、目录或挂载路径。它会找出因多次复制、备份、同步、迁移产生的重复文件和整目录重复副本，并生成「单副本化」方案：每组保留一份 canonical copy，其余映射到它。
+
+- **默认只读、dry-run。** 绝不删除、移动、覆盖、改写、建硬/软链接。任何破坏性操作都是独立的、需用户明确确认的一步。
+- **目录优先。** 整个目录被多次复制是最大空间浪费来源，所以先做目录级冗余检测和展示，再对候选文件做 hash。
+- **hash 确认。** 文件名/大小/时间只用于筛候选；最终「相同」结论来自内容 hash（`md5`、`sha256` 或 `both`）。
+
+扫描逻辑在 `skills/file-singlify/scripts/scan_file_singlify.py`（支持 markdown/json/csv 输出）。详见 [skills/file-singlify/references/matching-rules.md](skills/file-singlify/references/matching-rules.md) 与 [skills/file-singlify/references/safety-rules.md](skills/file-singlify/references/safety-rules.md)。
+
 ## 结构
 
 ```text
@@ -183,6 +210,11 @@ polish/
 ├── references/strategies.md  # prompt-polish 策略库
 ├── skills/prompt-polish/
 │   └── SKILL.md              # prompt-polish 的主行为契约
+├── skills/file-singlify/
+│   ├── SKILL.md              # file-singlify 的主行为契约
+│   ├── scripts/              # 只读重复扫描脚本
+│   ├── references/           # 匹配 + 安全规则
+│   └── agents/               # Codex/OpenAI agent 描述
 ├── .claude-plugin/
 │   ├── plugin.json           # Claude 插件清单
 │   └── marketplace.json      # 自带 marketplace 目录
