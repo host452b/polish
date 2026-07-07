@@ -10,6 +10,7 @@ Currently included:
 
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
+- `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
 
 ## Install
 
@@ -87,6 +88,16 @@ Point it at a disk, directory, or mount path. It detects duplicate files and who
 
 The scan logic lives in `skills/file-singlify/scripts/scan_file_singlify.py` (markdown/json/csv output). See [skills/file-singlify/references/matching-rules.md](skills/file-singlify/references/matching-rules.md) and [skills/file-singlify/references/safety-rules.md](skills/file-singlify/references/safety-rules.md).
 
+### `before-git-push`
+
+Run it right before `git push`, opening a PR, or shipping. Acting as a senior release engineer / SRE, it judges **only from the real diff** and walks a fixed checklist: the most fragile line, unverified assumptions and blind spots, old-user data-compatibility risk (cache, DB schema/migration, persisted format, API contract), the failure path most likely to break prod, and whether rollback + feature toggle are ready.
+
+- **Review, not execution.** It outputs a verdict plus reasoning; a human decides whether to push. It never runs `git push` for you.
+- **Diff-grounded.** No real diff, no review — it asks for the diff instead of guessing.
+- **Ends in PUSH / HOLD.** After a reverse-verification pass (3 pieces of counter-evidence, each scored), it prints `▶︎▶︎PUSH▶︎▶︎` or `▶︎▶︎HOLD▶︎▶︎`; on HOLD it names the first thing to fix. When unsure, it prefers HOLD.
+
+See [skills/before-git-push/SKILL.md](skills/before-git-push/SKILL.md).
+
 ## Structure
 
 ```text
@@ -99,6 +110,8 @@ polish/
 │   ├── scripts/              # read-only duplicate scanner
 │   ├── references/           # matching + safety rules
 │   └── agents/               # Codex/OpenAI agent descriptor
+├── skills/before-git-push/
+│   └── SKILL.md              # canonical before-git-push skill contract
 ├── .claude-plugin/
 │   ├── plugin.json           # Claude plugin manifest
 │   └── marketplace.json      # self-contained marketplace catalog
@@ -126,6 +139,7 @@ When adding new personal skills, keep each skill name stable under `skills/<skil
 
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
+- `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
 
 ## 安装
 
@@ -203,6 +217,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 扫描逻辑在 `skills/file-singlify/scripts/scan_file_singlify.py`（支持 markdown/json/csv 输出）。详见 [skills/file-singlify/references/matching-rules.md](skills/file-singlify/references/matching-rules.md) 与 [skills/file-singlify/references/safety-rules.md](skills/file-singlify/references/safety-rules.md)。
 
+### `before-git-push`
+
+在 `git push`、提 PR、上线之前运行。它以资深发布工程师 / SRE 视角，**只依据真实 diff** 走一遍固定清单：最发虚的一行、未验证假设与盲区、老用户数据兼容风险（缓存、数据库 schema/迁移、持久化格式、API 契约）、最可能击穿的失败路径，以及回滚 + feature toggle 是否就绪。
+
+- **只审查、不执行。** 只产出建议与理由，是否 push 由人决定；绝不代替你执行 `git push`。
+- **以 diff 为准。** 看不到真实 diff 就要求补充，绝不凭空评审。
+- **结论落到 PUSH / HOLD。** 经反向验证（3 条反证并打分）后输出 `▶︎▶︎PUSH▶︎▶︎` 或 `▶︎▶︎HOLD▶︎▶︎`；HOLD 时写明第一件要修的事。没把握时倾向 HOLD。
+
+详见 [skills/before-git-push/SKILL.md](skills/before-git-push/SKILL.md)。
+
 ## 结构
 
 ```text
@@ -215,6 +239,8 @@ polish/
 │   ├── scripts/              # 只读重复扫描脚本
 │   ├── references/           # 匹配 + 安全规则
 │   └── agents/               # Codex/OpenAI agent 描述
+├── skills/before-git-push/
+│   └── SKILL.md              # before-git-push 的主行为契约
 ├── .claude-plugin/
 │   ├── plugin.json           # Claude 插件清单
 │   └── marketplace.json      # 自带 marketplace 目录
