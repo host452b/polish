@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Port five selected Superpowers skills into `polish` with `superpowers-` names, complete runtime dependencies, working internal references, and accurate provenance.
+**Goal:** Port six selected Superpowers skills into `polish` with `superpowers-` names, complete runtime dependencies, working internal references, and accurate provenance.
 
 **Architecture:** Treat `superpowers/` as a read-only upstream checkout pinned at commit `d884ae04edebef577e82ff7c4e143debd0bbec99`. Copy only each selected skill's runtime closure into `skills/`, then apply small compatibility edits for prefixed names and the standalone planning handoff. A deterministic validator protects the file manifest, frontmatter, cross-references, and local Markdown links.
 
@@ -20,11 +20,12 @@
 - `skills/superpowers-verification-before-completion/SKILL.md` — evidence-before-claims workflow.
 - `skills/superpowers-test-driven-development/` — TDD workflow plus testing anti-pattern reference.
 - `skills/superpowers-writing-skills/` — skill-authoring workflow plus directly referenced guidance and tools.
+- `skills/superpowers-using-git-worktrees/SKILL.md` — isolated-workspace selection and setup workflow.
 - `THIRD_PARTY_NOTICES.md` — upstream source, pinned commit, copyright, and MIT text.
 
 **Modify:**
 
-- `README.md` — list and document the five skills in English and Chinese, update structure and provenance wording.
+- `README.md` — list and document the six skills in English and Chinese, update structure and provenance wording.
 - `.codex-plugin/plugin.json` — update collection description, keywords, long description, and prompts.
 - `.claude-plugin/plugin.json` — update collection description.
 - `.claude-plugin/marketplace.json` — update marketplace description.
@@ -657,3 +658,175 @@ git diff --check 80b9d6a..HEAD
 ```
 
 Expected: the stat matches the planned scope and the whitespace check exits 0.
+
+## Approved Delta: `superpowers-using-git-worktrees`
+
+Tasks 1–9 established and verified the original five-skill port. The following tasks extend that verified branch with the sixth approved skill.
+
+### Task 10: Extend the validator and port `superpowers-using-git-worktrees`
+
+**Files:**
+
+- Modify: `scripts/validate_superpowers_port.py`
+- Create: `skills/superpowers-using-git-worktrees/SKILL.md`
+
+- [ ] **Step 1: Add the sixth expected runtime closure**
+
+Add this entry to `EXPECTED` in `scripts/validate_superpowers_port.py`:
+
+```python
+    "superpowers-using-git-worktrees": {"SKILL.md"},
+```
+
+- [ ] **Step 2: Run the validator and verify RED**
+
+Run:
+
+```bash
+python3 scripts/validate_superpowers_port.py --skill superpowers-using-git-worktrees
+```
+
+Expected: exit 1 with `ERROR: superpowers-using-git-worktrees: missing directory`.
+
+- [ ] **Step 3: Copy and rename the self-contained skill**
+
+```bash
+mkdir -p skills/superpowers-using-git-worktrees
+cp superpowers/skills/using-git-worktrees/SKILL.md skills/superpowers-using-git-worktrees/SKILL.md
+```
+
+Use `apply_patch` to change only the frontmatter line:
+
+```yaml
+name: superpowers-using-git-worktrees
+```
+
+- [ ] **Step 4: Validate GREEN and provenance**
+
+Run:
+
+```bash
+python3 scripts/validate_superpowers_port.py --skill superpowers-using-git-worktrees
+python3 /Users/joejiang/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/superpowers-using-git-worktrees
+diff -u superpowers/skills/using-git-worktrees/SKILL.md skills/superpowers-using-git-worktrees/SKILL.md
+```
+
+Expected: both validators exit 0. The diff exits 1 and shows only `name: using-git-worktrees` changing to `name: superpowers-using-git-worktrees`.
+
+- [ ] **Step 5: Commit the sixth skill and validator extension**
+
+```bash
+git add scripts/validate_superpowers_port.py skills/superpowers-using-git-worktrees
+git commit -m "feat: add prefixed git worktree skill"
+```
+
+### Task 11: Integrate the sixth skill into collection documentation and metadata
+
+**Files:**
+
+- Modify: `README.md`
+- Modify: `.codex-plugin/plugin.json`
+- Modify: `.claude-plugin/plugin.json`
+- Modify: `.claude-plugin/marketplace.json`
+- Modify: `.cursor-plugin/plugin.json`
+
+- [ ] **Step 1: Update both README languages**
+
+Add this English inventory bullet:
+
+```markdown
+- `superpowers-using-git-worktrees` - creates or reuses an isolated workspace before feature work or plan execution.
+```
+
+Add this Chinese inventory bullet:
+
+```markdown
+- `superpowers-using-git-worktrees` - 在功能开发或执行计划前创建或复用隔离工作区。
+```
+
+Change the workflow introduction from five to six skills, add `superpowers-using-git-worktrees` as the first workflow step before brainstorming, and renumber the other five steps. Add `skills/superpowers-using-git-worktrees/` to both structure trees.
+
+- [ ] **Step 2: Update all plugin descriptions and discovery metadata**
+
+Add `git-worktrees` to the Codex and Cursor keyword arrays. Extend all four plugin descriptions so the prefixed workflows also mention worktree isolation.
+
+Add this Codex default prompt:
+
+```json
+"Use superpowers-using-git-worktrees before starting this feature."
+```
+
+- [ ] **Step 3: Parse and validate collection metadata**
+
+Run:
+
+```bash
+python3 -m json.tool .codex-plugin/plugin.json >/dev/null
+python3 -m json.tool .claude-plugin/plugin.json >/dev/null
+python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
+python3 -m json.tool .cursor-plugin/plugin.json >/dev/null
+python3 /Users/joejiang/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
+git diff --check
+```
+
+Expected: all commands exit 0 and plugin validation reports success.
+
+- [ ] **Step 4: Commit collection integration**
+
+```bash
+git add README.md .codex-plugin/plugin.json .claude-plugin/plugin.json .claude-plugin/marketplace.json .cursor-plugin/plugin.json
+git commit -m "docs: integrate git worktree skill"
+```
+
+### Task 12: Run the six-skill completion gate
+
+**Files:**
+
+- Verify: all files changed by Tasks 10–11 plus the complete original port
+
+- [ ] **Step 1: Validate all six port invariants and nine canonical skills**
+
+Run:
+
+```bash
+python3 scripts/validate_superpowers_port.py
+for skill in skills/*/SKILL.md; do
+  python3 /Users/joejiang/.codex/skills/.system/skill-creator/scripts/quick_validate.py "$(dirname "$skill")"
+done
+```
+
+Expected: `Validated 6 prefixed Superpowers skill(s).` followed by nine successful skill validations.
+
+- [ ] **Step 2: Validate helper syntax, JSON, plugin metadata, and whitespace**
+
+Run:
+
+```bash
+env PYTHONPYCACHEPREFIX=/tmp/polish-pycache python3 -m py_compile scripts/validate_superpowers_port.py
+node --check skills/superpowers-writing-skills/render-graphs.js
+node --check skills/superpowers-brainstorming/scripts/helper.js
+node --check skills/superpowers-brainstorming/scripts/server.cjs
+bash -n skills/superpowers-systematic-debugging/find-polluter.sh
+bash -n skills/superpowers-brainstorming/scripts/start-server.sh
+bash -n skills/superpowers-brainstorming/scripts/stop-server.sh
+python3 -m json.tool .codex-plugin/plugin.json >/dev/null
+python3 -m json.tool .claude-plugin/plugin.json >/dev/null
+python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
+python3 -m json.tool .cursor-plugin/plugin.json >/dev/null
+python3 /Users/joejiang/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
+git diff --check 80b9d6a..HEAD
+```
+
+Expected: every command exits 0.
+
+- [ ] **Step 3: Confirm scope and upstream preservation**
+
+Run:
+
+```bash
+git status --short
+git diff --name-status 80b9d6a..HEAD
+git -C superpowers rev-parse HEAD
+```
+
+Expected: status shows only `?? superpowers`; the diff includes the sixth skill, validator, amended spec/plan, collection docs, manifests, and prior planned files; the upstream SHA remains `d884ae04edebef577e82ff7c4e143debd0bbec99`.
