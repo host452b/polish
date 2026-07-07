@@ -7,7 +7,7 @@
     {
       "name": "polish",
       "source": "./",
-      "description": "Personal collection of curated, self-made agent skills. Includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts, and file-singlify for directory-first duplicate detection and read-only single-copy planning."
+      "description": "Personal collection of curated, self-made agent skills. Includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts, file-singlify for directory-first duplicate detection and read-only single-copy planning, and before-git-push for a final pre-push risk review that returns a PUSH or HOLD verdict."
     }
   ]
 }

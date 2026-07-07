@@ -14,6 +14,8 @@
     "file-deduplication",
     "duplicate-detection",
     "storage-cleanup",
+    "pre-push-review",
+    "release-safety",
     "personal-skills",
     "skills"
   ],
@@ -21,7 +23,7 @@
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made agent skills. It includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts, and file-singlify for directory-first duplicate detection and read-only single-copy planning.",
+    "longDescription": "Polish is a personal collection of curated, self-made agent skills. It includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts, file-singlify for directory-first duplicate detection and read-only single-copy planning, and before-git-push for a final pre-push risk review that returns a PUSH or HOLD verdict.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -30,7 +32,8 @@
     ],
     "defaultPrompt": [
       "Use prompt-polish to rewrite this prompt: ...",
-      "Rewrite this question for a better LLM answer."
+      "Rewrite this question for a better LLM answer.",
+      "Run before-git-push on my staged changes: PUSH or HOLD?"
     ],
     "brandColor": "#2563EB"
   }
