@@ -11,6 +11,7 @@ Currently included:
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
+- `superpowers-using-git-worktrees` - creates or reuses an isolated workspace before feature work or plan execution.
 - `superpowers-brainstorming` - turns an idea into an approved design and implementation plan before coding begins.
 - `superpowers-test-driven-development` - enforces the red-green-refactor cycle for feature and bug-fix work.
 - `superpowers-systematic-debugging` - investigates root causes before proposing changes.
@@ -105,13 +106,14 @@ See [skills/before-git-push/SKILL.md](skills/before-git-push/SKILL.md).
 
 ### Prefixed Superpowers workflow
 
-The five `superpowers-*` skills form a complementary workflow:
+The six `superpowers-*` skills form a complementary workflow:
 
-1. `superpowers-brainstorming` shapes the design and hands off to implementation planning.
-2. `superpowers-test-driven-development` drives implementation from a failing test.
-3. `superpowers-systematic-debugging` investigates when observed behavior diverges from expectations.
-4. `superpowers-verification-before-completion` checks fresh evidence before any success claim.
-5. `superpowers-writing-skills` applies the same testing discipline to skill authoring and validation.
+1. `superpowers-using-git-worktrees` creates or reuses an isolated workspace.
+2. `superpowers-brainstorming` shapes the design and hands off to implementation planning.
+3. `superpowers-test-driven-development` drives implementation from a failing test.
+4. `superpowers-systematic-debugging` investigates when observed behavior diverges from expectations.
+5. `superpowers-verification-before-completion` checks fresh evidence before any success claim.
+6. `superpowers-writing-skills` applies the same testing discipline to skill authoring and validation.
 
 These skills are adapted from [`obra/superpowers`](https://github.com/obra/superpowers). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned upstream revision and MIT license.
 
@@ -129,6 +131,8 @@ polish/
 │   └── agents/               # Codex/OpenAI agent descriptor
 ├── skills/before-git-push/
 │   └── SKILL.md              # canonical before-git-push skill contract
+├── skills/superpowers-using-git-worktrees/
+│   └── SKILL.md              # isolated-workspace setup workflow
 ├── skills/superpowers-brainstorming/
 │   ├── SKILL.md              # design-before-implementation workflow
 │   └── scripts/              # optional visual companion runtime
@@ -168,6 +172,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
+- `superpowers-using-git-worktrees` - 在功能开发或执行计划前创建或复用隔离工作区。
 - `superpowers-brainstorming` - 在写代码前把想法收敛为已批准的设计与实施计划。
 - `superpowers-test-driven-development` - 用 red-green-refactor 约束功能与 bugfix 实现。
 - `superpowers-systematic-debugging` - 先定位根因，再提出修改方案。
@@ -262,13 +267,14 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 ### Prefixed Superpowers 工作流
 
-五个 `superpowers-*` skills 组成一套互补工作流：
+六个 `superpowers-*` skills 组成一套互补工作流：
 
-1. `superpowers-brainstorming` 完成设计，并衔接到实施计划。
-2. `superpowers-test-driven-development` 从失败测试开始驱动实现。
-3. `superpowers-systematic-debugging` 在实际行为偏离预期时调查根因。
-4. `superpowers-verification-before-completion` 在任何成功声明前检查最新证据。
-5. `superpowers-writing-skills` 把相同的测试纪律用于 skill 编写与验证。
+1. `superpowers-using-git-worktrees` 创建或复用隔离工作区。
+2. `superpowers-brainstorming` 完成设计，并衔接到实施计划。
+3. `superpowers-test-driven-development` 从失败测试开始驱动实现。
+4. `superpowers-systematic-debugging` 在实际行为偏离预期时调查根因。
+5. `superpowers-verification-before-completion` 在任何成功声明前检查最新证据。
+6. `superpowers-writing-skills` 把相同的测试纪律用于 skill 编写与验证。
 
 这些 skills 适配自 [`obra/superpowers`](https://github.com/obra/superpowers)。固定的上游版本和 MIT license 见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
@@ -286,6 +292,8 @@ polish/
 │   └── agents/               # Codex/OpenAI agent 描述
 ├── skills/before-git-push/
 │   └── SKILL.md              # before-git-push 的主行为契约
+├── skills/superpowers-using-git-worktrees/
+│   └── SKILL.md              # 隔离工作区设置流程
 ├── skills/superpowers-brainstorming/
 │   ├── SKILL.md              # 先设计后实施工作流
 │   └── scripts/              # 可选 visual companion runtime

@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "displayName": "Polish",
-  "description": "Personal collection of curated, self-made, and adapted agent skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including worktree isolation and other prefixed Superpowers workflows.",
   "version": "0.1.0",
   "author": {
     "name": "host452b"
@@ -20,6 +20,7 @@
     "test-driven-development",
     "verification",
     "skill-authoring",
+    "git-worktrees",
     "personal-skills",
     "skills"
   ],

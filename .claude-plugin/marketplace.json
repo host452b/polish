@@ -7,7 +7,7 @@
     {
       "name": "polish",
       "source": "./",
-      "description": "Personal collection of curated, self-made, and adapted agent skills. Includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring."
+      "description": "Personal collection of curated, self-made, and adapted agent skills. Includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for worktree isolation, brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring."
     }
   ]
 }
