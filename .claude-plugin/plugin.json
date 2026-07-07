@@ -1,4 +1,4 @@
 {
   "name": "polish",
-  "description": "Personal collection of curated, self-made agent skills. The polish plugin includes prompt-polish, which rewrites rough questions into stronger bilingual LLM prompts; file-singlify, which scans disks and folders for duplicate files and directory copies and proposes a read-only single-copy plan; and before-git-push, which runs a final pre-push risk review of the real diff and returns a PUSH or HOLD verdict."
+  "description": "Personal collection of curated, self-made, and adapted agent skills. The polish plugin includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for worktree isolation, brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring."
 }
