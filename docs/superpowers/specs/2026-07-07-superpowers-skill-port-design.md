@@ -2,7 +2,7 @@
 
 ## Goal
 
-Port five selected skills from the local `superpowers/skills/` source tree into the `polish` collection as independently installable, prefixed skills:
+Port six selected skills from the local `superpowers/skills/` source tree into the `polish` collection as independently installable, prefixed skills:
 
 | Upstream skill | Polish skill |
 | --- | --- |
@@ -11,6 +11,7 @@ Port five selected skills from the local `superpowers/skills/` source tree into 
 | `verification-before-completion` | `superpowers-verification-before-completion` |
 | `test-driven-development` | `superpowers-test-driven-development` |
 | `writing-skills` | `superpowers-writing-skills` |
+| `using-git-worktrees` | `superpowers-using-git-worktrees` |
 
 The upstream `superpowers/` directory remains an untracked, read-only source and is not included in the port.
 
@@ -24,7 +25,7 @@ For each selected skill:
 2. Copy every script, reference, example, or template directly required at runtime by that skill.
 3. Exclude upstream creation logs, pressure-test fixtures, and other development-only artifacts that the runtime skill does not reference.
 4. Change the YAML `name` to match the prefixed directory exactly.
-5. Rewrite references among the five selected skills to their new `superpowers-*` names.
+5. Rewrite references among the selected skills to their new `superpowers-*` names.
 6. Rewrite local file links so they resolve from the new nested skill directory.
 
 No root-level `SKILL.md` is introduced.
@@ -35,7 +36,7 @@ No root-level `SKILL.md` is introduced.
 
 Include its visual-companion documentation, prompts, HTML template, JavaScript helper/server, and lifecycle shell scripts because the skill explicitly offers and drives that workflow.
 
-The upstream skill terminates by requiring `writing-plans`, which is outside the five selected skills. Replace that hard dependency with a capability-based handoff: use an available planning skill when one exists; otherwise write a concrete implementation plan directly. This keeps the port usable when `polish` is installed without the upstream Superpowers plugin.
+The upstream skill terminates by requiring `writing-plans`, which is outside the selected skill set. Replace that hard dependency with a capability-based handoff: use an available planning skill when one exists; otherwise write a concrete implementation plan directly. This keeps the port usable when `polish` is installed without the upstream Superpowers plugin.
 
 ### `superpowers-systematic-debugging`
 
@@ -57,9 +58,13 @@ Include the authoring references and tools linked by the skill: Anthropic best p
 
 Rewrite its required TDD/debugging references and its examples to use the selected prefixed names.
 
+### `superpowers-using-git-worktrees`
+
+Include its self-contained `SKILL.md`. It has no required supporting files or `superpowers:` cross-references. Change only its frontmatter name so the canonical name matches `skills/superpowers-using-git-worktrees/`.
+
 ## Collection Integration
 
-Update the English and Chinese README sections to list and briefly explain the five new skills and show the expanded `skills/` structure. Keep `prompt-polish`, `file-singlify`, and `before-git-push` unchanged.
+Update the English and Chinese README sections to list and briefly explain the six new skills and show the expanded `skills/` structure. Keep `prompt-polish`, `file-singlify`, and `before-git-push` unchanged.
 
 Update the Codex, Claude, marketplace, and Cursor plugin descriptions and relevant keywords so package metadata reflects the expanded collection. Preserve the package name `polish`, existing skill names, and current version values unless a validator requires a version change.
 
@@ -72,13 +77,13 @@ Update `AGENTS.md` only where repository policy or the verification commands mus
 Run the following before completion:
 
 1. Parse all four JSON manifests with `python3 -m json.tool`.
-2. Run `quick_validate.py` against all eight canonical skill directories, including each of the five new prefixed skills.
+2. Run `quick_validate.py` against all nine canonical skill directories, including each of the six new prefixed skills.
 3. Run `validate_plugin.py .`.
-4. Check that every relative Markdown link and referenced local file in the five new skill directories resolves.
+4. Check that every relative Markdown link and referenced local file in the six new skill directories resolves.
 5. Run representative syntax or smoke checks for copied executable helpers where supported by the local toolchain.
 6. Run `git diff --check`.
 7. Confirm `git status --short` still shows the upstream `superpowers/` tree as untracked and unmodified.
 
 ## Completion Criteria
 
-The port is complete when all five prefixed skills are discoverable under `skills/`, their runtime files and cross-references resolve without requiring the upstream Superpowers plugin, collection documentation and metadata accurately describe their provenance, and all repository validation checks pass.
+The port is complete when all six prefixed skills are discoverable under `skills/`, their runtime files and cross-references resolve without requiring the upstream Superpowers plugin, collection documentation and metadata accurately describe their provenance, and all repository validation checks pass.
