@@ -33,6 +33,7 @@ EXPECTED = {
         "SKILL.md",
         "testing-anti-patterns.md",
     },
+    "superpowers-using-git-worktrees": {"SKILL.md"},
     "superpowers-writing-skills": {
         "SKILL.md",
         "anthropic-best-practices.md",
