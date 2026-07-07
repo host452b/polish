@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-This repo is `polish`: a personal collection of curated, self-made agent skills.
+This repo is `polish`: a personal collection of curated agent skills, including self-made skills and explicitly attributed adaptations.
 Treat the repo/plugin package name as `polish`, but keep individual skill names stable.
 The current skill is `prompt-polish`.
 
@@ -34,7 +34,9 @@ python3 -m json.tool .codex-plugin/plugin.json >/dev/null
 python3 -m json.tool .claude-plugin/plugin.json >/dev/null
 python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
 python3 -m json.tool .cursor-plugin/plugin.json >/dev/null
-python3 /Users/joejiang/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/prompt-polish
+for skill in skills/*/SKILL.md; do
+  python3 /Users/joejiang/.codex/skills/.system/skill-creator/scripts/quick_validate.py "$(dirname "$skill")"
+done
 python3 /Users/joejiang/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
 git diff --check
 ```
