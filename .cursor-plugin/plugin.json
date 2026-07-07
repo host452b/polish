@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "displayName": "Polish",
-  "description": "Personal collection of curated, self-made agent skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills.",
   "version": "0.1.0",
   "author": {
     "name": "host452b"
@@ -15,6 +15,11 @@
     "file-deduplication",
     "duplicate-detection",
     "storage-cleanup",
+    "brainstorming",
+    "systematic-debugging",
+    "test-driven-development",
+    "verification",
+    "skill-authoring",
     "personal-skills",
     "skills"
   ],

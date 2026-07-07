@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.1.0",
-  "description": "Personal collection of curated, self-made agent skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills.",
   "author": {
     "name": "host452b"
   },
@@ -16,6 +16,11 @@
     "storage-cleanup",
     "pre-push-review",
     "release-safety",
+    "brainstorming",
+    "systematic-debugging",
+    "test-driven-development",
+    "verification",
+    "skill-authoring",
     "personal-skills",
     "skills"
   ],
@@ -23,7 +28,7 @@
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made agent skills. It includes prompt-polish for rewriting rough questions into stronger bilingual LLM prompts, file-singlify for directory-first duplicate detection and read-only single-copy planning, and before-git-push for a final pre-push risk review that returns a PUSH or HOLD verdict.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -33,7 +38,10 @@
     "defaultPrompt": [
       "Use prompt-polish to rewrite this prompt: ...",
       "Rewrite this question for a better LLM answer.",
-      "Run before-git-push on my staged changes: PUSH or HOLD?"
+      "Run before-git-push on my staged changes: PUSH or HOLD?",
+      "Use superpowers-brainstorming to design this change before implementation.",
+      "Use superpowers-systematic-debugging to investigate this failure.",
+      "Use superpowers-verification-before-completion before claiming this work is done."
     ],
     "brandColor": "#2563EB"
   }
