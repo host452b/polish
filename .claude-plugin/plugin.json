@@ -1,4 +1,4 @@
 {
   "name": "polish",
-  "description": "Personal collection of curated, self-made, and adapted agent skills. The polish plugin includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for worktree isolation, brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring."
+  "description": "Personal collection of curated, self-made, and adapted agent skills. Includes prompt rewriting, duplicate-file planning, pre-push risk review, portable frontend taste and design-system workflows, shadcn/ui guidance, and prefixed Superpowers workflows."
 }

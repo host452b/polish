@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.1.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills for prompt rewriting, frontend design quality, repository workflows, and release safety.",
   "author": {
     "name": "host452b"
   },
@@ -22,6 +22,11 @@
     "verification",
     "skill-authoring",
     "git-worktrees",
+    "frontend-design",
+    "design-system",
+    "ui-ux",
+    "shadcn-ui",
+    "visual-review",
     "personal-skills",
     "skills"
   ],
@@ -29,7 +34,7 @@
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for worktree isolation, brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, and prefixed Superpowers workflows.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -43,7 +48,11 @@
       "Use superpowers-using-git-worktrees before starting this feature.",
       "Use superpowers-brainstorming to design this change before implementation.",
       "Use superpowers-systematic-debugging to investigate this failure.",
-      "Use superpowers-verification-before-completion before claiming this work is done."
+      "Use superpowers-verification-before-completion before claiming this work is done.",
+      "Use google-stitch-frontend-taste-design to establish the visual direction for this interface.",
+      "Use google-stitch-extract-frontend-design-system to document this repository's visual language.",
+      "Use google-stitch-frontend-brief-enhancer to turn this UI request into an implementation brief.",
+      "Use google-stitch-shadcn-ui to implement or review this shadcn/ui interface."
     ],
     "brandColor": "#2563EB"
   }
