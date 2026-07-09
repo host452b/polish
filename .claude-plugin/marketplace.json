@@ -3,6 +3,9 @@
   "owner": {
     "name": "host452b"
   },
+  "metadata": {
+    "description": "Curated agent skills for prompt rewriting, frontend design quality, repository workflows, and release safety."
+  },
   "plugins": [
     {
       "name": "polish",
