@@ -3,11 +3,14 @@
   "owner": {
     "name": "host452b"
   },
+  "metadata": {
+    "description": "Curated agent skills for prompt rewriting, frontend design quality, repository workflows, and release safety."
+  },
   "plugins": [
     {
       "name": "polish",
       "source": "./",
-      "description": "Personal collection of curated, self-made, and adapted agent skills. Includes prompt rewriting, duplicate-file planning, pre-push risk review, and prefixed Superpowers workflows for worktree isolation, brainstorming, test-driven development, systematic debugging, completion verification, and skill authoring."
+      "description": "Personal collection of curated, self-made, and adapted agent skills. Includes prompt rewriting, duplicate-file planning, pre-push risk review, portable frontend taste and design-system workflows, shadcn/ui guidance, and prefixed Superpowers workflows."
     }
   ]
 }

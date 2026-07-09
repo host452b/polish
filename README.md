@@ -11,6 +11,10 @@ Currently included:
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
+- `google-stitch-frontend-taste-design` - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
+- `google-stitch-extract-frontend-design-system` - extracts a portable `DESIGN.md` from frontend source even when the app cannot build or run.
+- `google-stitch-frontend-brief-enhancer` - turns vague UI requests into bounded, implementation-ready briefs with explicit assumptions and acceptance criteria.
+- `google-stitch-shadcn-ui` - implements or reviews coherent, accessible, responsive shadcn/ui interfaces using the project's real tokens and primitives.
 - `superpowers-using-git-worktrees` - creates or reuses an isolated workspace before feature work or plan execution.
 - `superpowers-brainstorming` - turns an idea into an approved design and implementation plan before coding begins.
 - `superpowers-test-driven-development` - enforces the red-green-refactor cycle for feature and bug-fix work.
@@ -104,6 +108,23 @@ Run it right before `git push`, opening a PR, or shipping. Acting as a senior re
 
 See [skills/before-git-push/SKILL.md](skills/before-git-push/SKILL.md).
 
+### Google Stitch frontend quality workflow
+
+The four `google-stitch-*` skills are adapted from
+[`google-labs-code/stitch-skills`](https://github.com/google-labs-code/stitch-skills),
+but have no runtime Stitch service, MCP, project, screen, or upload dependency.
+They work as independent skills and can optionally compose through repository
+artifacts:
+
+1. `google-stitch-frontend-taste-design` establishes or reviews visual direction and can produce `DESIGN.md`.
+2. `google-stitch-extract-frontend-design-system` recovers an existing repository's visual language into `DESIGN.md`.
+3. `google-stitch-frontend-brief-enhancer` combines a UI request with available design evidence to produce an implementation brief.
+4. `google-stitch-shadcn-ui` applies the design contract and brief when implementing or reviewing a React interface.
+
+The skills keep confirmed facts, reversible assumptions, and unresolved
+decisions separate. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the
+pinned source revision and Apache-2.0 attribution.
+
 ### Prefixed Superpowers workflow
 
 The six `superpowers-*` skills form a complementary workflow:
@@ -131,6 +152,21 @@ polish/
 │   └── agents/               # Codex/OpenAI agent descriptor
 ├── skills/before-git-push/
 │   └── SKILL.md              # canonical before-git-push skill contract
+├── skills/google-stitch-frontend-taste-design/
+│   ├── SKILL.md              # contextual visual-direction workflow
+│   ├── references/           # detailed taste heuristics
+│   └── assets/DESIGN.md      # portable design-contract template
+├── skills/google-stitch-extract-frontend-design-system/
+│   ├── SKILL.md              # source-only design-system extraction
+│   └── references/           # framework guides + output template
+├── skills/google-stitch-frontend-brief-enhancer/
+│   ├── SKILL.md              # vague request to implementation brief
+│   └── references/           # UI vocabulary + brief template
+├── skills/google-stitch-shadcn-ui/
+│   ├── SKILL.md              # shadcn/ui implementation workflow
+│   ├── references/           # setup, catalog, customization, migration
+│   ├── examples/             # complete form-composition example
+│   └── scripts/              # deterministic setup checker
 ├── skills/superpowers-using-git-worktrees/
 │   └── SKILL.md              # isolated-workspace setup workflow
 ├── skills/superpowers-brainstorming/
@@ -172,6 +208,10 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
+- `google-stitch-frontend-taste-design` - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
+- `google-stitch-extract-frontend-design-system` - 即使项目无法构建或运行，也能从前端源码提取可移植的 `DESIGN.md`。
+- `google-stitch-frontend-brief-enhancer` - 把模糊 UI 需求转换为边界清晰、假设透明且可验收的实施 Brief。
+- `google-stitch-shadcn-ui` - 基于项目真实 token 与 primitives 实现或审查一致、无障碍、响应式的 shadcn/ui 界面。
 - `superpowers-using-git-worktrees` - 在功能开发或执行计划前创建或复用隔离工作区。
 - `superpowers-brainstorming` - 在写代码前把想法收敛为已批准的设计与实施计划。
 - `superpowers-test-driven-development` - 用 red-green-refactor 约束功能与 bugfix 实现。
@@ -265,6 +305,21 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 详见 [skills/before-git-push/SKILL.md](skills/before-git-push/SKILL.md)。
 
+### Google Stitch 前端质量工作流
+
+四个 `google-stitch-*` skills 适配自
+[`google-labs-code/stitch-skills`](https://github.com/google-labs-code/stitch-skills)，
+但运行时不依赖 Stitch 服务、MCP、project、screen 或上传链。它们可以独立使用，
+也可以通过仓库中的 artifact 组合：
+
+1. `google-stitch-frontend-taste-design` 建立或审查视觉方向，并可生成 `DESIGN.md`。
+2. `google-stitch-extract-frontend-design-system` 从已有仓库恢复视觉语言并写入 `DESIGN.md`。
+3. `google-stitch-frontend-brief-enhancer` 结合 UI 需求与设计证据，产出实施 Brief。
+4. `google-stitch-shadcn-ui` 在 React 实现或审查中应用设计契约与 Brief。
+
+这些 skills 会区分已确认事实、可逆假设与待决问题。固定的来源版本和 Apache-2.0
+归属信息见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
 ### Prefixed Superpowers 工作流
 
 六个 `superpowers-*` skills 组成一套互补工作流：
@@ -292,6 +347,21 @@ polish/
 │   └── agents/               # Codex/OpenAI agent 描述
 ├── skills/before-git-push/
 │   └── SKILL.md              # before-git-push 的主行为契约
+├── skills/google-stitch-frontend-taste-design/
+│   ├── SKILL.md              # 基于上下文的视觉方向工作流
+│   ├── references/           # 详细审美规则
+│   └── assets/DESIGN.md      # 可移植设计契约模板
+├── skills/google-stitch-extract-frontend-design-system/
+│   ├── SKILL.md              # 只读源码的设计系统提取
+│   └── references/           # 框架指南 + 输出模板
+├── skills/google-stitch-frontend-brief-enhancer/
+│   ├── SKILL.md              # 模糊需求转实施 Brief
+│   └── references/           # UI 词汇 + Brief 模板
+├── skills/google-stitch-shadcn-ui/
+│   ├── SKILL.md              # shadcn/ui 实现工作流
+│   ├── references/           # 设置、目录、定制、迁移指南
+│   ├── examples/             # 完整表单组合示例
+│   └── scripts/              # 确定性设置检查器
 ├── skills/superpowers-using-git-worktrees/
 │   └── SKILL.md              # 隔离工作区设置流程
 ├── skills/superpowers-brainstorming/
