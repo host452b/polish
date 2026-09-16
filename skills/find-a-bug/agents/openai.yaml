@@ -1,0 +1,4 @@
+interface:
+  display_name: "Find a Bug"
+  short_description: "Evidence-led bug investigation across projects"
+  default_prompt: "Use $find-a-bug to investigate this project, verify the unknowns that could change the diagnosis, and report evidence before proposing a fix."
