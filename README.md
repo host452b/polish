@@ -9,6 +9,7 @@
 Currently included:
 
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
+- `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
 - `google-stitch-frontend-taste-design` - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
@@ -88,6 +89,16 @@ It ships 15 text-only strategies such as `Chain-of-Thought (CoT)`, `Step-Back Pr
 
 See [references/strategies.md](references/strategies.md) for full strategy templates, rationale, and sources.
 
+### `find-a-bug`
+
+Use it to investigate a reported failure or inspect a bounded project path for a real defect. Adapted from the user-supplied **Uncertainty-First Planning Protocol**, it separates `VERIFIED`, `USER-STATED`, `INFERRED`, and `UNKNOWN`, checks competing explanations, and tests the top 1–3 unknowns that could change the next action.
+
+It adapts to the project's actual files, contracts, tools, and runtime. Each investigation reports a gate (`GO`, `TEST FIRST`, `ASK USER`, `LIMITED EXPERIMENT`, or `STOP`), evidence boundaries, and a checkpoint. Repair proceeds when requested and supported by evidence; finding no confirmed bug is a valid result.
+
+Example: `Use $find-a-bug to investigate this project's intermittent test failure. Identify what could disprove the suspected cause before proposing a fix.` In Claude Code, invoke `/polish:find-a-bug`.
+
+See [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md) for the workflow and report contract.
+
 ### `file-singlify`
 
 Point it at a disk, directory, or mount path. It detects duplicate files and whole duplicate directory copies left by repeated copying, backups, sync, and migration, then proposes a "singlify" plan: keep one canonical copy and map every duplicate to it.
@@ -145,6 +156,9 @@ polish/
 ├── references/strategies.md  # prompt-polish strategy library
 ├── skills/prompt-polish/
 │   └── SKILL.md              # canonical prompt-polish skill contract
+├── skills/find-a-bug/
+│   ├── SKILL.md              # uncertainty-first defect investigation
+│   └── agents/openai.yaml    # discovery and invocation metadata
 ├── skills/file-singlify/
 │   ├── SKILL.md              # canonical file-singlify skill contract
 │   ├── scripts/              # read-only duplicate scanner
@@ -206,6 +220,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 当前包含：
 
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
+- `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
 - `google-stitch-frontend-taste-design` - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
@@ -285,6 +300,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 完整策略模板、原理与来源见 [references/strategies.md](references/strategies.md)。
 
+### `find-a-bug`
+
+用于定位已报告的故障，或在明确范围内检查项目中的真实缺陷。改写自用户提供的 **Uncertainty-First Planning Protocol**：区分 `VERIFIED`、`USER-STATED`、`INFERRED` 和 `UNKNOWN`，保留竞争解释，优先验证最可能改变下一步动作的 1–3 个未知数。
+
+根据项目实际文件、契约、工具和运行状态选择调查方法。每轮报告 `GO`、`TEST FIRST`、`ASK USER`、`LIMITED EXPERIMENT` 或 `STOP` 门槛，以及证据边界和下一检查点。已要求修复且证据充分时继续修复；本轮没有发现已确认 bug 也是有效结论。
+
+示例：`使用 $find-a-bug 排查这个项目的间歇性测试失败，先找能推翻当前怀疑的证据，再提出修复。` Claude Code 中可用 `/polish:find-a-bug`。
+
+完整流程与输出契约见 [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md)。
+
 ### `file-singlify`
 
 把它指向某个磁盘、目录或挂载路径。它会找出因多次复制、备份、同步、迁移产生的重复文件和整目录重复副本，并生成「单副本化」方案：每组保留一份 canonical copy，其余映射到它。
@@ -340,6 +365,9 @@ polish/
 ├── references/strategies.md  # prompt-polish 策略库
 ├── skills/prompt-polish/
 │   └── SKILL.md              # prompt-polish 的主行为契约
+├── skills/find-a-bug/
+│   ├── SKILL.md              # 未知数优先的缺陷调查
+│   └── agents/openai.yaml    # 发现与调用元数据
 ├── skills/file-singlify/
 │   ├── SKILL.md              # file-singlify 的主行为契约
 │   ├── scripts/              # 只读重复扫描脚本

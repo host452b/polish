@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.1.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills for prompt rewriting, frontend design quality, repository workflows, and release safety.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills for prompt rewriting, defect investigation, frontend design quality, repository workflows, and release safety.",
   "author": {
     "name": "host452b"
   },
@@ -18,6 +18,8 @@
     "release-safety",
     "brainstorming",
     "systematic-debugging",
+    "bug-investigation",
+    "uncertainty-first",
     "test-driven-development",
     "verification",
     "skill-authoring",
@@ -34,7 +36,7 @@
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, and prefixed Superpowers workflows.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, uncertainty-first defect investigation, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, and prefixed Superpowers workflows.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -44,6 +46,7 @@
     "defaultPrompt": [
       "Use prompt-polish to rewrite this prompt: ...",
       "Rewrite this question for a better LLM answer.",
+      "Use find-a-bug to investigate this project's failure and verify the unknowns that could change the diagnosis.",
       "Run before-git-push on my staged changes: PUSH or HOLD?",
       "Use superpowers-using-git-worktrees before starting this feature.",
       "Use superpowers-brainstorming to design this change before implementation.",

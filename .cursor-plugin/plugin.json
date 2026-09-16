@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "displayName": "Polish",
-  "description": "Personal collection of curated, self-made, and adapted agent skills, including portable frontend design quality and prefixed Superpowers workflows.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including uncertainty-first defect investigation, portable frontend design quality, and prefixed Superpowers workflows.",
   "version": "0.1.0",
   "author": {
     "name": "host452b"
@@ -17,6 +17,8 @@
     "storage-cleanup",
     "brainstorming",
     "systematic-debugging",
+    "bug-investigation",
+    "uncertainty-first",
     "test-driven-development",
     "verification",
     "skill-authoring",
