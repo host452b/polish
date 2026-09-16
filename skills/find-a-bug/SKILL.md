@@ -1,140 +1,148 @@
 ---
 name: find-a-bug
-description: Use when a user asks to find a bug in a project, investigate a failure, diagnose unexpected behavior, or locate the cause of a regression, flaky test, hang, incorrect output, or build/runtime error. Also applies to 找 bug、排查故障、定位根因 and bounded defect reviews without a supplied symptom.
+description: Use when a user asks to find a bug in a project, investigate a failure, diagnose unexpected behavior, or locate the cause of a regression, flaky test, hang, incorrect output, or build/runtime error. Also applies to bounded defect reviews without a supplied symptom.
 ---
 
-# Find a Bug（未知数优先的缺陷调查）
+# Find a Bug: Uncertainty-First Defect Investigation
 
-先区分事实、用户陈述、推断和未知数；优先寻找能推翻当前路线的证据。目标是定位有证据支持的缺陷，并决定下一步动作。没有确认缺陷也是有效结果，不能为了交付而凑出一个 bug。
+Separate verified facts, user statements, inferences, and unknowns before acting. Prioritize evidence that could disprove the current approach. The goal is to identify an evidence-backed defect and decide what to do next. Finding no confirmed defect is a valid outcome; never invent a bug to satisfy a delivery expectation.
 
-适用于不同语言、框架、构建系统、数据管道和运行环境。不预设仓库布局、工具、平台、版本或故障原因；按用户语言输出。纯样式偏好、重构建议、一般方案比较不应伪装成缺陷调查。
+Apply this workflow across languages, frameworks, build systems, data pipelines, and runtime environments. Do not assume a repository layout, tool, platform, version, or failure cause. Respond in the user's language. Style preferences, refactoring suggestions, and general option comparisons must not be presented as defect investigations.
 
-## 1. 定义实际决策与调查边界
+## 1. Define the Actual Decision and Investigation Scope
 
-将任务落到动作，例如：“是否需要修改这一输入处理路径，还是先修正测试契约或运行环境？”确认预期行为、实际行为、成功标准、影响、可逆性，以及时间、成本、权限、安全和兼容性约束。
+Frame the task as an action, such as: "Should this input-handling path change, or should we first correct the test contract or runtime environment?" Establish expected behavior, observed behavior, success criteria, impact, reversibility, and constraints on time, cost, permissions, safety, and compatibility.
 
-- **有故障线索：** 从具体输入、终端错误、失败记录或行为差异出发，保留原始证据。
-- **没有故障线索：** 先读项目说明、入口、测试与近期变更，选择一条重要且可检验的执行路径；说明本轮范围，不宣称全仓无缺陷。
-- **只要求找 bug：** 交付调查与证据。**已要求修复：** 证据与执行门槛满足后继续修复，不重复索取已给出的授权。查找缺陷本身不授权部署、删除或外部发送。
+- **A failure symptom is available:** Start from the specific input, terminal error, failure record, or behavioral difference. Preserve the raw evidence.
+- **No failure symptom is available:** Read the project documentation, entry points, tests, and recent changes. Select one important, testable execution path. State the scope of this investigation; do not claim that the entire repository is defect-free.
+- **The user requested investigation only:** Deliver findings and evidence. **The user already requested a fix:** Continue with the fix once evidence and execution gates permit it; do not request authorization already granted. A request to find a bug does not itself authorize deployment, deletion, or external communication.
 
-从文件和实际状态识别项目：仓库指令、工作区改动、revision、依赖锁定、构建配置、测试入口、运行时与部署记录。读取现有材料能回答的问题，先验证，不先让用户填写问卷。保护已有工作区改动。
+Identify the project from its files and actual state: repository instructions, working-tree changes, revision, dependency locks, build configuration, test entry points, runtime, and deployment records. Verify what available artifacts can answer before asking the user to complete a questionnaire. Preserve existing working-tree changes.
 
-| 项目线索 | 优先确认的契约与边界 |
+| Project signals | Contracts and boundaries to verify first |
 |---|---|
-| 前端、移动端、交互应用 | 事件 → 状态 → 异步结果 → 渲染；输入、生命周期、取消和竞态 |
-| 服务、库、CLI | 调用方 → 参数/默认值 → 处理 → 返回/错误；空值、零值和持久化格式 |
-| 原生代码、构建工具 | 编译选项、ABI、平台、资源生命周期、实际加载的产物 |
-| 数据、ML、GPU 项目 | 数据/模型版本、shape、dtype、设备与依赖；各阶段成功分别判定 |
-| CI、脚本、配置、agent skills | 触发条件 → 参数/环境 → 子进程或工具 → 退出/收尾；输出契约与真实执行记录 |
+| Frontend, mobile, interactive applications | Event → state → asynchronous result → rendering; input, lifecycle, cancellation, and race conditions |
+| Services, libraries, command-line interfaces (CLI) | Caller → arguments/defaults → processing → return/error; null values, zero values, and persisted formats |
+| Native code, build tools | Compiler options, application binary interface (ABI), platform, resource lifecycle, and the artifact actually loaded |
+| Data, machine learning (ML), graphics processing unit (GPU) projects | Data/model versions, tensor shape, data type (`dtype`), devices, and dependencies; assess each stage's success separately |
+| Continuous integration (CI), scripts, configuration, agent skills | Trigger → arguments/environment → subprocess or tool → exit/cleanup; output contracts and actual execution records |
 
-只采用与目标项目有关的检查。从项目文件中发现命令，不凭生态经验编造测试入口；工具缺失是验证限制，不是产品缺陷。
+Use only checks relevant to the target project. Discover commands from project files rather than inventing test entry points from ecosystem conventions. A missing tool is a verification limitation, not a product defect.
 
-## 2. 建立认知账本
+## 2. Maintain an Evidence Ledger
 
-每项记录来源、适用范围及会改变的动作；无内容的类别写“暂无”。
+For each entry, record its source, applicability, and the action it could change. Write "None" for an empty category.
 
-| 类别 | 含义与证据要求 |
+| Category | Meaning and evidence requirements |
 |---|---|
-| VERIFIED | 通过文件、日志、测试、工具或权威记录直接验证。标注路径/行号或命令结果，以及相关版本、环境、运行实例和时间。 |
-| USER-STATED | 用户或负责人明确提供但尚未独立核实的信息，保留归属。 |
-| INFERRED | 由哪些事实推导出什么结论，列出仍需成立的前提与反证条件。 |
-| UNKNOWN | 缺失、冲突、过时、不可访问或无法确认的信息，写出验证途径。 |
+| VERIFIED | Directly verified through files, logs, tests, tools, or authoritative records. Cite a path/line or command result, together with the relevant version, environment, run instance, and time. |
+| USER-STATED | Explicitly provided by the user or responsible owner, but not independently verified. Preserve attribution. |
+| INFERRED | State which facts support the inference, which assumptions must still hold, and what evidence would disprove it. |
+| UNKNOWN | Missing, conflicting, stale, inaccessible, or unconfirmed information. State how it could be verified. |
 
-文件内容已验证，不等于运行时采用了它；当前配置不等于失败作业当时的配置。旧日志、其他平台或其他 revision 的结果只能证明其各自范围。缺少日志不代表事件没有发生，单次未复现不代表不存在缺陷，推断不得升级为已验证事实。
+Verifying a file's contents does not prove that the runtime used it. The current configuration is not necessarily the configuration used by the failed job. Old logs, other platforms, and other revisions establish facts only within their own scope. Missing logs do not prove an event never occurred. One unsuccessful reproduction does not prove the absence of a defect. Never promote an inference to a verified fact.
 
-## 3. 扫描隐藏未知数并反证
+## 3. Scan for Hidden Unknowns and Disconfirming Evidence
 
-检查：目标指标；对象/版本/环境/时间范围；输入完整性与代表性；上下游和接口；读取/修改/执行/回滚权限；真实系统状态；平台/硬件/配置兼容性；空、大、异常输入与并发；负责人/接收人；信息时效；可逆性；成功、失败与部分失败是否可观测。
+Check the objective metric; target/version/environment/time boundaries; input completeness and representativeness; upstream and downstream dependencies and interfaces; read/modify/execute/rollback permissions; actual system state; platform/hardware/configuration compatibility; empty, large, and unusual inputs; concurrency; owners and recipients; information freshness; reversibility; and observability of success, failure, and partial failure.
 
-不适用项略过，无法确认项进入账本。完成一次失败预演：“调查或修复失败，最可能遗漏了什么事实？”再问：“出现什么证据，就能证明当前问题定义或首选解释错误？”优先查这种证据，尤其是接口、边界、依赖与真实运行状态。
+Skip inapplicable items and enter unresolved items in the ledger. Run a premortem: "If this investigation or fix fails, what overlooked fact is most likely responsible?" Then ask: "What evidence would show that the current problem definition or preferred explanation is wrong?" Seek that evidence first, especially at interfaces, boundaries, dependencies, and actual runtime state.
 
-## 4. 保留竞争解释，找到翻转变量
+## 4. Keep Competing Hypotheses and Identify Decision-Critical Unknowns
 
-在未收敛时保留 **2–4 条会导向不同动作的合理分支**。每条写明：成立条件、支持证据、反对证据、尚缺证据、成立后的动作。证据已排除的分支可关闭并说明依据；不能为凑数量编造原因。
+Until the evidence converges, retain **2–4 plausible branches that would lead to different actions**. For each, state its necessary conditions, supporting evidence, opposing evidence, missing evidence, and the action to take if it holds. Close disproven branches with the supporting rationale; do not invent causes to meet a quota.
 
-沿“输入/触发 → 状态或转换 → 首次偏离契约 → 下游症状”追踪。最后一个栈帧、最后一个测试名、超时或外层异常通常只定位症状；定位根因要说明哪一步违反了什么契约，以及它如何产生观察到的结果。还要检验预期行为本身是否定义错误。
+Trace the causal chain: **input/trigger → state or transformation → first contract violation → downstream symptom**. The final stack frame, last test name, timeout, or outer exception often locates a symptom. A root-cause claim must explain which step violates which contract and how it produces the observed result. Also test whether the expected behavior itself has been defined incorrectly.
 
-从 UNKNOWN 中选择 **Top 1–3** 个翻转变量。每个必须满足：不同结果会改变动作、误判有实质影响、可通过提问/查询/实验/观测降低不确定性。按“翻转可能性 × 影响 × 可行动性 ÷ 验证成本”定性排序，用高/中/低并解释依据，不捏造概率或分数。
+Select the **top 1–3** decision-critical variables from UNKNOWN. Each must satisfy all three conditions: different outcomes change the action; an incorrect judgment has a material impact; and a question, query, experiment, or observation can reduce uncertainty. Rank them qualitatively using "likelihood of changing the decision × impact × actionability ÷ verification cost." Use High/Medium/Low with reasons; do not fabricate probabilities or scores.
 
-## 5. 设计最小可判别测试
+## 5. Design Minimal Discriminating Tests
 
-先写判定规则，再执行最便宜的有效验证：一个配置/调用点、一条权威记录、一段最小输入、一个已有测试，或小范围可回滚实验。一次只改变能区分分支的变量。
+Define the decision rules first, then run the cheapest effective check: one configuration or call site, one authoritative record, one minimal input, one existing test, or a small reversible experiment. Change only the variable needed to distinguish the branches at each step.
 
-每个测试必须包含：
+Each test must specify:
 
-- 对象、环境、输入、预期契约及其来源；命令来自哪里，是否实际执行。
-- **结果 X → 动作 A；结果 Y → 动作 B；仍不充分 → 验证 Z 或停止。** 阈值来自契约或明确的实验设计，不能看完结果再改。
-- 时间/资源上限、停止条件、可能副作用和恢复方式。
+- Target, environment, input, expected contract and its source; where the command came from and whether it was actually executed.
+- **Result X → action A; result Y → action B; inconclusive → verify Z or stop.** Derive thresholds from the contract or an explicit experimental design. Do not change them after seeing the result.
+- Time/resource budget, stopping conditions, possible side effects, and recovery method.
 
-优先复用项目测试；需要复现时缩减无关依赖，保留触发条件与对照输入。无法运行时做有界的源码分析，明确未验证的运行条件，给出最小缺失证据。测试环境失败、依赖缺失与目标缺陷分别报告。
+Prefer existing project tests. When a reproduction is needed, remove irrelevant dependencies while preserving the trigger and control inputs. If execution is unavailable, perform bounded source analysis, identify unverified runtime conditions, and state the minimum missing evidence. Report test-environment failures, missing dependencies, and the target defect separately.
 
-## 6. 应用执行门槛
+## 6. Apply Execution Gates
 
-每轮选择**一个门槛状态**，绑定紧接着要做的具体动作。其他动作的限制用普通文字说明，不并列多个状态；证据不足且仍可验证时使用 TEST FIRST，不能用 STOP 代替“尚未确认”。
+Choose **one gate per round**, bound to the immediate next action. Describe restrictions on other actions in ordinary prose rather than listing multiple gate states. Use TEST FIRST when evidence is insufficient but verification remains feasible; do not use STOP as a synonym for "not yet confirmed."
 
-| 状态 | 条件与允许的下一步 |
+| Gate | Conditions and permitted next action |
 |---|---|
-| GO | 该动作的关键证据、权限、成功标准充分；执行已授权的动作并验证。 |
-| TEST FIRST | 关键未知数可低成本验证；直接完成安全的读取或局部测试，再更新门槛。 |
-| ASK USER | 影响路线的关键事实或权限无法自行验证；最多问 3 个具体问题，同时推进不依赖答案的调查。 |
-| LIMITED EXPERIMENT | 低风险、可逆；明确假设、影响范围、验证方式和回滚路径后做一次受限实验。 |
-| STOP | 动作风险或权限不允许继续；说明阻断条件及恢复调查所需条件。 |
+| GO | Critical evidence, permissions, and success criteria for this action are sufficient. Execute the authorized action and verify the result. |
+| TEST FIRST | A critical unknown can be checked at low cost. Perform the safe read or local test directly, then update the gate. |
+| ASK USER | A decision-critical fact or permission cannot be verified independently. Ask at most 3 specific questions while continuing investigation that does not depend on the answers. |
+| LIMITED EXPERIMENT | The action is low-risk and reversible. State assumptions, scope, verification method, and rollback path before conducting one bounded experiment. |
+| STOP | Risk or permissions prohibit proceeding. State the blocking condition and what would allow investigation to resume. |
 
-如果未知数可能翻转方案、误判影响高，且动作难回滚或涉及生产、安全、健康、资金、删除、覆盖、外部发送，不直接执行该动作；先安全验证或请求关键输入。不要因低价值未知数无限阻塞可逆调查；已有授权不必重复确认，但授权也不使未知事实变成已知。
+Do not execute an action when an unknown could reverse the plan, an incorrect judgment would have high impact, and the action is hard to roll back or involves production, safety, health, funds, deletion, overwriting, or external communication. First perform safe verification or request the critical input. Do not indefinitely block reversible investigation over low-value unknowns. Do not reconfirm existing authorization, but remember that authorization does not establish missing facts.
 
-只有关键路线和硬门槛明确后，才比较成本、性能或方案得分。正确性、安全、权限和必要的回滚条件不能被综合评分抵消。
+Compare cost, performance, or option scores only after the critical path and hard gates are clear. An aggregate score cannot compensate for failed correctness, safety, permissions, or required rollback conditions.
 
-## 7. 收敛、交付与条件式修复
+## 7. Converge, Deliver, and Fix When Authorized
 
-结论区分 **已确认缺陷 / 待验证候选 / 本轮未发现已确认缺陷**。已确认缺陷必须附：位置、触发条件、预期与实际、因果解释、证据、影响范围和验证边界。明确证据属于运行复现、已有测试还是源码与契约证明，不把源码分析冒充实测。
+Distinguish **Confirmed Defect / Unverified Candidate / No Confirmed Defect Found in This Investigation**. A confirmed defect must include its location, trigger, expected versus actual behavior, causal explanation, evidence, impact scope, and verification limits. Specify whether the evidence comes from runtime reproduction, existing tests, or proof from source and contract. Do not present source analysis as an executed test.
 
-已授权修复且门槛允许时：围绕已证明的因果链做最小修改；用触发输入与相关对照/回归验证；报告改动、实际检查及剩余限制。若证据与预期不符，停止叠加修复，回到账本和分支。只撤销自己的实验或改动，不覆盖用户工作。
+When a fix is authorized and the gate permits it, make the smallest change that addresses the established causal chain. Verify with the triggering input and relevant control/regression cases. Report the change, checks actually performed, and remaining limitations. If evidence contradicts expectations, stop layering on fixes and return to the ledger and branches. Revert only your own experiments or changes; do not overwrite the user's work.
 
-当新增信息不再改变当前动作时停止研究。预算用尽或验证不可达时，交付已有结论、覆盖边界、未决问题及下一检查点；不扩大为无限审计，也不把“未发现”写成“没有 bug”。
+Stop researching when additional information can no longer change the current action. When the budget is exhausted or verification is inaccessible, deliver the supported conclusions, coverage boundaries, open questions, and next checkpoint. Do not expand into an unlimited audit or translate "not found" into "no bug exists."
 
-## 输出契约
+## Output Contract
 
-每轮规划及最终交付按以下顺序输出，简单条目可只用一句话；报告可审核的证据和决策依据，不展开内部思考过程。
+Use the following order for each planning round and final delivery. A simple section may contain just one sentence. Report auditable evidence and decision rationale without exposing internal deliberation.
 
-### 实际决策
-本轮要定位或决定的动作、范围、成功标准与约束。
+### Actual Decision
 
-### 当前倾向
-当前默认路线及依据；最终交付补充缺陷结论、位置、触发条件、预期/实际、影响和证据类型。
+The action to investigate or decide in this round, its scope, success criteria, and constraints.
 
-### 认知账本
-分别列出 VERIFIED、USER-STATED、INFERRED、UNKNOWN；附来源与适用范围。
+### Current Assessment
 
-### 关键分支
-各分支的成立条件、支持/反对/缺失证据及对应动作；附失败预演与可推翻当前路线的证据。
+The current default approach and supporting evidence. In the final delivery, include the defect conclusion, location, trigger, expected/actual behavior, impact, and evidence type.
 
-### Top关键未知数
-Top 1–3 的排序依据、翻转决定的方式、影响、最小验证、预先定义的 X/Y/不充分判定规则。没有行动相关未知数时明确写“无”。
+### Evidence Ledger
 
-### 当前门槛
-仅选择 GO / TEST FIRST / ASK USER / LIMITED EXPERIMENT / STOP 之一，注明下一项动作及原因。
+List VERIFIED, USER-STATED, INFERRED, and UNKNOWN separately, with sources and applicability.
 
-### 执行计划
-通过门槛后才列该动作的操作、验证、停止条件、回滚方法与下一检查点。未通过时只列获准的验证或待答问题，不展开依赖未知前提的完整修复步骤。最终交付区分已执行与待执行。
+### Competing Hypotheses
 
-### 剩余风险
-尚未解决但不阻断当前动作的不确定性，以及未覆盖的版本、平台、输入或运行环境。
+For each branch, give its necessary conditions, supporting/opposing/missing evidence, and resulting action. Include the premortem and evidence that could disprove the current approach.
 
-## 示例：零值是否真是 bug
+### Top Decision-Critical Unknowns
 
-请求：“检查分页函数，找一个 bug。”源码使用 `limit = limit or 100`，文档规定 `limit=0` 返回空列表。
+Give the top 1–3, ranking rationale, how each could change the decision, impact, minimal verification, and predeclared X/Y/inconclusive rules. Explicitly write "None" if no action-relevant unknown remains.
 
-VERIFIED 是源码与文档的内容；“调用方能传入 0”在未查看入口前仍是 UNKNOWN。分支一：0 可达，默认值逻辑违反契约，应定位该赋值；分支二：公共入口拒绝 0，需核对契约适用层，不能宣称用户已受影响。
+### Current Gate
 
-先查公开入口，再预先规定：以合法零值输入调用公开接口，返回非空 → 确认边界缺陷；返回空 → 排除这一候选；入口不可运行 → 保留源码候选并报告限制。普通正数作对照。只读调查可 GO；测试可 TEST FIRST；报告已确认问题不自动授权修复。
+Choose exactly one of GO / TEST FIRST / ASK USER / LIMITED EXPERIMENT / STOP. Identify the next action and why this gate applies.
 
-## 常见失误与纠正
+### Execution Plan
 
-| 失误或借口 | 纠正 |
+After passing the gate, list the action, verification, stopping conditions, rollback method, and next checkpoint. Before passing it, list only permitted verification or outstanding questions; do not elaborate a complete repair plan that depends on unknown premises. Distinguish completed actions from pending actions in the final delivery.
+
+### Residual Risks
+
+Unresolved uncertainties that do not block the current action, plus versions, platforms, inputs, or runtime environments not covered.
+
+## Example: Is Zero-Value Handling Actually a Bug?
+
+Request: "Inspect the pagination function and find a bug." The source uses `limit = limit or 100`, while the documentation specifies that `limit=0` returns an empty list.
+
+The source and documentation contents are VERIFIED. Whether a caller can pass 0 remains UNKNOWN until the entry point is checked. Branch one: 0 is reachable, so the default-value logic violates the contract; investigate that assignment. Branch two: the public entry point rejects 0, so establish which layer the contract applies to before claiming user impact.
+
+Inspect the public entry point, then predeclare the test: call the public application programming interface (API) with valid zero-valued input. A nonempty result confirms the boundary defect; an empty result rules out this candidate; an unavailable runtime leaves a source-level candidate with explicit limits. Use an ordinary positive value as a control. A read-only investigation can be GO; a test can be TEST FIRST. Reporting a confirmed defect does not automatically authorize a fix.
+
+## Common Mistakes and Corrections
+
+| Mistake or rationalization | Correction |
 |---|---|
-| “负责人已经查很久，先采用他的根因” | 仍属 USER-STATED；优先找能推翻它的证据。 |
-| “配置文件读到了，所以失败作业用了它” | 核对历史版本、覆盖来源与运行实例；否则运行时配置仍为 UNKNOWN。 |
-| “补一堆日志总能找到原因” | 先选 Top 翻转变量，定义不同结果对应的动作，再决定采集什么。 |
-| “没复现，说明没 bug” | 只排除本次条件下的复现，保留覆盖边界。 |
-| “十分钟内必须报一个 bug” | 提交有界结论与下一检查点，不降低证据标准。 |
-| “先顺手修掉，再找证据” | 回到因果链、授权与门槛；停止未经证据支持的修改。 |
+| "The owner has investigated for hours; accept their root cause." | It remains USER-STATED. Seek evidence that could disprove it first. |
+| "We read the configuration file, so the failed job used it." | Verify the historical version, override sources, and run instance. Otherwise the effective runtime configuration remains UNKNOWN. |
+| "Collect enough logs and the cause will emerge." | Select the top decision-critical unknowns and define result-to-action rules before deciding what to collect. |
+| "It did not reproduce, so there is no bug." | This only establishes that the defect did not reproduce under the tested conditions. Preserve coverage boundaries. |
+| "We must report a bug within ten minutes." | Deliver a bounded conclusion and next checkpoint without lowering the evidence standard. |
+| "Fix it first; collect evidence afterward." | Return to the causal chain, authorization, and gate. Stop changes unsupported by evidence. |
