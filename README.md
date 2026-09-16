@@ -10,6 +10,7 @@ Currently included:
 
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
+- `project-bug-hunting` - explores unknown functional defects across C++, Python, and mixed projects by checking applicable contracts against source, installed artifacts, and runtime evidence.
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
 - `google-stitch-frontend-taste-design` - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
@@ -99,6 +100,16 @@ Example: `Use $find-a-bug to investigate this project's intermittent test failur
 
 See [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md) for the workflow and report contract.
 
+### `project-bug-hunting`
+
+Use it when there is no supplied error and you want project-wide exploration of unknown functional defects. It separates contract relationships, runtime scenarios, and verification methods, then builds a project map, contract inventory, and candidate pool across seven groups: documentation/usage, interfaces/calls, configuration/dispatch, data/artifacts, state/lifecycle, versions/delivery, and tests/real behavior.
+
+Each candidate retains its contract basis, applicability, verification, alternatives, status, and impact. Confirmed behavior errors and root-cause confidence are recorded separately. Native tracing with bpftrace, Python monitoring, and GPU observation are optional evidence sources; probe validation and coverage limits determine what they can establish. The deliverable is a findings report, reproducible evidence, and checked/uncovered scope; zero confirmed defects is a valid result.
+
+Example: `Use $project-bug-hunting to explore this C++/Python repository for unknown functional defects within a 30-minute budget. Report evidence and coverage limits.` In Claude Code, invoke `/polish:project-bug-hunting`.
+
+See [skills/project-bug-hunting/SKILL.md](skills/project-bug-hunting/SKILL.md), with on-demand references for [contract relationships](skills/project-bug-hunting/references/contracts.md), [runtime evidence](skills/project-bug-hunting/references/runtime-tracing.md), and the [report format](skills/project-bug-hunting/references/report-format.md).
+
 ### `file-singlify`
 
 Point it at a disk, directory, or mount path. It detects duplicate files and whole duplicate directory copies left by repeated copying, backups, sync, and migration, then proposes a "singlify" plan: keep one canonical copy and map every duplicate to it.
@@ -158,6 +169,10 @@ polish/
 │   └── SKILL.md              # canonical prompt-polish skill contract
 ├── skills/find-a-bug/
 │   ├── SKILL.md              # uncertainty-first defect investigation
+│   └── agents/openai.yaml    # discovery and invocation metadata
+├── skills/project-bug-hunting/
+│   ├── SKILL.md              # project-wide contract and defect exploration
+│   ├── references/           # contracts, runtime evidence, report format
 │   └── agents/openai.yaml    # discovery and invocation metadata
 ├── skills/file-singlify/
 │   ├── SKILL.md              # canonical file-singlify skill contract
@@ -221,6 +236,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
+- `project-bug-hunting` - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
 - `google-stitch-frontend-taste-design` - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
@@ -310,6 +326,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 完整流程与输出契约见 [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md)。
 
+### `project-bug-hunting`
+
+用于没有现成报错时的项目级未知功能缺陷探索。将契约关系、运行场景、验证手段分开组织，建立项目地图、契约清单与候选问题池，覆盖文档与使用、接口与调用、配置与分派、数据与产物、状态与生命周期、版本与交付、测试与真实行为七组关系。
+
+每个候选独立记录契约依据、适用条件、验证过程、替代解释、状态与影响；行为错误是否确认和根因是否确定分别记录。bpftrace、Python 监控和 GPU 观测是可选取证手段，必须校验探针有效性并说明覆盖限制。交付发现报告、可复现证据、已检查与未覆盖范围；没有确认缺陷也是有效结果。
+
+示例：`使用 $project-bug-hunting，在 30 分钟预算内探索这个 C++/Python 仓库中的未知功能缺陷，报告证据与覆盖边界。` Claude Code 中可用 `/polish:project-bug-hunting`。
+
+入口见 [skills/project-bug-hunting/SKILL.md](skills/project-bug-hunting/SKILL.md)，按需加载[契约关系](skills/project-bug-hunting/references/contracts.md)、[运行时取证](skills/project-bug-hunting/references/runtime-tracing.md)及[报告格式](skills/project-bug-hunting/references/report-format.md)。
+
 ### `file-singlify`
 
 把它指向某个磁盘、目录或挂载路径。它会找出因多次复制、备份、同步、迁移产生的重复文件和整目录重复副本，并生成「单副本化」方案：每组保留一份 canonical copy，其余映射到它。
@@ -367,6 +393,10 @@ polish/
 │   └── SKILL.md              # prompt-polish 的主行为契约
 ├── skills/find-a-bug/
 │   ├── SKILL.md              # 未知数优先的缺陷调查
+│   └── agents/openai.yaml    # 发现与调用元数据
+├── skills/project-bug-hunting/
+│   ├── SKILL.md              # 项目级契约一致性与未知缺陷探索
+│   ├── references/           # 契约关系、运行时取证、报告格式
 │   └── agents/openai.yaml    # 发现与调用元数据
 ├── skills/file-singlify/
 │   ├── SKILL.md              # file-singlify 的主行为契约
