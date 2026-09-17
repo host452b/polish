@@ -45,7 +45,9 @@ Choose tools already useful for the target project; no tool is a prerequisite fo
 
 ## Evidence Standard and Delivery
 
-Keep an independent record per candidate using the report format. It must contain the contract basis, applicable conditions, compared objects, conflict hypothesis, verification, alternative explanations, conclusion, user impact, evidence strength, and unresolved questions. Distinguish independently executed evidence from supplied records and proposed checks.
+Keep an independent record per candidate using the report format. It must contain the contract basis, applicable conditions, compared objects, conflict hypothesis, verification, alternative explanations, conclusion, user impact, severity and its rationale, evidence strength, and unresolved questions. Distinguish independently executed evidence from supplied records and proposed checks.
+
+Include a **Severity** column in the findings overview and a severity field in each detailed finding: **Blocker / Major / Medium / Minor / Trivial**. Apply the impact definitions in the report format; severity is independent of finding status, root-cause confidence, and investigation priority. Leave it unassigned when impact evidence is insufficient.
 
 | Status | Meaning |
 | --- | --- |
