@@ -1,4 +1,5 @@
 {
   "name": "polish",
+  "version": "0.2.0",
   "description": "Personal collection of curated, self-made, and adapted agent skills. Includes prompt rewriting, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste and design-system workflows, shadcn/ui guidance, and prefixed Superpowers workflows."
 }

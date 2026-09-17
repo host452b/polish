@@ -6,6 +6,8 @@
 
 `polish` is a Claude Code, Codex CLI, and Cursor CLI skill/plugin collection for selected personal and adapted skills. The repo/plugin package is named `polish`; individual skill names stay stable so existing triggers and installs do not break.
 
+Plugin version: **0.2.0**, shared by the Codex, Claude Code, and Cursor manifests.
+
 Currently included:
 
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
@@ -34,7 +36,7 @@ Currently included:
 ```
 
 - Invoke the current skill with `/polish:prompt-polish`, or hand Claude a raw prompt and let the skill trigger automatically.
-- Updates: this repo pins no `version`, so every new commit counts as an update. Run `/plugin update` to get the latest.
+- Updates: Claude Code uses the explicit version in `.claude-plugin/plugin.json`. Bump all three plugin manifests together for each release; run `/plugin update` after the new version is published. See [version management](https://code.claude.com/docs/en/plugins-reference#version-management).
 
 ### Codex CLI - as a plugin
 
@@ -232,6 +234,8 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 `polish` 是一个面向 Claude Code、Codex CLI 和 Cursor CLI 的个人自制与适配 skill/plugin 集合。repo/plugin 包名叫 `polish`；里面每个 skill 的名字保持稳定，避免已有触发方式和安装路径失效。
 
+插件版本：**0.2.0**，Codex、Claude Code 和 Cursor 三份清单使用同一版本号。
+
 当前包含：
 
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
@@ -260,7 +264,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 ```
 
 - 当前 skill 可用 `/polish:prompt-polish` 调用，也可以直接把原始 prompt 交给 Claude，由它按描述自动触发。
-- 更新：本仓库未固定 `version`，因此每个新 commit 都算一次更新，运行 `/plugin update` 即可获取最新版。
+- 更新：Claude Code 使用 `.claude-plugin/plugin.json` 中的显式版本。每次发布时同步递增三份插件清单的版本号；新版本发布后运行 `/plugin update` 更新。详见[版本管理](https://code.claude.com/docs/en/plugins-reference#version-management)。
 
 ### Codex CLI：作为插件安装
 
