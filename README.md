@@ -8,23 +8,25 @@
 
 Plugin version: **0.2.0**, shared by the Codex, Claude Code, and Cursor manifests.
 
+Codex display names come from each skill's `agents/openai.yaml` (`interface.display_name`). The labels below pair these titles with the stable skill IDs used for invocation; display names do not rename skills or change their automatic matching descriptions.
+
 Currently included:
 
-- `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
-- `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
-- `project-bug-hunting` - explores unknown functional defects across C++, Python, and mixed projects by checking applicable contracts against source, installed artifacts, and runtime evidence.
-- `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
-- `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
-- `google-stitch-frontend-taste-design` - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
-- `google-stitch-extract-frontend-design-system` - extracts a portable `DESIGN.md` from frontend source even when the app cannot build or run.
-- `google-stitch-frontend-brief-enhancer` - turns vague UI requests into bounded, implementation-ready briefs with explicit assumptions and acceptance criteria.
-- `google-stitch-shadcn-ui` - implements or reviews coherent, accessible, responsive shadcn/ui interfaces using the project's real tokens and primitives.
-- `superpowers-using-git-worktrees` - creates or reuses an isolated workspace before feature work or plan execution.
-- `superpowers-brainstorming` - turns an idea into an approved design and implementation plan before coding begins.
-- `superpowers-test-driven-development` - enforces the red-green-refactor cycle for feature and bug-fix work.
-- `superpowers-systematic-debugging` - investigates root causes before proposing changes.
-- `superpowers-verification-before-completion` - requires fresh evidence before success claims.
-- `superpowers-writing-skills` - applies test-driven discipline to creating and maintaining agent skills.
+- **Prompt Polish** (`prompt-polish`) - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
+- **Bug Investigation** (`find-a-bug`) - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
+- **Project Bug Hunting** (`project-bug-hunting`) - explores unknown functional defects across C++, Python, and mixed projects by checking applicable contracts against source, installed artifacts, and runtime evidence.
+- **Duplicate File Finder** (`file-singlify`) - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
+- **Git Push Review** (`before-git-push`) - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
+- **Frontend Visual Design** (`google-stitch-frontend-taste-design`) - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
+- **Design System Extraction** (`google-stitch-extract-frontend-design-system`) - extracts a portable `DESIGN.md` from frontend source even when the app cannot build or run.
+- **Frontend Brief Refinement** (`google-stitch-frontend-brief-enhancer`) - turns vague UI requests into bounded, implementation-ready briefs with explicit assumptions and acceptance criteria.
+- **shadcn/ui Development** (`google-stitch-shadcn-ui`) - implements or reviews coherent, accessible, responsive shadcn/ui interfaces using the project's real tokens and primitives.
+- **Git Worktrees** (`superpowers-using-git-worktrees`) - creates or reuses an isolated workspace before feature work or plan execution.
+- **Design Brainstorming** (`superpowers-brainstorming`) - turns an idea into an approved design and implementation plan before coding begins.
+- **Test-Driven Development** (`superpowers-test-driven-development`) - enforces the red-green-refactor cycle for feature and bug-fix work.
+- **Systematic Debugging** (`superpowers-systematic-debugging`) - investigates root causes before proposing changes.
+- **Verification Before Completion** (`superpowers-verification-before-completion`) - requires fresh evidence before success claims.
+- **Skill Authoring** (`superpowers-writing-skills`) - applies test-driven discipline to creating and maintaining agent skills.
 
 ## Install
 
@@ -236,23 +238,25 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 插件版本：**0.2.0**，Codex、Claude Code 和 Cursor 三份清单使用同一版本号。
 
+Codex 显示名称由各 skill 的 `agents/openai.yaml` 中的 `interface.display_name` 配置。以下列表同时标出友好名称和用于调用的稳定 skill 标识；显示名称不会改变 skill 标识或自动匹配所用的描述。
+
 当前包含：
 
-- `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
-- `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
-- `project-bug-hunting` - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
-- `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
-- `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
-- `google-stitch-frontend-taste-design` - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
-- `google-stitch-extract-frontend-design-system` - 即使项目无法构建或运行，也能从前端源码提取可移植的 `DESIGN.md`。
-- `google-stitch-frontend-brief-enhancer` - 把模糊 UI 需求转换为边界清晰、假设透明且可验收的实施 Brief。
-- `google-stitch-shadcn-ui` - 基于项目真实 token 与 primitives 实现或审查一致、无障碍、响应式的 shadcn/ui 界面。
-- `superpowers-using-git-worktrees` - 在功能开发或执行计划前创建或复用隔离工作区。
-- `superpowers-brainstorming` - 在写代码前把想法收敛为已批准的设计与实施计划。
-- `superpowers-test-driven-development` - 用 red-green-refactor 约束功能与 bugfix 实现。
-- `superpowers-systematic-debugging` - 先定位根因，再提出修改方案。
-- `superpowers-verification-before-completion` - 在声称成功前要求最新验证证据。
-- `superpowers-writing-skills` - 用测试驱动的方法创建、维护并验证 agent skills。
+- **Prompt Polish** (`prompt-polish`) - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
+- **Bug Investigation** (`find-a-bug`) - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
+- **Project Bug Hunting** (`project-bug-hunting`) - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
+- **Duplicate File Finder** (`file-singlify`) - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
+- **Git Push Review** (`before-git-push`) - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
+- **Frontend Visual Design** (`google-stitch-frontend-taste-design`) - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
+- **Design System Extraction** (`google-stitch-extract-frontend-design-system`) - 即使项目无法构建或运行，也能从前端源码提取可移植的 `DESIGN.md`。
+- **Frontend Brief Refinement** (`google-stitch-frontend-brief-enhancer`) - 把模糊 UI 需求转换为边界清晰、假设透明且可验收的实施 Brief。
+- **shadcn/ui Development** (`google-stitch-shadcn-ui`) - 基于项目真实 token 与 primitives 实现或审查一致、无障碍、响应式的 shadcn/ui 界面。
+- **Git Worktrees** (`superpowers-using-git-worktrees`) - 在功能开发或执行计划前创建或复用隔离工作区。
+- **Design Brainstorming** (`superpowers-brainstorming`) - 在写代码前把想法收敛为已批准的设计与实施计划。
+- **Test-Driven Development** (`superpowers-test-driven-development`) - 用 red-green-refactor 约束功能与 bugfix 实现。
+- **Systematic Debugging** (`superpowers-systematic-debugging`) - 先定位根因，再提出修改方案。
+- **Verification Before Completion** (`superpowers-verification-before-completion`) - 在声称成功前要求最新验证证据。
+- **Skill Authoring** (`superpowers-writing-skills`) - 用测试驱动的方法创建、维护并验证 agent skills。
 
 ## 安装
 

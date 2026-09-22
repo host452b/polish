@@ -1,0 +1,3 @@
+interface:
+  display_name: "shadcn/ui Development"
+  short_description: "Build and review accessible React interfaces with shadcn/ui"

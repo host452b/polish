@@ -1,0 +1,3 @@
+interface:
+  display_name: "Git Push Review"
+  short_description: "Review the diff and release risks before pushing changes"

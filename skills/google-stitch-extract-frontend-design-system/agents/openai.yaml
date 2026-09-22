@@ -1,0 +1,3 @@
+interface:
+  display_name: "Design System Extraction"
+  short_description: "Extract design tokens and UI patterns from frontend source"
