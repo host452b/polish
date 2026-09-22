@@ -1,0 +1,3 @@
+interface:
+  display_name: "Frontend Brief Refinement"
+  short_description: "Turn vague UI requests into clear implementation briefs"

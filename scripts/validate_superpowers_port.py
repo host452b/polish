@@ -12,6 +12,7 @@ SKILLS = ROOT / "skills"
 EXPECTED = {
     "superpowers-brainstorming": {
         "SKILL.md",
+        "agents/openai.yaml",
         "spec-document-reviewer-prompt.md",
         "visual-companion.md",
         "scripts/frame-template.html",
@@ -22,20 +23,23 @@ EXPECTED = {
     },
     "superpowers-systematic-debugging": {
         "SKILL.md",
+        "agents/openai.yaml",
         "condition-based-waiting-example.ts",
         "condition-based-waiting.md",
         "defense-in-depth.md",
         "find-polluter.sh",
         "root-cause-tracing.md",
     },
-    "superpowers-verification-before-completion": {"SKILL.md"},
+    "superpowers-verification-before-completion": {"SKILL.md", "agents/openai.yaml"},
     "superpowers-test-driven-development": {
         "SKILL.md",
+        "agents/openai.yaml",
         "testing-anti-patterns.md",
     },
-    "superpowers-using-git-worktrees": {"SKILL.md"},
+    "superpowers-using-git-worktrees": {"SKILL.md", "agents/openai.yaml"},
     "superpowers-writing-skills": {
         "SKILL.md",
+        "agents/openai.yaml",
         "anthropic-best-practices.md",
         "examples/CLAUDE_MD_TESTING.md",
         "graphviz-conventions.dot",

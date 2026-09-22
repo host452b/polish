@@ -1,0 +1,3 @@
+interface:
+  display_name: "Prompt Polish"
+  short_description: "Rewrite rough requests into clear bilingual prompts"

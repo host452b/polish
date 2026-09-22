@@ -12,11 +12,13 @@ SKILLS = ROOT / "skills"
 EXPECTED = {
     "google-stitch-frontend-taste-design": {
         "SKILL.md",
+        "agents/openai.yaml",
         "assets/DESIGN.md",
         "references/taste-rules.md",
     },
     "google-stitch-extract-frontend-design-system": {
         "SKILL.md",
+        "agents/openai.yaml",
         "references/angular.md",
         "references/design-md-template.md",
         "references/plain-css.md",
@@ -26,11 +28,13 @@ EXPECTED = {
     },
     "google-stitch-frontend-brief-enhancer": {
         "SKILL.md",
+        "agents/openai.yaml",
         "references/brief-template.md",
         "references/ui-ux-keywords.md",
     },
     "google-stitch-shadcn-ui": {
         "SKILL.md",
+        "agents/openai.yaml",
         "examples/form-pattern.tsx",
         "references/component-catalog.md",
         "references/customization-guide.md",
