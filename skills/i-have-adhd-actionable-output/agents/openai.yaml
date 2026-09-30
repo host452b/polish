@@ -1,0 +1,4 @@
+interface:
+  display_name: "i-have-adhd-actionable-output"
+  short_description: "Make answers actionable without losing needed detail"
+  default_prompt: "Use $i-have-adhd-actionable-output for this task: put the answer first, make progress clear, and preserve required details and uncertainty."

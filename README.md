@@ -18,6 +18,7 @@ Currently included:
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
 - `git-commit-message` - drafts and reviews commit messages using separate GitLab and GitHub conventions, with repository rules taking precedence.
+- `i-have-adhd-actionable-output` - makes answers and handoffs easier to act on while preserving completeness, evidence, and agent autonomy.
 - `google-stitch-frontend-taste-design` - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
 - `google-stitch-extract-frontend-design-system` - extracts a portable `DESIGN.md` from frontend source even when the app cannot build or run.
 - `google-stitch-frontend-brief-enhancer` - turns vague UI requests into bounded, implementation-ready briefs with explicit assumptions and acceptance criteria.
@@ -177,11 +178,35 @@ Invoke with `/polish:git-commit-message` in Claude Code or `$git-commit-message`
 
 See [skills/git-commit-message/SKILL.md](skills/git-commit-message/SKILL.md) for the workflow and platform references.
 
+### `i-have-adhd-actionable-output`
+
+Use it when asking for ADHD-friendly or easier-to-follow answers, a concise
+actionable handoff, or a clearer response whose conclusion and progress are
+hard to find. It selectively adapts the core of `ayghri/i-have-adhd` into one
+task-scoped skill: answer first, bounded steps, visible progress, complete
+information, and evidence-calibrated error reporting.
+
+It preserves detailed explanations and exact output formats, lets the agent
+finish authorized work, and adds a next action only when something remains
+open. It does not impose a five-item cap, infer a diagnosis, or install hooks
+or global session settings. Automatic discovery follows the specific request
+triggers in its description; applying it does not enable a permanent mode.
+
+Example: `Use $i-have-adhd-actionable-output to turn these work notes into a
+clear handoff. Keep every item's status and distinguish tested from unverified.`
+In Claude Code, invoke `/polish:i-have-adhd-actionable-output`.
+
+See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
+[upstream attribution](THIRD_PARTY_NOTICES.md#i-have-adhd-actionable-output).
+
 ## Structure
 
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish strategy library
+├── skills/i-have-adhd-actionable-output/
+│   ├── SKILL.md              # actionable output with completeness safeguards
+│   └── agents/openai.yaml    # matching display and invocation name
 ├── skills/prompt-polish/
 │   └── SKILL.md              # canonical prompt-polish skill contract
 ├── skills/find-a-bug/
@@ -265,6 +290,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
 - `git-commit-message` - 按 GitLab / GitHub 各自规范生成和检查提交信息，优先遵守目标仓库规则。
+- `i-have-adhd-actionable-output` - 让答案和交接更易执行，同时保留完整信息、证据边界和 agent 自主完成工作的能力。
 - `google-stitch-frontend-taste-design` - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
 - `google-stitch-extract-frontend-design-system` - 即使项目无法构建或运行，也能从前端源码提取可移植的 `DESIGN.md`。
 - `google-stitch-frontend-brief-enhancer` - 把模糊 UI 需求转换为边界清晰、假设透明且可验收的实施 Brief。
@@ -422,11 +448,30 @@ Claude Code 中使用 `/polish:git-commit-message`；支持 skill 名称调用�
 
 工作流与两套平台参考规范见 [skills/git-commit-message/SKILL.md](skills/git-commit-message/SKILL.md)。
 
+### `i-have-adhd-actionable-output`
+
+用于用户要求 ADHD 友好、易跟进的回答、简洁可执行的交接，或重新组织结论和进度
+难以找到的回复。它精选迁移 `ayghri/i-have-adhd` 的核心内容，整合为一个按当前
+任务生效的 skill：答案优先、步骤明确、进度可见、信息完整、错误陈述有据可查。
+
+保留详细解释和精确输出格式，支持 agent 直接完成已授权工作；仅有未完成事项时
+才给出下一步。不设五项硬上限，不推断诊断，不安装 hooks 或全局会话设置。
+按照描述中的具体请求场景自动发现，使用一次不会开启永久模式。
+
+示例：`使用 $i-have-adhd-actionable-output 把这些工作记录整理成清晰交接，保留每项状态，区分已验证和未验证。`
+Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
+
+见 [skill 正文](skills/i-have-adhd-actionable-output/SKILL.md) 和
+[上游归属](THIRD_PARTY_NOTICES.md#i-have-adhd-actionable-output)。
+
 ## 结构
 
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish 策略库
+├── skills/i-have-adhd-actionable-output/
+│   ├── SKILL.md              # 可执行回答与完整性保护
+│   └── agents/openai.yaml    # 一致的展示名与调用名
 ├── skills/prompt-polish/
 │   └── SKILL.md              # prompt-polish 的主行为契约
 ├── skills/find-a-bug/
