@@ -1,4 +1,4 @@
 interface:
-  display_name: "Git Commit Message"
+  display_name: "git-commit-message"
   short_description: "Draft commit messages for GitLab and GitHub"
   default_prompt: "Use $git-commit-message to draft a message for the selected changes using the target repository's GitLab or GitHub conventions."

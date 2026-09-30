@@ -1,4 +1,4 @@
 interface:
-  display_name: "Project Bug Hunting"
+  display_name: "project-bug-hunting"
   short_description: "Explore unknown defects through project contracts"
   default_prompt: "Use $project-bug-hunting to explore this repository for unknown functional defects and contract inconsistencies, then report reproducible evidence and coverage limits."

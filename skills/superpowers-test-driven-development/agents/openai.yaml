@@ -1,3 +1,3 @@
 interface:
-  display_name: "Test-Driven Development"
+  display_name: "superpowers-test-driven-development"
   short_description: "Build features and fixes through red-green-refactor cycles"

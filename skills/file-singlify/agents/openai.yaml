@@ -1,10 +1,10 @@
 # Codex / OpenAI agent manifest for the file-singlify skill.
 # Behavior lives in SKILL.md; this file only carries interface + policy metadata.
 interface:
-  display_name: "Duplicate File Finder"
+  display_name: "file-singlify"
   short_description: "Find duplicate files and folders with read-only cleanup plans"
   brand_color: "#2563EB"
-  default_prompt: "Scan this folder for duplicate files and duplicate directory copies, then propose a single-copy plan (dry-run)."
+  default_prompt: "Use $file-singlify to scan this folder for duplicate files and duplicate directory copies, then propose a single-copy plan (dry-run)."
 policy:
   allow_implicit_invocation: true
 dependencies:
