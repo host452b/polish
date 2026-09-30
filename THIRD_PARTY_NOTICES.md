@@ -1,5 +1,42 @@
 # Third-Party Notices
 
+## i-have-adhd actionable output
+
+`i-have-adhd-actionable-output` is selectively adapted from
+[`ayghri/i-have-adhd`](https://github.com/ayghri/i-have-adhd) at commit
+`839872f9d1cd634fed642b4589ce7226199cc15f`, specifically
+[`skills/i-have-adhd/SKILL.md`](https://github.com/ayghri/i-have-adhd/blob/839872f9d1cd634fed642b4589ce7226199cc15f/skills/i-have-adhd/SKILL.md).
+
+The adaptation retains answer/action-first presentation, bounded steps,
+visible progress, completeness safeguards, task/harness precedence, and
+evidence-calibrated language. It combines these into one task-scoped skill.
+It removes the presumed diagnosis, hard list-size target, mandatory time
+estimates, and default session persistence. Runtime hooks, installers, platform
+extensions, and the upstream Git history are not imported. This is a selective
+content adaptation, not a verbatim Git cherry-pick or an upstream endorsement.
+
+MIT License
+
+Copyright (c) 2026 Ayoub Ghriss
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 ## Superpowers skills
 
 The `superpowers-*` skills in this repository are adapted from [obra/superpowers](https://github.com/obra/superpowers) at commit `d884ae04edebef577e82ff7c4e143debd0bbec99`.
