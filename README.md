@@ -17,6 +17,7 @@ Currently included:
 - **Project Bug Hunting** (`project-bug-hunting`) - explores unknown functional defects across C++, Python, and mixed projects by checking applicable contracts against source, installed artifacts, and runtime evidence.
 - **Duplicate File Finder** (`file-singlify`) - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - **Git Push Review** (`before-git-push`) - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
+- **Git Commit Message** (`git-commit-message`) - drafts and reviews commit messages using separate GitLab and GitHub conventions, with repository rules taking precedence.
 - **Frontend Visual Design** (`google-stitch-frontend-taste-design`) - establishes or reviews evidence-backed frontend visual direction without generic AI styling or fabricated product content.
 - **Design System Extraction** (`google-stitch-extract-frontend-design-system`) - extracts a portable `DESIGN.md` from frontend source even when the app cannot build or run.
 - **Frontend Brief Refinement** (`google-stitch-frontend-brief-enhancer`) - turns vague UI requests into bounded, implementation-ready briefs with explicit assumptions and acceptance criteria.
@@ -164,6 +165,18 @@ The six `superpowers-*` skills form a complementary workflow:
 
 These skills are adapted from [`obra/superpowers`](https://github.com/obra/superpowers). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned upstream revision and MIT license.
 
+### `git-commit-message`
+
+Draft or review a commit message, final squash title, or MR/PR title. The skill selects the target platform from the request and repository evidence, reads the matching GitLab or GitHub profile, and applies repository contribution/CI rules first.
+
+- **GitLab:** standard or team-approved Issue-prefixed headers; validation, risk, and traceability footers; controlled automation exceptions.
+- **GitHub:** standard Conventional Commits headers, a 50-character target and 72-character maximum, with explanatory bodies and issue/migration footers.
+- **Evidence-based:** uses the selected diff and known validation; reports missing facts without inventing issues or test results. Drafting does not stage, commit, push, or change Git configuration.
+
+Invoke with `/polish:git-commit-message` in Claude Code or `$git-commit-message` where skill-name invocation is supported. Example: “Draft a GitLab commit message for the staged changes, related to PROJ-1234.”
+
+See [skills/git-commit-message/SKILL.md](skills/git-commit-message/SKILL.md) for the workflow and platform references.
+
 ## Structure
 
 ```text
@@ -183,6 +196,10 @@ polish/
 │   ├── scripts/              # read-only duplicate scanner
 │   ├── references/           # matching + safety rules
 │   └── agents/               # Codex/OpenAI agent descriptor
+├── skills/git-commit-message/
+│   ├── SKILL.md              # commit-message workflow and platform selection
+│   ├── references/           # GitLab, GitHub, and optional tooling
+│   └── agents/openai.yaml    # discovery and invocation metadata
 ├── skills/before-git-push/
 │   └── SKILL.md              # canonical before-git-push skill contract
 ├── skills/google-stitch-frontend-taste-design/
@@ -247,6 +264,7 @@ Codex 显示名称由各 skill 的 `agents/openai.yaml` 中的 `interface.displa
 - **Project Bug Hunting** (`project-bug-hunting`) - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
 - **Duplicate File Finder** (`file-singlify`) - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - **Git Push Review** (`before-git-push`) - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
+- **Git Commit Message** (`git-commit-message`) - 按 GitLab / GitHub 各自规范生成和检查提交信息，优先遵守目标仓库规则。
 - **Frontend Visual Design** (`google-stitch-frontend-taste-design`) - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
 - **Design System Extraction** (`google-stitch-extract-frontend-design-system`) - 即使项目无法构建或运行，也能从前端源码提取可移植的 `DESIGN.md`。
 - **Frontend Brief Refinement** (`google-stitch-frontend-brief-enhancer`) - 把模糊 UI 需求转换为边界清晰、假设透明且可验收的实施 Brief。
@@ -392,6 +410,18 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 这些 skills 适配自 [`obra/superpowers`](https://github.com/obra/superpowers)。固定的上游版本和 MIT license 见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+### `git-commit-message`
+
+生成或检查 commit message、最终 squash 标题及 MR/PR 标题。根据用户指定目标和仓库证据选择平台，读取对应规范，优先遵守仓库 CONTRIBUTING 与 CI 规则。
+
+- **GitLab：** 标准格式或团队约定的 Issue 前缀格式；验证、风险与追溯 footer；受控自动化提交例外。
+- **GitHub：** 标准 Conventional Commits 格式；完整标题建议不超过 50 字符、硬上限 72；正文解释原因，footer 关联 Issue 或说明迁移。
+- **基于证据：** 使用选定 diff 和已知验证结果，缺失信息明确说明，不虚构 Issue 或测试结果。仅生成信息不会执行暂存、提交、推送或修改 Git 配置。
+
+Claude Code 中使用 `/polish:git-commit-message`；支持 skill 名称调用的环境中使用 `$git-commit-message`。例如：“根据暂存改动生成 GitLab 提交信息，关联 PROJ-1234。”
+
+工作流与两套平台参考规范见 [skills/git-commit-message/SKILL.md](skills/git-commit-message/SKILL.md)。
+
 ## 结构
 
 ```text
@@ -411,6 +441,10 @@ polish/
 │   ├── scripts/              # 只读重复扫描脚本
 │   ├── references/           # 匹配 + 安全规则
 │   └── agents/               # Codex/OpenAI agent 描述
+├── skills/git-commit-message/
+│   ├── SKILL.md              # commit-message workflow and platform selection
+│   ├── references/           # GitLab, GitHub, and optional tooling
+│   └── agents/openai.yaml    # discovery and invocation metadata
 ├── skills/before-git-push/
 │   └── SKILL.md              # before-git-push 的主行为契约
 ├── skills/google-stitch-frontend-taste-design/
