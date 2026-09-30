@@ -1,3 +1,3 @@
 interface:
-  display_name: "Verification Before Completion"
+  display_name: "superpowers-verification-before-completion"
   short_description: "Check fresh evidence before claiming work is complete"

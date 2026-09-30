@@ -21,6 +21,7 @@ Do not put canonical skill instructions in a root-level `SKILL.md`. Root docs ar
 
 - Keep `prompt-polish` as the skill name and `skills/prompt-polish/` as its path unless the user explicitly asks to rename the skill itself.
 - Use `polish` for the repo/plugin/package name and install commands.
+- Keep every skill directory name, `SKILL.md` frontmatter `name`, invocation identifier, and `agents/openai.yaml` `interface.display_name` identical in lowercase kebab-case. Use that same name in README skill lists; invocation syntax may add `$` or the `/polish:` namespace.
 - Keep README wording collection-oriented: this repo is a growing personal skill collection, not a single-purpose prompt-polish repo.
 - When adding a new skill, add it under `skills/<new-skill-name>/SKILL.md` and update README plus plugin metadata only as needed.
 - Keep `CLAUDE.md` as a thin import of this file; put shared repo policy here.
