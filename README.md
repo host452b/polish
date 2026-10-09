@@ -88,7 +88,7 @@ Architecture, technology selection, post-implementation recovery, and comparable
 
 Example: `Use $find-blind-spots to identify one overlooked consequence of our architecture change, explain the evidence, and give the smallest test that would change our decision.` In Claude Code, invoke `/polish:find-blind-spots`.
 
-See [the skill](skills/find-blind-spots/SKILL.md), [knowledge model](skills/find-blind-spots/references/knowledge-model.md), and [decision lenses](skills/find-blind-spots/references/decision-lenses.md).
+See [the skill](skills/find-blind-spots/SKILL.md), [knowledge model](skills/find-blind-spots/references/knowledge-model.md), [decision lenses](skills/find-blind-spots/references/decision-lenses.md), and [prompt-strategy choices and sources](skills/find-blind-spots/references/prompt-strategies.md).
 
 ### `prompt-polish`
 
@@ -372,7 +372,7 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 示例：`使用 $find-blind-spots，基于当前聊天和项目证据，找出这次架构改造最容易遗漏的一个上线后问题，并给出最小验证和结果分支。`
 Claude Code 中使用 `/polish:find-blind-spots`。
 
-见 [skill 正文](skills/find-blind-spots/SKILL.md)、[认知模型与来源](skills/find-blind-spots/references/knowledge-model.md) 和 [决策视角](skills/find-blind-spots/references/decision-lenses.md)。
+见 [skill 正文](skills/find-blind-spots/SKILL.md)、[认知模型与来源](skills/find-blind-spots/references/knowledge-model.md)、[决策视角](skills/find-blind-spots/references/decision-lenses.md) 和 [提示词策略取舍与来源](skills/find-blind-spots/references/prompt-strategies.md)。
 
 ### `prompt-polish`
 
