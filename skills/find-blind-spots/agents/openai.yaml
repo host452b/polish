@@ -1,0 +1,6 @@
+interface:
+  display_name: "find-blind-spots"
+  short_description: "从聊天与项目证据发现关键认知、落实和验证缺口，以及收益机会"
+  default_prompt: "使用 $find-blind-spots，结合可访问的聊天与当前项目，找出一个最值得补齐的关键点，默认附 ASCII 四象限表，每格按重要程度编号列出最多三项、不凑数，再说明证据、影响和最小验证。"
+policy:
+  allow_implicit_invocation: true

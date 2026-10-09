@@ -12,6 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
+- `find-blind-spots` - identifies decision-relevant blind spots in conversations, architecture, technology choices, and post-launch plans, with evidence and a bounded validation step.
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
 - `project-bug-hunting` - explores unknown functional defects across C++, Python, and mixed projects by checking applicable contracts against source, installed artifacts, and runtime evidence.
@@ -78,6 +79,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `find-blind-spots`
+
+Use it for “what am I missing?” or “what should I know but probably do not?” It separates awareness, evidence, confidence, and decision impact; a known unknown is not automatically a critical assumption. It uses visible context, checks whether the concern was already addressed, and defaults to one useful finding with a minimal test, pass/fail criteria, and the resulting decision branches.
+
+Architecture, technology selection, post-implementation recovery, and comparable-team practices are conditional lenses, not a mandatory production checklist. It distinguishes knowledge, implementation, and verification gaps, including opportunities to reuse assets or simplify work. At consequential decision checkpoints, an implicit pass stays lightweight and preserves the main task. Missing discussion does not establish user ignorance. An ASCII quadrant table is shown by default, with up to three numbered entries per quadrant ranked by importance and no invented filler. Research background remains available on demand.
+
+Example: `Use $find-blind-spots to identify one overlooked consequence of our architecture change, explain the evidence, and give the smallest test that would change our decision.` In Claude Code, invoke `/polish:find-blind-spots`.
+
+See [the skill](skills/find-blind-spots/SKILL.md), [knowledge model](skills/find-blind-spots/references/knowledge-model.md), and [decision lenses](skills/find-blind-spots/references/decision-lenses.md).
 
 ### `prompt-polish`
 
@@ -285,6 +296,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 当前包含：
 
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
+- `find-blind-spots` - 从聊天、架构、选型与上线计划中发现影响决策的盲点，给出证据和最小验证动作。
 - `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
 - `project-bug-hunting` - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
@@ -350,6 +362,17 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `find-blind-spots`
+
+用于“我漏掉了什么”“基于聊天告诉我一件必要但可能不知道的事”，也用于架构、技术选型、改造后恢复能力和同行实践差距审视。分别处理觉察、证据、信心和决策影响，明确“已知未知”不一定是关键假设。
+
+默认只给一个最有价值的发现，附 ASCII 四象限表，每格按重要程度用 1、2、3 编号、最多三项，有几项列几项，无证据不凑数；随后说明依据、最小验证及通过／失败后的选择。区分知识、落实与验证缺口，同时寻找复用与简化的收益机会。隐式触发仅在关键决策处轻量检查，保留主任务。聊天没提到不等于用户不知道；已经处理过的事项不反复提醒。研究来源按需展开，原型试用不会自动套用生产级清单。
+
+示例：`使用 $find-blind-spots，基于当前聊天和项目证据，找出这次架构改造最容易遗漏的一个上线后问题，并给出最小验证和结果分支。`
+Claude Code 中使用 `/polish:find-blind-spots`。
+
+见 [skill 正文](skills/find-blind-spots/SKILL.md)、[认知模型与来源](skills/find-blind-spots/references/knowledge-model.md) 和 [决策视角](skills/find-blind-spots/references/decision-lenses.md)。
 
 ### `prompt-polish`
 
