@@ -12,6 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
+- `yc-rejection-simulator` - reviews startup ideas and applications with evidence-grounded objections, a sharp simulated verdict, and one concrete validation test.
 - `find-blind-spots` - identifies decision-relevant blind spots in conversations, architecture, technology choices, and post-launch plans, with evidence and a bounded validation step.
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
@@ -79,6 +80,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `yc-rejection-simulator`
+
+Submit a startup idea, pitch, business plan, or YC application for a sharp independent simulation. The skill distinguishes `explicit`, `inference`, and `missing` evidence bases, selects `reject`, `insufficient_evidence`, or `continue`, and gives at most three grounded objections plus one concrete validation test. New evidence can weaken or withdraw earlier objections. It does not represent YC or predict admission outcomes.
+
+The self-contained skill uses Chinese action instructions and English professional concepts, criteria, and output fields. It runs in one response without external services or agent orchestration.
+
+Example: `Use $yc-rejection-simulator to critique this startup application. Be sharp, ground every objection in the material, and identify one test that would change the verdict.` In Claude Code, invoke `/polish:yc-rejection-simulator`.
+
+See [the skill](skills/yc-rejection-simulator/SKILL.md).
 
 ### `find-blind-spots`
 
@@ -215,6 +226,9 @@ See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish strategy library
+├── skills/yc-rejection-simulator/
+│   ├── SKILL.md              # evidence-grounded startup review and simulation
+│   └── agents/openai.yaml    # matching display and invocation name
 ├── skills/i-have-adhd-actionable-output/
 │   ├── SKILL.md              # actionable output with completeness safeguards
 │   └── agents/openai.yaml    # matching display and invocation name
@@ -295,6 +309,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
+- `yc-rejection-simulator` - 用有据可查的 objections、尖锐的模拟 verdict 和一个具体 validation test 评审 startup ideas 与 applications。
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `find-blind-spots` - 从聊天、架构、选型与上线计划中发现影响决策的盲点，给出证据和最小验证动作。
 - `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
@@ -362,6 +377,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `yc-rejection-simulator`
+
+提交 startup idea、pitch、business plan 或 YC application，即可获得尖锐的 independent simulation。区分 `explicit`、`inference`、`missing` 三种 evidence basis，选择 `reject`、`insufficient_evidence` 或 `continue`，给出最多三个有依据的 objections 和一个具体 validation test。补充证据后会减弱或撤回原质疑；不代表 YC，也不预测录取结果。
+
+操作指引用中文，professional concepts、review criteria 和 output fields 使用英文。主流程集中在一个 `SKILL.md`，一次 response 完成，无需外部服务或多个 agents。
+
+示例：`使用 $yc-rejection-simulator 评审这份 startup application，反馈要尖锐，每条 objection 都要对应材料，并给出一个能改变 verdict 的 validation test。` Claude Code 中使用 `/polish:yc-rejection-simulator`。
+
+见 [skill 正文](skills/yc-rejection-simulator/SKILL.md)。
 
 ### `find-blind-spots`
 
@@ -492,6 +517,9 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish 策略库
+├── skills/yc-rejection-simulator/
+│   ├── SKILL.md              # 有据可查的 startup review 与 simulation
+│   └── agents/openai.yaml    # 一致的显示名与调用名
 ├── skills/i-have-adhd-actionable-output/
 │   ├── SKILL.md              # 可执行回答与完整性保护
 │   └── agents/openai.yaml    # 一致的展示名与调用名
