@@ -1,4 +1,4 @@
 interface:
   display_name: "yc-rejection-simulator"
-  short_description: "Evidence-grounded startup critique and rejection simulation"
-  default_prompt: "使用 $yc-rejection-simulator 评审以下 startup application，给出 evidence-grounded verdict、尖锐反馈和一个可执行的 validation test。"
+  short_description: "Critique startup ideas, approaches, code and architecture"
+  default_prompt: "使用 $yc-rejection-simulator 挑刺我的 idea、current approach、implementation 或 architecture；若我不知道如何反省，从已有上下文开始，给出 evidence-grounded verdict 和一个 validation test。"
