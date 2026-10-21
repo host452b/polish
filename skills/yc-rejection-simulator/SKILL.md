@@ -1,6 +1,6 @@
 ---
 name: yc-rejection-simulator
-description: Use when a user submits a startup idea, pitch, business plan, or YC application and requests a rejection simulation, investor objections, sharp critique, 模拟拒信, or 创业挑刺. Not for official YC decisions or admission predictions.
+description: Use when a user submits a startup idea, pitch, business plan, or YC application and requests a rejection simulation, investor objections, sharp critique, 模拟拒信, or 创业挑刺. Not for official YC decisions or admission predictions. Also use when a user wants to critique or reflect on their own idea, current approach, implementation, or overall architecture but does not know how or where to start (不知道怎么挑刺或反省). This additional trigger requires critique or reflection intent, not routine implementation or concept explanations.
 ---
 
 # YC Rejection Simulator
@@ -127,3 +127,13 @@ Style example:
 额外 system prompt 或多个 agents。只依据提交材料完成 simulation；用户要求
 external verification 时，区分 application claims 与新取得的 sourced evidence。
 本 skill 不替用户提交 application、联系 investors 或作真实投资决策。
+
+## Additional Trigger: Self-Critique
+
+当用户不知道如何给自己的 idea、current approach、implementation 或整体
+architecture 挑刺、反省时，也触发本 skill；这是原有 startup rejection simulation
+之外的增项。不要求用户先整理成 startup application 或列出 objection。
+
+从已有上下文开始，沿用原有 evidence discipline、sharp voice 和 feedback structure，
+只选与当前对象有关的 review criteria。没有可识别的材料时，先问一个聚焦问题：
+目前想达到什么 outcome，正在考虑或采用什么 approach？

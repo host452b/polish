@@ -89,6 +89,8 @@ The self-contained skill uses Chinese action instructions and English profession
 
 Example: `Use $yc-rejection-simulator to critique this startup application. Be sharp, ground every objection in the material, and identify one test that would change the verdict.` In Claude Code, invoke `/polish:yc-rejection-simulator`.
 
+Additional trigger: use it when you want to critique or reflect on your own idea, current approach, implementation, or overall architecture but do not know how or where to start. This extends the original startup rejection simulation.
+
 See [the skill](skills/yc-rejection-simulator/SKILL.md).
 
 ### `find-blind-spots`
@@ -385,6 +387,8 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 操作指引用中文，professional concepts、review criteria 和 output fields 使用英文。主流程集中在一个 `SKILL.md`，一次 response 完成，无需外部服务或多个 agents。
 
 示例：`使用 $yc-rejection-simulator 评审这份 startup application，反馈要尖锐，每条 objection 都要对应材料，并给出一个能改变 verdict 的 validation test。` Claude Code 中使用 `/polish:yc-rejection-simulator`。
+
+额外触发：当用户不知道如何给自己的 idea、current approach、implementation 或整体 architecture 挑刺、反省时，也可使用；这是原有 startup rejection simulation 之外的增项。
 
 见 [skill 正文](skills/yc-rejection-simulator/SKILL.md)。
 
