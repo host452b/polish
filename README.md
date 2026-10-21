@@ -12,7 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
-- `yc-rejection-simulator` - critiques startup ideas, current approaches, implementations, and architecture, including when the user does not know how to start reflecting on them.
+- `yc-rejection-simulator` - reviews startup ideas and applications with evidence-grounded objections, a sharp simulated verdict, and one concrete validation test.
 - `find-blind-spots` - identifies decision-relevant blind spots in conversations, architecture, technology choices, and post-launch plans, with evidence and a bounded validation step.
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
 - `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
@@ -83,13 +83,13 @@ Use plugin install when you want the whole collection as it grows. Use manual sy
 
 ### `yc-rejection-simulator`
 
-Ask for a sharp critique of a startup idea, current approach, implementation, or overall architecture—even when you do not know how or where to start that reflection. The skill starts from available context and selects relevant startup or engineering criteria. It distinguishes `explicit`, `inference`, and `missing` evidence bases, selects `reject`, `insufficient_evidence`, or `continue`, and gives at most three grounded objections plus one concrete validation test. New evidence can weaken or withdraw earlier objections. Investor rejection language applies to startup reviews; it does not represent YC or predict admission outcomes.
+Submit a startup idea, pitch, business plan, or YC application for a sharp independent simulation. The skill distinguishes `explicit`, `inference`, and `missing` evidence bases, selects `reject`, `insufficient_evidence`, or `continue`, and gives at most three grounded objections plus one concrete validation test. New evidence can weaken or withdraw earlier objections. It does not represent YC or predict admission outcomes.
 
 The self-contained skill uses Chinese action instructions and English professional concepts, criteria, and output fields. It runs in one response without external services or agent orchestration.
 
 Example: `Use $yc-rejection-simulator to critique this startup application. Be sharp, ground every objection in the material, and identify one test that would change the verdict.` In Claude Code, invoke `/polish:yc-rejection-simulator`.
 
-Also triggers for: “I do not know how to challenge my current implementation or overall architecture; help me examine its assumptions.” Routine implementation and concept explanations keep their original scope.
+Additional trigger: use it when you want to critique or reflect on your own idea, current approach, implementation, or overall architecture but do not know how or where to start. This extends the original startup rejection simulation.
 
 See [the skill](skills/yc-rejection-simulator/SKILL.md).
 
@@ -311,7 +311,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
-- `yc-rejection-simulator` - 对 ideas、current approaches、implementations 和整体 architecture 挑刺；用户不知道如何开始反省时也可触发。
+- `yc-rejection-simulator` - 用有据可查的 objections、尖锐的模拟 verdict 和一个具体 validation test 评审 startup ideas 与 applications。
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `find-blind-spots` - 从聊天、架构、选型与上线计划中发现影响决策的盲点，给出证据和最小验证动作。
 - `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
@@ -382,13 +382,13 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 ### `yc-rejection-simulator`
 
-对自己的 idea、current approach、implementation 或整体 architecture 想挑刺、反省，甚至不知道从哪里开始时即可触发。从已有上下文开始，按需选择 startup 或 engineering criteria。区分 `explicit`、`inference`、`missing` 三种 evidence basis，选择 `reject`、`insufficient_evidence` 或 `continue`，给出最多三个有依据的 objections 和一个具体 validation test。补充证据后会减弱或撤回原质疑；investor rejection 语气仅用于 startup review，不代表 YC，也不预测录取结果。
+提交 startup idea、pitch、business plan 或 YC application，即可获得尖锐的 independent simulation。区分 `explicit`、`inference`、`missing` 三种 evidence basis，选择 `reject`、`insufficient_evidence` 或 `continue`，给出最多三个有依据的 objections 和一个具体 validation test。补充证据后会减弱或撤回原质疑；不代表 YC，也不预测录取结果。
 
 操作指引用中文，professional concepts、review criteria 和 output fields 使用英文。主流程集中在一个 `SKILL.md`，一次 response 完成，无需外部服务或多个 agents。
 
 示例：`使用 $yc-rejection-simulator 评审这份 startup application，反馈要尖锐，每条 objection 都要对应材料，并给出一个能改变 verdict 的 validation test。` Claude Code 中使用 `/polish:yc-rejection-simulator`。
 
-也可直接说：“我不知道怎么给当前做法、实现或整体架构挑刺，帮我从假设开始反省。”仅实现已确认改动、解释概念的请求不会自动扩展为 critique。
+额外触发：当用户不知道如何给自己的 idea、current approach、implementation 或整体 architecture 挑刺、反省时，也可使用；这是原有 startup rejection simulation 之外的增项。
 
 见 [skill 正文](skills/yc-rejection-simulator/SKILL.md)。
 
