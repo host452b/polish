@@ -32,6 +32,10 @@ Currently included:
 - `superpowers-verification-before-completion` - requires fresh evidence before success claims.
 - `superpowers-writing-skills` - applies test-driven discipline to creating and maintaining agent skills.
 
+## Upstream maintenance
+
+In a checkout of this repository, ask your agent to run `update-and-sync` to review all documented upstream adaptations, or specify a skill, e.g. `update-and-sync google-stitch-shadcn-ui`. The [maintenance workflow](docs/update-and-sync.md) traces upstream commits and recommends a full sync, selected changes, or skipping the update.
+
 ## Install
 
 ### Claude Code - as a plugin
@@ -330,6 +334,10 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `superpowers-systematic-debugging` - 先定位根因，再提出修改方案。
 - `superpowers-verification-before-completion` - 在声称成功前要求最新验证证据。
 - `superpowers-writing-skills` - 用测试驱动的方法创建、维护并验证 agent skills。
+
+## 上游维护
+
+在本仓库里对 agent 说 `update-and-sync`，即可检查所有有明确开源上游的 skill；也可以指定一个，例如 `update-and-sync google-stitch-shadcn-ui`。默认汇总相关提交并给出同步建议；需要落地时可以直接说「分析并应用合适的更新」。详见[上游维护流程](docs/update-and-sync.md)。
 
 ## 安装
 
