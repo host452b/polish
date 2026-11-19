@@ -26,6 +26,10 @@ Do not put canonical skill instructions in a root-level `SKILL.md`. Root docs ar
 - When adding a new skill, add it under `skills/<new-skill-name>/SKILL.md` and update README plus plugin metadata only as needed.
 - Keep `CLAUDE.md` as a thin import of this file; put shared repo policy here.
 
+## Upstream maintenance
+
+For the repository maintenance mode `update-and-sync`, follow [the upstream review workflow](docs/update-and-sync.md). It covers the explicitly mapped open-source adaptations and accepts optional local skill names.
+
 ## Verification
 
 Run these checks after changing manifests, docs, or skills:
