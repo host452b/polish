@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.2.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills for prompt rewriting, defect investigation, project-wide contract exploration, frontend design quality, repository workflows, and release safety.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills for prompt rewriting, defect investigation, project-wide contract exploration, frontend design quality, repository workflows, and release safety. Includes consistent-term-translation-polish-guard for English-Chinese translation and terminology consistency.",
   "author": {
     "name": "host452b"
   },
@@ -34,13 +34,15 @@
     "shadcn-ui",
     "visual-review",
     "personal-skills",
-    "skills"
+    "skills",
+    "translation",
+    "terminology-consistency"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, and prefixed Superpowers workflows. git-commit-message drafts and reviews messages using GitLab and GitHub conventions.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, and prefixed Superpowers workflows. git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -60,7 +62,8 @@
       "Use google-stitch-frontend-taste-design to establish the visual direction for this interface.",
       "Use google-stitch-extract-frontend-design-system to document this repository's visual language.",
       "Use google-stitch-frontend-brief-enhancer to turn this UI request into an implementation brief.",
-      "Use google-stitch-shadcn-ui to implement or review this shadcn/ui interface."
+      "Use google-stitch-shadcn-ui to implement or review this shadcn/ui interface.",
+      "Use consistent-term-translation-polish-guard to translate this document between English and Chinese with consistent terminology."
     ],
     "brandColor": "#2563EB"
   }

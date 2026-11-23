@@ -1,0 +1,4 @@
+interface:
+  display_name: "consistent-term-translation-polish-guard"
+  short_description: "Translate EN/ZH with consistent terms and acronyms"
+  default_prompt: "Use $consistent-term-translation-polish-guard to translate or polish this English-Chinese document, reuse the available glossary, and keep terminology consistent."

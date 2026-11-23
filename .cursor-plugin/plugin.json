@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "displayName": "Polish",
-  "description": "Personal collection of curated, self-made, and adapted agent skills, including uncertainty-first defect investigation, project-wide contract exploration, portable frontend design quality, and prefixed Superpowers workflows.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including uncertainty-first defect investigation, project-wide contract exploration, portable frontend design quality, and prefixed Superpowers workflows. Includes consistent-term-translation-polish-guard for English-Chinese translation and terminology consistency.",
   "version": "0.2.0",
   "author": {
     "name": "host452b"
@@ -33,7 +33,9 @@
     "shadcn-ui",
     "visual-review",
     "personal-skills",
-    "skills"
+    "skills",
+    "translation",
+    "terminology-consistency"
   ],
   "skills": "./skills/"
 }
