@@ -12,6 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
+- `consistent-term-translation-polish-guard` - translates and polishes EN↔ZH content with stable primary terms, acronym bindings, ambiguity checks, and a bilingual terminology table.
 - `yc-rejection-simulator` - reviews startup ideas and applications with evidence-grounded objections, a sharp simulated verdict, and one concrete validation test.
 - `find-blind-spots` - identifies decision-relevant blind spots in conversations, architecture, technology choices, and post-launch plans, with evidence and a bounded validation step.
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
@@ -80,6 +81,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `consistent-term-translation-polish-guard`
+
+Use it for English–Chinese translation, bilingual summaries, and translation polishing involving professional terms, proper names, jargon, or acronyms. It locks one primary translation per concept and sense, keeps related concepts distinct, binds known acronym expansions, and asks about unresolved core terminology. EN→ZH first mentions may include the source term and aliases; later prose stays consistent. ZH→EN uses natural English with the selected terms.
+
+By default, it appends a five-column terminology table. Explicit output formats and requests for translation only take precedence. Visible series glossaries carry forward; fresh sessions need an available glossary rather than a promise of permanent memory. Source formatting and code are preserved.
+
+Example: `Use $consistent-term-translation-polish-guard to translate this technical report into Chinese, reuse the attached glossary, and keep terminology consistent.` In Claude Code, invoke `/polish:consistent-term-translation-polish-guard`.
+
+See [the skill](skills/consistent-term-translation-polish-guard/SKILL.md).
 
 ### `yc-rejection-simulator`
 
@@ -228,6 +239,9 @@ See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish strategy library
+├── skills/consistent-term-translation-polish-guard/
+│   ├── SKILL.md              # EN↔ZH translation and terminology consistency
+│   └── agents/openai.yaml
 ├── skills/yc-rejection-simulator/
 │   ├── SKILL.md              # evidence-grounded startup review and simulation
 │   └── agents/openai.yaml    # matching display and invocation name
@@ -311,6 +325,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
+- `consistent-term-translation-polish-guard` - 中英双向翻译与译文润色，统一主译名、绑定缩写、确认核心歧义，并默认附双向术语对照表。
 - `yc-rejection-simulator` - 用有据可查的 objections、尖锐的模拟 verdict 和一个具体 validation test 评审 startup ideas 与 applications。
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
 - `find-blind-spots` - 从聊天、架构、选型与上线计划中发现影响决策的盲点，给出证据和最小验证动作。
@@ -379,6 +394,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `consistent-term-translation-polish-guard`
+
+适用于含专业术语、专有名词、行业黑话或缩写的中英双向翻译、双语摘要与译文润色。按“源词＋义项”锁定唯一主译名，区分近义概念，绑定缩写与已知全称，并确认尚未解决的核心术语歧义。英译中首次可标注原词及别名，后文统一；中译英保持自然表达和术语一致。
+
+默认附五列《双向术语一致性对照表》，用户指定的严格格式或纯译文要求优先。沿用当前可见的系列术语表；新会话需提供可访问的术语约定，不承诺永久记忆。保留源文结构、格式与代码。
+
+示例：`使用 $consistent-term-translation-polish-guard 把这份技术报告译成中文，沿用附件术语表，并检查全文术语一致性。` Claude Code 中使用 `/polish:consistent-term-translation-polish-guard`。
+
+见 [skill 正文](skills/consistent-term-translation-polish-guard/SKILL.md)。
 
 ### `yc-rejection-simulator`
 
@@ -521,6 +546,9 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish 策略库
+├── skills/consistent-term-translation-polish-guard/
+│   ├── SKILL.md              # EN↔ZH translation and terminology consistency
+│   └── agents/openai.yaml
 ├── skills/yc-rejection-simulator/
 │   ├── SKILL.md              # 有据可查的 startup review 与 simulation
 │   └── agents/openai.yaml    # 一致的显示名与调用名
