@@ -5,7 +5,6 @@ allowed-tools:
   - read
   - grep
   - glob
-  - exec
 ---
 
 # takeover-agent-sessions

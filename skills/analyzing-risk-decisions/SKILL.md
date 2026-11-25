@@ -5,7 +5,6 @@ allowed-tools:
   - read
   - grep
   - glob
-  - exec
 ---
 
 # analyzing-risk-decisions
