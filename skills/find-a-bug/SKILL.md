@@ -1,6 +1,6 @@
 ---
 name: find-a-bug
-description: Use when a user asks to find a bug in a project, investigate a failure, diagnose unexpected behavior, or locate the cause of a regression, flaky test, hang, incorrect output, or build/runtime error. Also applies to bounded defect reviews without a supplied symptom.
+description: "Use for exploratory bug testing and uncertainty-first defect auditing starting from reading a repository, module boundaries, contracts, or risk paths (engineering-management style: evidence ledger, competing hypotheses, decision gates). Also use for ambiguous or cross-cutting failure investigations where premises are unverified. When concrete error logs, stack traces, or reproducer issues are already supplied, prefer superpowers-systematic-debugging; for full-repo C++/Python 7-contract sweeps, use project-bug-hunting."
 ---
 
 # Find a Bug: Uncertainty-First Defect Investigation
@@ -84,9 +84,17 @@ Do not execute an action when an unknown could reverse the plan, an incorrect ju
 
 Compare cost, performance, or option scores only after the critical path and hard gates are clear. An aggregate score cannot compensate for failed correctness, safety, permissions, or required rollback conditions.
 
-## 7. Converge, Deliver, and Fix When Authorized
+## 7. Converge, Trace the Regression Commit, Deliver, and Fix When Authorized
 
 Distinguish **Confirmed Defect / Unverified Candidate / No Confirmed Defect Found in This Investigation**. A confirmed defect must include its location, trigger, expected versus actual behavior, causal explanation, evidence, impact scope, and verification limits. Specify whether the evidence comes from runtime reproduction, existing tests, or proof from source and contract. Do not present source analysis as an executed test.
+
+### Regression Commit Lookup (30-Second Non-Blocking Default)
+
+Once a defect's root cause and introducing code/contract boundary are confirmed inside a Git repository (unless the user already asked to skip history or the bug exists only in uncommitted local edits):
+
+1. Inform the user that the root cause is confirmed and ask whether to locate the introducing **regression commit**, with a **30-second countdown that defaults to searching** when there is no interaction or response.
+2. Run [`scripts/prompt-regression-commit.sh`](scripts/prompt-regression-commit.sh): in an interactive TTY it waits up to 30 seconds (`n`/`no` skips; Enter, `y`, or timeout proceeds), and in non-interactive or autonomous agent runs it immediately returns `DECISION=FIND_REGRESSION_COMMIT` without blocking.
+3. When `DECISION=FIND_REGRESSION_COMMIT`, trace the introducing commit starting with read-only `git log -L <start>,<end>:<file>`, `git log -S` / `-G`, and `git blame` across renames (`-M -C`); if history inspection alone is inconclusive and a deterministic reproducer exists, run `git bisect` in a clean/isolated worktree. Report the introducing commit SHA, author/date/subject, and the exact change that introduced the defect (or explain why it predates available history).
 
 When a fix is authorized and the gate permits it, make the smallest change that addresses the established causal chain. Verify with the triggering input and relevant control/regression cases. Report the change, checks actually performed, and remaining limitations. If evidence contradicts expectations, stop layering on fixes and return to the ledger and branches. Revert only your own experiments or changes; do not overwrite the user's work.
 
@@ -102,7 +110,7 @@ The action to investigate or decide in this round, its scope, success criteria, 
 
 ### Current Assessment
 
-The current default approach and supporting evidence. In the final delivery, include the defect conclusion, location, trigger, expected/actual behavior, impact, and evidence type.
+The current default approach and supporting evidence. In the final delivery, include the defect conclusion, location, trigger, expected/actual behavior, introducing regression commit (when confirmed and not declined), impact, and evidence type.
 
 ### Evidence Ledger
 

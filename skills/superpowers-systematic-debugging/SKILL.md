@@ -1,6 +1,6 @@
 ---
 name: superpowers-systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: Use when a bug has already surfaced and logs, stack traces, failing tests, or issue symptoms are supplied (symptom-driven root-cause debugging before proposing fixes). For exploratory repo-reading bug audits without a clear symptom, use find-a-bug.
 ---
 
 # Systematic Debugging
@@ -157,7 +157,7 @@ You MUST complete each phase before proceeding to the next.
    - Don't fix multiple things at once
 
 3. **Verify Before Continuing**
-   - Did it work? Yes → Phase 4
+   - Did it work? Yes → run the **Regression Commit Follow-Up** below, then Phase 4
    - Didn't work? Form NEW hypothesis
    - DON'T add more fixes on top
 
@@ -166,6 +166,11 @@ You MUST complete each phase before proceeding to the next.
    - Don't pretend to know
    - Ask for help
    - Research more
+
+5. **Regression Commit Follow-Up (30s Non-Blocking Default)**
+   - Once the root cause is confirmed inside a Git repository (unless the defect only exists in uncommitted working-tree edits or the user already opted out), prompt whether to find the introducing **regression commit** with a **30-second countdown defaulting to search** on timeout or no response.
+   - Execute [`prompt-regression-commit.sh`](prompt-regression-commit.sh) in this skill directory: interactive TTY sessions wait up to 30 seconds (`n`/`no` skips; `y`/Enter/timeout searches), while non-interactive / autonomous agent sessions immediately return `DECISION=FIND_REGRESSION_COMMIT` without blocking.
+   - When `DECISION=FIND_REGRESSION_COMMIT`, identify the introducing commit via read-only `git log -L`, `git log -S` / `-G`, and `git blame -M -C` (or `git bisect` in an isolated worktree when needed), and report the commit SHA, date, subject, and mechanism alongside the root cause.
 
 ### Phase 4: Implementation
 

@@ -1,6 +1,6 @@
 ---
 name: superpowers-brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Use when turning a feature or change idea into an approved written design spec and implementation plan through step-by-step collaborative refinement before coding. For rapid multi-question stress-testing of rough ideas or decisions without writing a spec first, use mattpocock-grilling."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -68,8 +68,9 @@ digraph brainstorming {
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
 - If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
 - For appropriately-scoped projects, ask questions one at a time to refine the idea
+- Finding facts from the codebase, configuration, or environment is your job, never the user's — look them up directly (or via a read-only subagent) and reserve questions strictly for user decisions and trade-offs
 - Prefer multiple choice questions when possible, but open-ended is fine too
-- Only one question per message - if a topic needs more exploration, break it into multiple questions
+- Default to one question per message - if a topic needs more exploration, break it into multiple questions (if the user asks to move faster, you may batch independent frontier questions that do not depend on each other, each with a recommended default)
 - Focus on understanding: purpose, constraints, success criteria
 
 **Exploring approaches:**

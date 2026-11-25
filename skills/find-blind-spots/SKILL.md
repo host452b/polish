@@ -1,11 +1,11 @@
 ---
 name: find-blind-spots
-description: Use when the user asks for consequential knowledge, assumption, implementation, or verification gaps in accessible chats and current projects, including architecture, technology selection, completed changes, post-launch operations, and peer practices. Also use a lightweight pass at consequential decision checkpoints when a specific unexamined assumption could change the recommendation. 适用于“结合我们可访问的聊天和当前项目，找出一个我最有必要知道、但可能尚未考虑或落实的关键点”“重点检查这次改造上线后的问题，给出证据和最小验证动作”“基于所有聊天说一个我必要但可能不知道的知识”“我没想到什么”“还有什么坑”“同行做了什么而我没做”等请求；不要求出现“盲点”或四象限术语。普通事实问答、翻译、窄范围编辑和仅解释概念不触发。
+description: Use when exploring unfamiliar technical domains, codebases, language/framework idioms, unspoken engineering conventions (peer practices), architectural or technology-selection assumptions, and post-launch operational/verification gaps in accessible chats and projects. Also run a lightweight pass at consequential engineering checkpoints when an unexamined assumption could flip the technical approach. 适用于“我不熟这个领域的代码习惯/工程惯例，帮我看看漏了什么”“结合聊天和当前项目找出一个关键工程盲点”“重点检查这次改造上线后的坑与最小验证”“同行工程实践做了什么而我没做”等技术与工程盲区请求；纯产品/市场/商业闭环与非代码决策挑刺交由 yc-rejection-simulator。
 ---
 
 # find-blind-spots
 
-找出当前最值得补齐、能改变行动的 Knowledge gap（知识缺口）、Assumption gap（假设缺口）、Implementation gap（实施缺口）或 Verification gap（验证缺口）。覆盖损失规避、收益机会、已有知识的新用途和实施后的运行责任，不追求惊奇、焦虑或检查项数量。默认回答一个主发现，附 ASCII 四象限表，用用户的语言解释到足以行动。
+找出当前技术与工程上下文中最值得补齐、能改变行动的 Knowledge gap（领域代码习惯、框架潜规则与工程惯例缺口）、Assumption gap（架构与选型假设缺口）、Implementation gap（实施缺口）或 Verification gap（上线与恢复验证缺口）。尤其适用于进入不熟悉的语言、框架、底层系统或陌生代码库时识别“老手默认遵守但新手容易踩坑”的惯例与边界，兼顾损失规避、资产复用简化与实施后的运行责任。默认回答一个主发现，附 ASCII 四象限表，用用户的语言解释到足以行动；纯产品、市场与非代码商业决策反方挑刺交由 `yc-rejection-simulator`。
 
 ## 适用边界
 

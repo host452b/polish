@@ -28,6 +28,7 @@ EXPECTED = {
         "condition-based-waiting.md",
         "defense-in-depth.md",
         "find-polluter.sh",
+        "prompt-regression-commit.sh",
         "root-cause-tracing.md",
     },
     "superpowers-verification-before-completion": {"SKILL.md", "agents/openai.yaml"},

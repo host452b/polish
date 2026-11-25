@@ -1,4 +1,4 @@
 interface:
   display_name: "find-a-bug"
-  short_description: "Evidence-led bug investigation across projects"
-  default_prompt: "Use $find-a-bug to investigate this project, verify the unknowns that could change the diagnosis, and report evidence before proposing a fix."
+  short_description: "Exploratory repo-reading defect audit with evidence gates"
+  default_prompt: "Use $find-a-bug to inspect this repository path, verify decision-critical unknowns with an evidence ledger, and trace any confirmed bug's regression commit."

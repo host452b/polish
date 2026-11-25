@@ -29,7 +29,7 @@
           "local_path": "skills/mattpocock-grilling",
           "upstream_path": "skills/productivity/grilling",
           "mode": "adapted",
-          "notes": "Prefixed skill name and normalized agents/openai.yaml display_name to lowercase kebab-case."
+          "notes": "Prefixed skill name, normalized display_name, narrowed trigger vs superpowers-brainstorming, and added optional post-frontier spec handoff."
         },
         {
           "skill": "mattpocock-prototype",
@@ -64,7 +64,7 @@
           "local_path": "skills/mattpocock-writing-for-agents",
           "upstream_path": "skills/productivity/writing-for-agents",
           "mode": "adapted",
-          "notes": "Prefixed skill name, normalized display_name, and updated SKILL-MECHANICS.md self-link label."
+          "notes": "Prefixed skill name, normalized display_name, updated SKILL-MECHANICS.md self-link label, and separated trigger boundary from superpowers-writing-skills."
         },
         {
           "skill": "find-a-bug",
@@ -123,7 +123,8 @@
           "skill": "superpowers-brainstorming",
           "local_path": "skills/superpowers-brainstorming",
           "upstream_path": "skills/brainstorming",
-          "mode": "adapted"
+          "mode": "adapted",
+          "notes": "Separated trigger from mattpocock-grilling and incorporated codebase fact-lookup discipline."
         },
         {
           "skill": "superpowers-test-driven-development",
@@ -135,7 +136,8 @@
           "skill": "superpowers-systematic-debugging",
           "local_path": "skills/superpowers-systematic-debugging",
           "upstream_path": "skills/systematic-debugging",
-          "mode": "adapted"
+          "mode": "adapted",
+          "notes": "Scoped to symptom/log/issue-driven debugging (vs find-a-bug) and added 30s non-blocking regression-commit lookup."
         },
         {
           "skill": "superpowers-verification-before-completion",
@@ -147,7 +149,8 @@
           "skill": "superpowers-writing-skills",
           "local_path": "skills/superpowers-writing-skills",
           "upstream_path": "skills/writing-skills",
-          "mode": "adapted"
+          "mode": "adapted",
+          "notes": "Scoped to subagent pressure-testing and TDD hardening of SKILL.md (vs mattpocock-writing-for-agents)."
         }
       ]
     },
