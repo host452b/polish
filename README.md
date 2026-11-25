@@ -33,6 +33,14 @@ Currently included:
 - `superpowers-systematic-debugging` - investigates root causes before proposing changes.
 - `superpowers-verification-before-completion` - requires fresh evidence before success claims.
 - `superpowers-writing-skills` - applies test-driven discipline to creating and maintaining agent skills.
+- `mattpocock-domain-modeling` - builds and sharpens a project's domain model, `GLOSSARY.md`, and ADRs.
+- `mattpocock-codebase-design` - provides shared deep-module vocabulary (`module`, `interface`, `depth`, `seam`, `adapter`) and deepening / design-it-twice guides.
+- `mattpocock-grilling` - stress-tests a plan, decision, or idea in frontier-based rounds of design-tree questions.
+- `mattpocock-prototype` - builds throwaway logic or UI prototypes to answer concrete design questions fast.
+- `mattpocock-research` - delegates primary-source research to a background agent and captures cited Markdown notes in the repo.
+- `mattpocock-code-review` - reviews changes since a fixed point in parallel along two separate axes: Standards and Spec.
+- `mattpocock-wizard` - generates an interactive bash wizard for manual setup, credential, or migration steps only a human can perform.
+- `mattpocock-writing-for-agents` - reference for writing predictable, concise agent-consumed documents (`SKILL.md`, `AGENTS.md`, `CLAUDE.md`).
 
 ## Upstream maintenance
 
@@ -210,6 +218,27 @@ The six `superpowers-*` skills form a complementary workflow:
 
 These skills are adapted from [`obra/superpowers`](https://github.com/obra/superpowers). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned upstream revision and MIT license.
 
+### Prefixed Matt Pocock engineering & agent-writing skills
+
+The eight `mattpocock-*` skills are adapted from [`mattpocock/skills`](https://github.com/mattpocock/skills) as standalone, prefixed skills:
+
+1. `mattpocock-domain-modeling` sharpens project terminology, maintains `GLOSSARY.md` inline, and records ADRs sparingly.
+2. `mattpocock-codebase-design` fixes shared deep-module vocabulary (`module`, `interface`, `depth`, `seam`, `adapter`) with `DEEPENING.md` and `DESIGN-IT-TWICE.md`.
+3. `mattpocock-grilling` interviews through a design tree in frontier rounds until no silent assumptions remain.
+4. `mattpocock-prototype` builds throwaway logic (`LOGIC.md`) or multi-variant UI (`UI.md`) prototypes to settle design questions quickly.
+5. `mattpocock-research` investigates primary sources via a background agent and writes cited Markdown notes to the repository.
+6. `mattpocock-code-review` runs parallel Standards (repo rules + Fowler smell baseline) and Spec reviews since any fixed Git ref, detecting trackers without requiring `setup-matt-pocock-skills`.
+7. `mattpocock-wizard` builds an interactive bash wizard from `template.sh` for manual human-only setup or cutover steps.
+8. `mattpocock-writing-for-agents` documents context pointers, information hierarchy, completion criteria, leading words, and pruning for `SKILL.md`, `AGENTS.md`, and `CLAUDE.md`.
+
+In addition, selective high-signal supplements were cherry-picked into existing skills without duplicating triggers:
+
+- `find-a-bug`: [references/feedback-loops.md](skills/find-a-bug/references/feedback-loops.md) and [scripts/hitl-loop.template.sh](skills/find-a-bug/scripts/hitl-loop.template.sh) (from `mattpocock/skills` `diagnosing-bugs`).
+- `superpowers-test-driven-development`: [seam-and-slicing-guide.md](skills/superpowers-test-driven-development/seam-and-slicing-guide.md) (from `mattpocock/skills` `tdd`).
+- `google-stitch-frontend-taste-design`: [references/quantitative-checks.md](skills/google-stitch-frontend-taste-design/references/quantitative-checks.md) (from `nextlevelbuilder/ui-ux-pro-max-skill`).
+
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for pinned upstream revisions and MIT licenses, and [upstream-sources.json](upstream-sources.json) for the machine-readable provenance manifest used for future `update-sync` runs.
+
 ### `git-commit-message`
 
 Draft or review a commit message, final squash title, or MR/PR title. The skill selects the target platform from the request and repository evidence, reads the matching GitLab or GitHub profile, and applies repository contribution/CI rules first.
@@ -262,6 +291,8 @@ polish/
 │   └── SKILL.md              # canonical prompt-polish skill contract
 ├── skills/find-a-bug/
 │   ├── SKILL.md              # uncertainty-first defect investigation
+│   ├── references/           # tight feedback loops and debugging hygiene
+│   ├── scripts/              # human-in-the-loop reproduction template
 │   └── agents/openai.yaml    # discovery and invocation metadata
 ├── skills/project-bug-hunting/
 │   ├── SKILL.md              # project-wide contract and defect exploration
@@ -306,6 +337,33 @@ polish/
 │   └── SKILL.md              # red-green-refactor workflow
 ├── skills/superpowers-writing-skills/
 │   └── SKILL.md              # test-driven skill authoring workflow
+├── skills/mattpocock-domain-modeling/
+│   ├── SKILL.md              # domain modeling, GLOSSARY.md, and ADR workflow
+│   └── agents/openai.yaml
+├── skills/mattpocock-codebase-design/
+│   ├── SKILL.md              # deep-module vocabulary, deepening, design-it-twice
+│   └── agents/openai.yaml
+├── skills/mattpocock-grilling/
+│   ├── SKILL.md              # round-based design-tree interrogation
+│   └── agents/openai.yaml
+├── skills/mattpocock-prototype/
+│   ├── SKILL.md              # throwaway logic/UI prototyping
+│   └── agents/openai.yaml
+├── skills/mattpocock-research/
+│   ├── SKILL.md              # primary-source background research
+│   └── agents/openai.yaml
+├── skills/mattpocock-code-review/
+│   ├── SKILL.md              # parallel Standards + Spec diff review
+│   └── agents/openai.yaml
+├── skills/mattpocock-wizard/
+│   ├── SKILL.md              # interactive human-step bash wizard generator
+│   ├── template.sh           # reusable wizard shell library
+│   └── agents/openai.yaml
+├── skills/mattpocock-writing-for-agents/
+│   ├── SKILL.md              # writing reference for agent-consumed docs
+│   └── agents/openai.yaml
+├── upstream-sources.json     # machine-readable upstream provenance for update-sync
+├── THIRD_PARTY_NOTICES.md    # pinned upstream revisions and license notices
 ├── .claude-plugin/
 │   ├── plugin.json           # Claude plugin manifest
 │   └── marketplace.json      # self-contained marketplace catalog
@@ -356,6 +414,14 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `superpowers-systematic-debugging` - 先定位根因，再提出修改方案。
 - `superpowers-verification-before-completion` - 在声称成功前要求最新验证证据。
 - `superpowers-writing-skills` - 用测试驱动的方法创建、维护并验证 agent skills。
+- `mattpocock-domain-modeling` - 构建并打磨项目领域模型、`GLOSSARY.md` 词汇表与 ADR。
+- `mattpocock-codebase-design` - 提供深模块设计共享词汇（`module`、`interface`、`depth`、`seam`、`adapter`）及深化与多方案对比指南。
+- `mattpocock-grilling` - 按设计树分轮拷问方案、决策与想法，消除隐含假设。
+- `mattpocock-prototype` - 快速构建抛弃型逻辑或 UI 原型以验证设计问题。
+- `mattpocock-research` - 用后台 agent 基于一手资料调研并沉淀带引用的 Markdown 笔记。
+- `mattpocock-code-review` - 基于指定 Git 基准并行执行 Standards 与 Spec 双轴评审。
+- `mattpocock-wizard` - 为必须人工执行的配置、凭证或迁移步骤生成交互式 bash 向导脚本。
+- `mattpocock-writing-for-agents` - 面向 agent 文档（`SKILL.md`、`AGENTS.md`、`CLAUDE.md`）的写作参考。
 
 ## 上游维护
 
@@ -532,6 +598,27 @@ Claude Code 中使用 `/polish:find-blind-spots`。
 
 这些 skills 适配自 [`obra/superpowers`](https://github.com/obra/superpowers)。固定的上游版本和 MIT license 见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+### Prefixed Matt Pocock 工程与 Agent 写作 Skills
+
+八个 `mattpocock-*` skills 适配自 [`mattpocock/skills`](https://github.com/mattpocock/skills)，以独立、带前缀的形式运行：
+
+1. `mattpocock-domain-modeling` 澄清项目领域术语、即时维护 `GLOSSARY.md`，并克制地记录 ADR。
+2. `mattpocock-codebase-design` 统一深模块设计词汇（`module`、`interface`、`depth`、`seam`、`adapter`），附 `DEEPENING.md` 与 `DESIGN-IT-TWICE.md`。
+3. `mattpocock-grilling` 按设计树 frontier 分轮追问，直到没有隐含假设。
+4. `mattpocock-prototype` 用抛弃型逻辑原型（`LOGIC.md`）或多变体 UI 原型（`UI.md`）快速验证设计问题。
+5. `mattpocock-research` 派发后台 agent 查证一手资料，并在仓库内沉淀带来源引用的 Markdown 笔记。
+6. `mattpocock-code-review` 针对任意 Git 基准并行运行 Standards（仓库规范 + Fowler 代码坏味道基线）与 Spec 双轴评审，自动探测仓库/CLI 追踪方式，不依赖 `setup-matt-pocock-skills`。
+7. `mattpocock-wizard` 基于 `template.sh` 生成交互式 bash 向导，引导人工完成只能手动执行的配置或切换步骤。
+8. `mattpocock-writing-for-agents` 总结给 agent 消费文档（`SKILL.md`、`AGENTS.md`、`CLAUDE.md`）的指针、信息层级、完成条件、引导词与精简原则。
+
+此外，在不引入重复触发的前提下，向现有 skills 隔离式补充了三组精选参考：
+
+- `find-a-bug`：[references/feedback-loops.md](skills/find-a-bug/references/feedback-loops.md) 与 [scripts/hitl-loop.template.sh](skills/find-a-bug/scripts/hitl-loop.template.sh)（精选自 `mattpocock/skills` `diagnosing-bugs`）。
+- `superpowers-test-driven-development`：[seam-and-slicing-guide.md](skills/superpowers-test-driven-development/seam-and-slicing-guide.md)（精选自 `mattpocock/skills` `tdd`）。
+- `google-stitch-frontend-taste-design`：[references/quantitative-checks.md](skills/google-stitch-frontend-taste-design/references/quantitative-checks.md)（精选自 `nextlevelbuilder/ui-ux-pro-max-skill`）。
+
+固定上游版本与 MIT 归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)，面向后续 `update-sync` 的机器可读来源清单见 [upstream-sources.json](upstream-sources.json)。
+
 ### `git-commit-message`
 
 生成或检查 commit message、最终 squash 标题及 MR/PR 标题。根据用户指定目标和仓库证据选择平台，读取对应规范，优先遵守仓库 CONTRIBUTING 与 CI 规则。
@@ -579,6 +666,8 @@ polish/
 │   └── SKILL.md              # prompt-polish 的主行为契约
 ├── skills/find-a-bug/
 │   ├── SKILL.md              # 未知数优先的缺陷调查
+│   ├── references/           # 紧反馈复现阶梯与调试卫生补充
+│   ├── scripts/              # 人工在环复现脚本模板
 │   └── agents/openai.yaml    # 发现与调用元数据
 ├── skills/project-bug-hunting/
 │   ├── SKILL.md              # 项目级契约一致性与未知缺陷探索
@@ -623,6 +712,33 @@ polish/
 │   └── SKILL.md              # red-green-refactor 工作流
 ├── skills/superpowers-writing-skills/
 │   └── SKILL.md              # 测试驱动的 skill 编写流程
+├── skills/mattpocock-domain-modeling/
+│   ├── SKILL.md              # 领域建模、GLOSSARY.md 与 ADR 流程
+│   └── agents/openai.yaml
+├── skills/mattpocock-codebase-design/
+│   ├── SKILL.md              # 深模块词汇、深化与多方案对比
+│   └── agents/openai.yaml
+├── skills/mattpocock-grilling/
+│   ├── SKILL.md              # 设计树分轮拷问
+│   └── agents/openai.yaml
+├── skills/mattpocock-prototype/
+│   ├── SKILL.md              # 抛弃型逻辑/UI 原型验证
+│   └── agents/openai.yaml
+├── skills/mattpocock-research/
+│   ├── SKILL.md              # 后台一手资料调研
+│   └── agents/openai.yaml
+├── skills/mattpocock-code-review/
+│   ├── SKILL.md              # Standards + Spec 双轴并行评审
+│   └── agents/openai.yaml
+├── skills/mattpocock-wizard/
+│   ├── SKILL.md              # 人工步骤交互式 bash 向导生成
+│   ├── template.sh           # 可复用向导脚本库
+│   └── agents/openai.yaml
+├── skills/mattpocock-writing-for-agents/
+│   ├── SKILL.md              # 面向 agent 文档的写作参考
+│   └── agents/openai.yaml
+├── upstream-sources.json     # 面向 update-sync 的机器可读来源清单
+├── THIRD_PARTY_NOTICES.md    # 固定上游版本与第三方许可说明
 ├── .claude-plugin/
 │   ├── plugin.json           # Claude 插件清单
 │   └── marketplace.json      # 自带 marketplace 目录

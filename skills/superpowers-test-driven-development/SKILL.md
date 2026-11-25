@@ -361,6 +361,8 @@ When adding mocks or test utilities, read [testing-anti-patterns.md](testing-ant
 - Adding test-only methods to production classes
 - Mocking without understanding dependencies
 
+For pre-agreed seams, avoiding tautological tests and horizontal slicing, and SDK-style boundary mocks, also consult [seam-and-slicing-guide.md](seam-and-slicing-guide.md).
+
 ## Final Rule
 
 ```

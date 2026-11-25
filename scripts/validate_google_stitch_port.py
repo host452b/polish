@@ -14,6 +14,7 @@ EXPECTED = {
         "SKILL.md",
         "agents/openai.yaml",
         "assets/DESIGN.md",
+        "references/quantitative-checks.md",
         "references/taste-rules.md",
     },
     "google-stitch-extract-frontend-design-system": {

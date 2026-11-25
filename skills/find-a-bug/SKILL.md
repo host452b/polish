@@ -66,7 +66,7 @@ Each test must specify:
 - **Result X → action A; result Y → action B; inconclusive → verify Z or stop.** Derive thresholds from the contract or an explicit experimental design. Do not change them after seeing the result.
 - Time/resource budget, stopping conditions, possible side effects, and recovery method.
 
-Prefer existing project tests. When a reproduction is needed, remove irrelevant dependencies while preserving the trigger and control inputs. If execution is unavailable, perform bounded source analysis, identify unverified runtime conditions, and state the minimum missing evidence. Report test-environment failures, missing dependencies, and the target defect separately.
+Prefer existing project tests. When a reproduction is needed, remove irrelevant dependencies while preserving the trigger and control inputs. For hard, flaky, or performance bugs — including the 10-level feedback-loop ladder, repro minimisation, `<REDACTED>` secret hygiene, `[DEBUG-<id>]` tagged instrumentation, and the structured human-in-the-loop template (`scripts/hitl-loop.template.sh`) — consult [references/feedback-loops.md](references/feedback-loops.md). If execution is unavailable, perform bounded source analysis, identify unverified runtime conditions, and state the minimum missing evidence. Report test-environment failures, missing dependencies, and the target defect separately.
 
 ## 6. Apply Execution Gates
 

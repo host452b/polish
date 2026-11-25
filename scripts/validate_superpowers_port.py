@@ -34,6 +34,7 @@ EXPECTED = {
     "superpowers-test-driven-development": {
         "SKILL.md",
         "agents/openai.yaml",
+        "seam-and-slicing-guide.md",
         "testing-anti-patterns.md",
     },
     "superpowers-using-git-worktrees": {"SKILL.md", "agents/openai.yaml"},
