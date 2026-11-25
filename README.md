@@ -4,11 +4,11 @@
 
 **English** | [中文](#中文版)
 
-`polish` is a Claude Code, Codex CLI, and Cursor CLI skill/plugin collection for selected personal and adapted skills. The repo/plugin package is named `polish`; individual skill names stay stable so existing triggers and installs do not break.
+`polish` is a Claude Code, Codex CLI, Cursor CLI, and Devin CLI skill/plugin collection for selected personal and adapted skills. The repo/plugin package is named `polish`; individual skill names stay stable so existing triggers and installs do not break.
 
-Plugin version: **0.3.0**, shared by the Codex, Claude Code, and Cursor manifests.
+Plugin version: **0.3.0**, shared by the Devin, Codex, Claude Code, and Cursor manifests.
 
-Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` frontmatter `name`, invocation identifier, and `agents/openai.yaml` `interface.display_name`. For example, `git-commit-message` is displayed as `git-commit-message` and invoked as `$git-commit-message` (or `/polish:git-commit-message` in Claude Code).
+Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` frontmatter `name`, invocation identifier, and `agents/openai.yaml` `interface.display_name`. For example, `git-commit-message` is displayed as `git-commit-message` and invoked as `$git-commit-message` (or `/polish:git-commit-message` in Claude Code and Devin CLI).
 
 Currently included:
 
@@ -74,7 +74,17 @@ In a checkout of this repository, ask your agent to run `update-and-sync` to rev
 ```
 
 - Invoke the current skill with `/polish:prompt-polish`, or hand Claude a raw prompt and let the skill trigger automatically.
-- Updates: Claude Code uses the explicit version in `.claude-plugin/plugin.json`. Bump all three plugin manifests together for each release; run `/plugin update` after the new version is published. See [version management](https://code.claude.com/docs/en/plugins-reference#version-management).
+- Updates: Claude Code uses the explicit version in `.claude-plugin/plugin.json`. Bump all four plugin manifests together for each release; run `/plugin update` after the new version is published. See [version management](https://code.claude.com/docs/en/plugins-reference#version-management).
+
+### Devin CLI - as a plugin
+
+```bash
+devin plugins install host452b/polish
+# Or link a local checkout on this machine for live authoring:
+devin plugins install --local ./polish
+```
+
+- Invoke any skill with `/polish:<skill-name>` (e.g. `/polish:analyzing-risk-decisions`), or let Devin invoke it automatically when relevant. Run `devin plugins update polish` to pull newer releases.
 
 ### Codex CLI - as a plugin
 
@@ -103,10 +113,11 @@ For the current `prompt-polish` skill:
 
 ```bash
 git clone https://github.com/host452b/polish.git
-mkdir -p ~/.claude/skills ~/.agents/skills ~/.cursor/skills
+mkdir -p ~/.claude/skills ~/.agents/skills ~/.cursor/skills ~/.config/devin/skills
 ln -s "$(pwd)/polish/skills/prompt-polish" ~/.claude/skills/prompt-polish
 ln -s "$(pwd)/polish/skills/prompt-polish" ~/.agents/skills/prompt-polish
 ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 ```
 
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
@@ -410,8 +421,10 @@ polish/
 │   └── marketplace.json      # self-contained marketplace catalog
 ├── .codex-plugin/
 │   └── plugin.json           # Codex CLI plugin manifest
-└── .cursor-plugin/
-    └── plugin.json           # Cursor plugin manifest
+├── .cursor-plugin/
+│   └── plugin.json           # Cursor plugin manifest
+└── .devin-plugin/
+    └── plugin.json           # Devin CLI / Devin Cloud plugin manifest
 ```
 
 When adding skills, keep each skill name stable under `skills/<skill-name>/`. The repo/plugin package can remain `polish` while skills inside it grow independently.
@@ -426,11 +439,11 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 [English](#polish) | **中文**
 
-`polish` 是一个面向 Claude Code、Codex CLI 和 Cursor CLI 的个人自制与适配 skill/plugin 集合。repo/plugin 包名叫 `polish`；里面每个 skill 的名字保持稳定，避免已有触发方式和安装路径失效。
+`polish` 是一个面向 Claude Code、Codex CLI、Cursor CLI 和 Devin CLI 的个人自制与适配 skill/plugin 集合。repo/plugin 包名叫 `polish`；里面每个 skill 的名字保持稳定，避免已有触发方式和安装路径失效。
 
-插件版本：**0.3.0**，Codex、Claude Code 和 Cursor 三份清单使用同一版本号。
+插件版本：**0.3.0**，Devin、Codex、Claude Code 和 Cursor 四份清单使用同一版本号。
 
-每个 skill 的目录名、`SKILL.md` frontmatter `name`、调用标识和 `agents/openai.yaml` 中的 `interface.display_name` 使用同一个小写连字符名称。例如，`git-commit-message` 的显示名就是 `git-commit-message`，调用时使用 `$git-commit-message`（Claude Code 中为 `/polish:git-commit-message`）。
+每个 skill 的目录名、`SKILL.md` frontmatter `name`、调用标识和 `agents/openai.yaml` 中的 `interface.display_name` 使用同一个小写连字符名称。例如，`git-commit-message` 的显示名就是 `git-commit-message`，调用时使用 `$git-commit-message`（Claude Code 与 Devin CLI 中为 `/polish:git-commit-message`）。
 
 当前包含：
 
@@ -496,7 +509,17 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 ```
 
 - 当前 skill 可用 `/polish:prompt-polish` 调用，也可以直接把原始 prompt 交给 Claude，由它按描述自动触发。
-- 更新：Claude Code 使用 `.claude-plugin/plugin.json` 中的显式版本。每次发布时同步递增三份插件清单的版本号；新版本发布后运行 `/plugin update` 更新。详见[版本管理](https://code.claude.com/docs/en/plugins-reference#version-management)。
+- 更新：Claude Code 使用 `.claude-plugin/plugin.json` 中的显式版本。每次发布时同步递增四份插件清单的版本号；新版本发布后运行 `/plugin update` 更新。详见[版本管理](https://code.claude.com/docs/en/plugins-reference#version-management)。
+
+### Devin CLI：作为插件安装
+
+```bash
+devin plugins install host452b/polish
+# 或在本机直接链接本地仓库以便实时调试：
+devin plugins install --local ./polish
+```
+
+- 安装后可用 `/polish:<skill-name>`（例如 `/polish:analyzing-risk-decisions`）调用任意 skill，或由 Devin 按描述自动触发；后续执行 `devin plugins update polish` 拉取新版本。
 
 ### Codex CLI：作为插件安装
 
@@ -525,10 +548,11 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 ```bash
 git clone https://github.com/host452b/polish.git
-mkdir -p ~/.claude/skills ~/.agents/skills ~/.cursor/skills
+mkdir -p ~/.claude/skills ~/.agents/skills ~/.cursor/skills ~/.config/devin/skills
 ln -s "$(pwd)/polish/skills/prompt-polish" ~/.claude/skills/prompt-polish
 ln -s "$(pwd)/polish/skills/prompt-polish" ~/.agents/skills/prompt-polish
 ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
+ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 ```
 
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
@@ -826,8 +850,10 @@ polish/
 │   └── marketplace.json      # 自带 marketplace 目录
 ├── .codex-plugin/
 │   └── plugin.json           # Codex CLI 插件清单
-└── .cursor-plugin/
-    └── plugin.json           # Cursor 插件清单
+├── .cursor-plugin/
+│   └── plugin.json           # Cursor 插件清单
+└── .devin-plugin/
+    └── plugin.json           # Devin CLI / Devin Cloud 插件清单
 ```
 
 以后新增 skills 时，把每个 skill 的稳定入口放在 `skills/<skill-name>/` 下。外层 repo/plugin 包名继续叫 `polish`，里面的 skills 可以独立增长。

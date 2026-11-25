@@ -1,6 +1,11 @@
 ---
 name: analyzing-risk-decisions
-description: Use when comparing options under uncertain losses or payoffs (insurance, cloud SLA/DR, QA/CI gating, AI model/tool selection, lease-vs-buy, staged R&D), inverting break-even probability, reservation price, or indifference risk tolerance R*, or calibrating tail-loss constraints (概率决策、赔率与回本门槛反推、风险偏好与尾部损失评估). For qualitative startup/market devil's-advocate critique without payoff math, use yc-rejection-simulator.
+description: "Use when comparing options under uncertain losses or payoffs (insurance, cloud SLA/DR, QA/CI gating, AI model/tool selection, lease-vs-buy, staged R&D), inverting break-even probability, reservation price, or indifference risk tolerance R*, or calibrating tail-loss constraints (概率决策、赔率与回本门槛反推、风险偏好与尾部损失评估). For qualitative startup/market devil's-advocate critique without payoff math, use yc-rejection-simulator."
+allowed-tools:
+  - read
+  - grep
+  - glob
+  - exec
 ---
 
 # analyzing-risk-decisions
@@ -26,27 +31,37 @@ Deliver **switching boundaries** (exact conditions where Choice A flips to Choic
    - Measure every candidate by **portfolio increment** ($\Delta C_j(s) = C_{\text{with } j}(s) - C_{\text{current}}(s)$), capping expense reimbursement at uncompensated eligible loss (`reimbursement_payout`).
    - Evaluate multi-period hold-vs-exit choices forward from today (`forward_cashflow_npv`): include future cashflows, terminal value, and today's exit opportunity cost $K$; exclude past sunk payments.
 
-3. **Pick the mode and run `scripts/decision_engine.py`** (paths relative to this skill directory; read [`references/schemas-and-patterns.md`](references/schemas-and-patterns.md) for JSON input schemas and domain patterns):
+3. **Resolve `SKILL_DIR`, pick the mode, and run `decision_engine.py`**:
+   - Set `SKILL_DIR` from the invoked skill's `Base directory` header (in Devin CLI) or the directory containing this `SKILL.md` (e.g. `~/.config/devin/skills/analyzing-risk-decisions` or `<plugin_root>/skills/analyzing-risk-decisions`) so execution works from any project working directory. Read [`references/schemas-and-patterns.md`](references/schemas-and-patterns.md) (`"$SKILL_DIR/references/schemas-and-patterns.md"`) for JSON input schemas and domain patterns.
+   - Prefer passing JSON over stdin (`--input -` with `<<'EOF'`) or a `/tmp` file rather than writing scratch files into the user's repository:
    - **`compare`** — probabilities or stress scenarios are given:
      ```bash
-     python3 scripts/decision_engine.py compare --input problem.json
+     python3 "$SKILL_DIR/scripts/decision_engine.py" compare --input - <<'EOF'
+     { ... }
+     EOF
      ```
      Computes EV, incremental RTP, `VaR`/`ES` (use deep-tail `ES` alongside `VaR` when rare catastrophes fall beyond `1 - alpha`), breach probability $\Pr(Z_a > A)$, `cara_ce`, and strict dominance / zero-increment overlap flags.
    - **`invert`** — probabilities, prices, or $R$ are unknown; solve for switching thresholds:
      ```bash
-     python3 scripts/decision_engine.py invert --input spec.json
+     python3 "$SKILL_DIR/scripts/decision_engine.py" invert --input - <<'EOF'
+     { ... }
+     EOF
      ```
      Supports `break_even_probability` ($p^*$ risk-neutral and CARA-adjusted), `reservation_price` ($P^*(R)$ closed-form max acceptable cost), `indifference_r` ($R^*$ crossing roots and winner regimes), and `budget_tail_frontier` (min cost for $\varepsilon$ / min breach prob for $B$).
    - **`calibrate`** — $R$ is unknown or needs consistency verification:
      ```bash
-     python3 scripts/decision_engine.py calibrate --input choices.json
+     python3 "$SKILL_DIR/scripts/decision_engine.py" calibrate --input - <<'EOF'
+     { ... }
+     EOF
      ```
      Infers the consistent $[R_{\min}, R_{\max}]$ interval from pairwise sure-cost vs lottery answers, pinpoints conflicting pairs when preferences violate CARA, and generates 3 scale-matched calibration questions when `target_loss_scale` is supplied.
    - **`cashflow`** — multi-year discounted hold-vs-exit cashflows:
      ```bash
-     python3 scripts/decision_engine.py cashflow --input cashflow.json
+     python3 "$SKILL_DIR/scripts/decision_engine.py" cashflow --input - <<'EOF'
+     { ... }
+     EOF
      ```
 
 4. **Verify invariants and report conditional conclusions**:
-   - Confirm all `invariants` in engine output are `true` (run `python3 scripts/decision_engine.py selftest` after any script edit).
+   - Confirm all `invariants` in engine output are `true` (run `python3 "$SKILL_DIR/scripts/decision_engine.py" selftest` after any script edit).
    - State the **switching boundary** explicitly (e.g., required annual event probability $p^*$, max justifiable fee $P^*(R)$, or indifference $R^*$), label `assumption`-tagged outputs as conditional stress tests rather than personal forecasts, and list the top missing datum whose resolution can flip `optimal_id`.
