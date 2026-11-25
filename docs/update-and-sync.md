@@ -35,7 +35,7 @@ Paths are relative to the indicated GitHub repository at its original adaptation
 | `superpowers-test-driven-development` (supplement) | `mattpocock/skills` | `skills/engineering/tdd` |
 | `google-stitch-frontend-taste-design` (supplement) | `nextlevelbuilder/ui-ux-pro-max-skill` | `src/ui-ux-pro-max/templates/base/quick-reference.md` |
 
-For the two pstack integrations, compare upstream changes only against the consumer check in pre-push step 6 and the documentation/API replay table respectively. For the three isolated cherry-picked supplements, compare upstream changes only against `skills/find-a-bug/references/feedback-loops.md` + `scripts/hitl-loop.template.sh`, `skills/superpowers-test-driven-development/seam-and-slicing-guide.md`, and `skills/google-stitch-frontend-taste-design/references/quantitative-checks.md` respectively. Machine-readable provenance for all mapped entries is also maintained in [`upstream-sources.json`](../upstream-sources.json).
+For the three pstack integrations (`prompt-polish`, `before-git-push`, and `project-bug-hunting`), compare upstream changes only against the technical-investigation evidence note, the consumer check in pre-push step 6, and the documentation/API replay table respectively. For the three isolated cherry-picked supplements, compare upstream changes only against `skills/find-a-bug/references/feedback-loops.md` + `scripts/hitl-loop.template.sh`, `skills/superpowers-test-driven-development/seam-and-slicing-guide.md`, and `skills/google-stitch-frontend-taste-design/references/quantitative-checks.md` respectively. Machine-readable provenance for all mapped entries is also maintained in [`upstream-sources.json`](../upstream-sources.json).
 
 ## Read the original and its history
 
