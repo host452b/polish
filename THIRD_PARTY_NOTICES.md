@@ -94,6 +94,7 @@ specific language governing permissions and limitations under the License.
 
 Selectively adapted from Lauren Tan's [pstack](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/README.md) at `41e400932eca14f289e7db717a70455256b6d388`.
 
+- [why](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/why/SKILL.md) supplies the release-specific design-intent check when choosing a repair target in `find-a-bug`.
 - [benchmark-checklist](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/benchmark-checklist/SKILL.md) supplies the measurement checks for the standalone local skill.
 - [blast-radius](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/blast-radius/SKILL.md) supplies the decisive compatibility assumption and consumer check in step 6 of `before-git-push`.
 - [create-verification-skill](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/create-verification-skill/SKILL.md) supplies the reusable feature-to-verification mapping adapted for versioned documentation/API checks in `project-bug-hunting`.

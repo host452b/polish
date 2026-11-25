@@ -42,6 +42,8 @@ For each entry, record its source, applicability, and the action it could change
 
 Verifying a file's contents does not prove that the runtime used it. The current configuration is not necessarily the configuration used by the failed job. Old logs, other platforms, and other revisions establish facts only within their own scope. Missing logs do not prove an event never occurred. One unsuccessful reproduction does not prove the absence of a defect. Never promote an inference to a verified fact.
 
+When choosing whether to fix a documented example or the implementation depends on design intent, trace the public behavior to its introducing change and any later decision effective in the affected release. Cite the commit, accepted PR discussion or migration note that states the decision and its effective version. Record the observed behavior and the documented decision separately in the ledger. A deprecation notice alone gives no removal date. If removal was approved for this release, flag the stale example. If support was promised through this release, investigate the rejection as a regression. If the record is silent or conflicting, report the confirmed mismatch and leave the repair target open.
+
 ## 3. Scan for Hidden Unknowns and Disconfirming Evidence
 
 Check the objective metric; target/version/environment/time boundaries; input completeness and representativeness; upstream and downstream dependencies and interfaces; read/modify/execute/rollback permissions; actual system state; platform/hardware/configuration compatibility; empty, large, and unusual inputs; concurrency; owners and recipients; information freshness; reversibility; and observability of success, failure, and partial failure.

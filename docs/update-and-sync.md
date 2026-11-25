@@ -19,11 +19,12 @@ Paths are relative to the indicated GitHub repository at its original adaptation
 | `google-stitch-frontend-brief-enhancer` | `google-labs-code/stitch-skills` | `plugins/stitch-utilities/skills/enhance-prompt` |
 | `google-stitch-shadcn-ui` | `google-labs-code/stitch-skills` | `plugins/stitch-build/skills/shadcn-ui` |
 | `i-have-adhd-actionable-output` | `ayghri/i-have-adhd` | `skills/i-have-adhd` |
+| `find-a-bug` | `cursor/plugins` | `pstack/skills/why` |
 | `benchmark-checklist` | `cursor/plugins` | `pstack/skills/benchmark-checklist` |
 | `before-git-push` | `cursor/plugins` | `pstack/skills/blast-radius` |
 | `project-bug-hunting` | `cursor/plugins` | `pstack/skills/create-verification-skill` |
 
-For the two pstack integrations, compare upstream changes only against the consumer check in pre-push step 6 and the documentation/API replay table respectively.
+For `before-git-push` and `project-bug-hunting`, compare upstream changes only against the consumer check in pre-push step 6 and the documentation/API replay table respectively.
 
 ## Read the original and its history
 
