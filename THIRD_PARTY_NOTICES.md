@@ -96,6 +96,7 @@ Selectively adapted from Lauren Tan's [pstack](https://github.com/cursor/plugins
 
 - [benchmark-checklist](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/benchmark-checklist/SKILL.md) supplies the measurement checks for the standalone local skill.
 - [blast-radius](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/blast-radius/SKILL.md) supplies the decisive compatibility assumption and consumer check in step 6 of `before-git-push`.
+- [sharpen](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/sharpen/SKILL.md) supplies the primary-source and independent-observation prompts for technical investigations in `prompt-polish`.
 - [create-verification-skill](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/create-verification-skill/SKILL.md) supplies the reusable feature-to-verification mapping adapted for versioned documentation/API checks in `project-bug-hunting`.
 
 MIT License
