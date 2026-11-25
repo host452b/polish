@@ -1,0 +1,3 @@
+interface:
+  display_name: "mattpocock-writing-for-agents"
+  short_description: "Write documents agents consume"

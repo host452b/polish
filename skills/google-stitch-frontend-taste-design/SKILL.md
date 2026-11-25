@@ -15,7 +15,7 @@ Create a coherent visual point of view before polishing components. Be opinionat
 2. **Choose a direction.** Define atmosphere, density, compositional variance, and motion intensity. Then specify palette roles, type hierarchy, layout rhythm, imagery, elevation, and interaction character. Read [taste-rules.md](references/taste-rules.md) for detailed heuristics.
 3. **Make it implementable.** Cover desktop and mobile composition plus default, hover, focus, active, disabled, loading, empty, error, and success states where relevant. Give concrete tokens or bounded ranges, not adjectives alone.
 4. **Record durable decisions.** When the direction will guide multiple screens or agents, create or update `DESIGN.md` using [the template](assets/DESIGN.md). Preserve compatible existing tokens unless the user approved a redesign.
-5. **Run the review gate.** Check hierarchy at a glance, content truthfulness, contrast, keyboard focus, touch targets, responsive collapse, reduced motion, and consistency across repeated elements.
+5. **Run the review gate.** Check hierarchy at a glance, content truthfulness, contrast, keyboard focus, touch targets, responsive collapse, reduced motion, and consistency across repeated elements. When concrete cross-platform thresholds or prioritized review checks help, also consult [quantitative-checks.md](references/quantitative-checks.md).
 
 ## Decision Rules
 
