@@ -66,30 +66,34 @@ Ensure all five signal blocks are accounted for (reading `--turns 12` only if th
 
 - *Completion criterion:* 5-part Takeover Brief extracted with secrets redacted and zero raw `tool_result` dumps.
 
-### 4. Reconcile Transcript Intent Against Live Workspace Reality
+### 4. Reconcile Transcript Intent Against Live Workspace, Worktrees, and Remote State
 
-**Never trust a transcript's claim that a file was saved or a test passed without checking disk.** Run read-only repo checks in parallel:
+**Never trust a transcript's claim — or a cached markdown summary — that a file was saved, a branch is unmerged, or a test passed without checking primary artifacts.** (For tools with summary caches such as Codex `~/.codex/memories/rollout_summaries/*.md`, trust the raw rollout `.jsonl` tail timestamp and `~/.codex/memories_1.sqlite` `stage1_outputs.source_updated_at` watermark over lagging static exports.) Run read-only checks in parallel:
 
 ```bash
 git status --short --branch
+git worktree list
 git diff --stat
 git log -n 5 --oneline
 ```
 
-Inspect the actual files listed under **Files Touched** and classify every task item into three buckets:
-- **Verified Done on Disk:** Present in commits or working tree and consistent with the goal.
-- **Half-Done / Drifted:** Interrupted mid-edit, reverted, modified manually after the session ended, or sitting on a different branch/worktree — **live disk state wins**.
-- **Remaining Work:** Unimplemented steps, unverified edits, or failing tests from the stopping point.
+- **Parallel worktrees & remote MR/PR state:** Inspect linked `/tmp` or sibling worktrees owned by parallel sessions before mutating branches, and query live remote review state (`gh pr list` / `gh pr view`, `glab mr list`) when applicable — a local branch behind `origin/main` often reflects an **already-merged** PR/MR rather than unsubmitted work. Keep private scratch/evidence directories (`~/.local/state/...`, `/tmp/...`) out of commits.
 
-- *Completion criterion:* Every touched file and claimed milestone reconciled against live git/filesystem state.
+Inspect the actual files listed under **Files Touched** and classify every task item into explicit buckets:
+- **Verified Done (Disk / Merged):** Present in commits, working tree, or an already-merged remote PR/MR and consistent with the goal.
+- **Half-Done / Drifted:** Interrupted mid-edit, reverted, modified manually after the session ended, or sitting in another branch/worktree — **live disk and remote state win**.
+- **Re-diagnose Before Acting:** Prior band-aids, wrappers, or unverified root-cause hypotheses from the transcript that warrant primary-log and source verification before building further edits on top of them.
+- **Remaining Work (and Deferred Backlog):** Concrete next implementation/verification steps from the stopping point, kept separate from optional deferred ideas.
+
+- *Completion criterion:* Every touched file, parallel worktree, and claimed milestone reconciled against live git, filesystem, and remote PR/MR state.
 
 ### 5. Present Takeover Check-In & Finish the Job
 
 Report a concise **Takeover Summary** before making edits:
 - **Picked Up From:** `[harness] session_id` (`updated_at`, recorded branch/cwd)
-- **Done on Disk:** Verified completed changes
-- **Drift / Attention Needed:** Any mismatch between transcript claims and current `git status` / branch
-- **Next Actions:** Concrete remaining steps
+- **Done on Disk / Merged:** Verified completed changes
+- **Drift / Re-diagnose:** Any mismatch with `git status` / worktrees / merged PRs, or prior workarounds needing verification
+- **Next Actions:** Concrete remaining steps (aligned with the repository's branch, Draft-PR/MR, and Git-identity rules before committing or pushing)
 
 If the user asked only to *inspect/summarize* the session, stop after the summary. If the user asked to *continue/take over* the work and there is no destructive conflict or wrong-branch hazard, proceed immediately to execute the remaining steps. Pause for confirmation only when uncommitted changes conflict, files were partially clobbered, or the checkout is on an unexpected branch.
 
