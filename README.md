@@ -171,7 +171,7 @@ See [the skill](skills/yc-rejection-simulator/SKILL.md).
 
 Use it when entering an unfamiliar technical domain, codebase, or framework ("what idioms or unspoken engineering conventions am I missing?") as well as for architectural, technology-selection, and post-launch verification blind spots. It separates awareness, evidence, confidence, and decision impact; a known unknown is not automatically a critical assumption. It uses visible context, checks whether the concern was already addressed, and defaults to one useful finding with a minimal test, pass/fail criteria, and the resulting decision branches. Pure product/market/business-loop critique routes to `yc-rejection-simulator`.
 
-Architecture, technology selection, post-implementation recovery, and comparable-team practices are conditional lenses, not a mandatory production checklist. It distinguishes knowledge, implementation, and verification gaps, including opportunities to reuse assets or simplify work. At consequential decision checkpoints, an implicit pass stays lightweight and preserves the main task. Missing discussion does not establish user ignorance. An ASCII quadrant table is shown by default, with up to three numbered entries per quadrant ranked by importance and no invented filler. Research background remains available on demand.
+Architecture, domain-inherent late-stage bottlenecks, technology selection, post-implementation recovery, and comparable-team practices are conditional lenses, not a mandatory production checklist. When a request omits high-importance constraints inherent to the target domain or system topology (for example inter-node latency, connection stability, and partial-failure reliability in a distributed system), it surfaces the highest-leverage `[领域隐含]` bottlenecks in `Unknown Unknowns` alongside residual-unknown safeguards without asserting user ignorance. An ASCII quadrant table is shown by default, with up to three numbered entries per quadrant ranked by importance and no invented filler. Research background remains available on demand.
 
 Example: `Use $find-blind-spots to identify one overlooked consequence of our architecture change, explain the evidence, and give the smallest test that would change our decision.` In Claude Code, invoke `/polish:find-blind-spots`.
 
@@ -623,7 +623,7 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 
 聚焦技术与工程盲区：特别适用于进入不熟悉的技术领域、语言/框架或陌生代码库时排查“我不熟的代码习惯（idioms）、框架潜规则或行业工程惯例”，也用于架构、技术选型、改造后恢复能力和同行工程实践差距审视。分别处理觉察、证据、信心和决策影响，明确“已知未知”不一定是关键假设；纯产品与非代码商业决策挑刺交由 `yc-rejection-simulator`。
 
-默认只给一个最有价值的发现，附 ASCII 四象限表，每格按重要程度用 1、2、3 编号、最多三项，有几项列几项，无证据不凑数；随后说明依据、最小验证及通过／失败后的选择。区分知识、落实与验证缺口，同时寻找复用与简化的收益机会。隐式触发仅在关键决策处轻量检查，保留主任务。聊天没提到不等于用户不知道；已经处理过的事项不反复提醒。研究来源按需展开，原型试用不会自动套用生产级清单。
+默认只给一个最有价值的发现，附 ASCII 四象限表，每格按重要程度用 1、2、3 编号、最多三项，有几项列几项，无证据不凑数；随后说明依据、最小验证及通过／失败后的选择。当需求与对话完全未提及所属领域或综合系统天然绕不开的高权重规则／后期核心瓶颈（如分布式系统的通信延迟、连接稳定性与部分失败可靠性）时，会在 `Unknown Unknowns` 主动点亮 1–2 项最高价值的 `[领域隐含]` 必考项并保留残余未知兜底，客观指出方案缺口而不做“用户不懂”的心理揣测。隐式触发仅在关键决策处轻量检查，保留主任务；已处理事项不反复提醒。
 
 示例：`使用 $find-blind-spots，基于当前聊天和项目证据，找出这次架构改造最容易遗漏的一个上线后问题，并给出最小验证和结果分支。`
 Claude Code 中使用 `/polish:find-blind-spots`。
