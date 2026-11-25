@@ -1,0 +1,7 @@
+interface:
+  display_name: "orchestrating-multi-agent-workflows"
+  short_description: "Architect Agent-to-Agent workflows, Proposer-Reviewer loops, and A2A"
+  default_prompt: "Use $orchestrating-multi-agent-workflows to design or audit our multi-agent workflow topology, handoff contracts, filesystem isolation, and loop verification."
+
+policy:
+  allow_implicit_invocation: true

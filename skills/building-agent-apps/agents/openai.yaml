@@ -1,0 +1,7 @@
+interface:
+  display_name: "building-agent-apps"
+  short_description: "Build downstream Agent apps with Memory, RAG, Event Ingress, and GenUI"
+  default_prompt: "Use $building-agent-apps to architect our agent application's memory/RAG pipeline, event-driven ingress, real-time interaction, and data-layer security."
+
+policy:
+  allow_implicit_invocation: true

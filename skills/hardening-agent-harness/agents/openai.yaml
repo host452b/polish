@@ -1,0 +1,7 @@
+interface:
+  display_name: "hardening-agent-harness"
+  short_description: "Harden agent harnesses against loops, fabrication, crashes, and injection"
+  default_prompt: "Use $hardening-agent-harness to audit our agent runtime for fragile failure modes, retry loops, non-idempotent side effects, and guardrails."
+
+policy:
+  allow_implicit_invocation: true

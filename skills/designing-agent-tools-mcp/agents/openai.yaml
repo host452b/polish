@@ -1,0 +1,7 @@
+interface:
+  display_name: "designing-agent-tools-mcp"
+  short_description: "Design Poka-yoke agent tools, MCP servers, and active tool discovery"
+  default_prompt: "Use $designing-agent-tools-mcp to review or design our agent tools, MCP server schemas, parameter fidelity, and on-demand tool discovery."
+
+policy:
+  allow_implicit_invocation: true

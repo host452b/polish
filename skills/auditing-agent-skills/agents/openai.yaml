@@ -1,0 +1,7 @@
+interface:
+  display_name: "auditing-agent-skills"
+  short_description: "Scan SKILL.md and AGENTS.md for routing, cache, and safety bugs"
+  default_prompt: "Use $auditing-agent-skills to scan the skills in this repository and report prioritized defects with minimal-diff fixes."
+
+policy:
+  allow_implicit_invocation: true

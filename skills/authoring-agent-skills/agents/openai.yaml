@@ -1,0 +1,7 @@
+interface:
+  display_name: "authoring-agent-skills"
+  short_description: "Create and refactor modular SKILL.md packages with progressive disclosure"
+  default_prompt: "Use $authoring-agent-skills to create or refactor a skill with clean trigger routing, progressive disclosure, and checkable completion criteria."
+
+policy:
+  allow_implicit_invocation: true

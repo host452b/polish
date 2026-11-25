@@ -232,3 +232,25 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## AI Agents in Depth (`bojieli/ai-agent-book`)
+
+The eight AI Agent & Harness engineering skills (`auditing-agent-skills`,
+`authoring-agent-skills`, `architecting-agent-context`,
+`designing-agent-tools-mcp`, `hardening-agent-harness`,
+`orchestrating-multi-agent-workflows`, `building-agent-apps`, and
+`evaluating-evolving-agents`) distill architectural patterns, v3.0 experimental
+evidence, and reworked skill guidance from
+[`bojieli/ai-agent-book`](https://github.com/bojieli/ai-agent-book) (forked at
+[`joe-nv/ai-agent-book`](https://github.com/joe-nv/ai-agent-book)) at commit
+`40f4ce5778e6cc93e3606c3079bf8cf13a0c4d04` (`book/` and `skills/`). All Python
+helper scripts and unit tests in these skills are original implementations for
+`polish`.
+
+Copyright 2025 Bojie Li
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may obtain
+a copy of the License at `http://www.apache.org/licenses/LICENSE-2.0`.
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.
