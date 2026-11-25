@@ -13,6 +13,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 Currently included:
 
 - `benchmark-checklist` - checks measured throughput, latency, and speedup claims against completed work and run variability.
+- `takeover-agent-sessions` - reads local session stores across Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, and Devin on macOS, Windows, and Linux into a bounded 5-part Takeover Brief, reconciles against live `git status` / `git diff`, and resumes unfinished work from any host agent.
 - `analyzing-risk-decisions` - models uncertain options via joint state-wise net losses, CARA exponential utility ($CE_R$), and `VaR`/`ES` tail constraints, with deterministic threshold inversion ($p^*$, reservation price $P^*(R)$, indifference $R^*$) and preference calibration.
 - `consistent-term-translation-polish-guard` - translates and polishes EN↔ZH content with stable primary terms, acronym bindings, ambiguity checks, and a bilingual terminology table.
 - `yc-rejection-simulator` - critiques startup ideas, product loops, market assumptions, and non-code strategic decisions with evidence-grounded objections, a sharp verdict, and one validation test.
@@ -47,11 +48,11 @@ Currently included:
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **30** | Total `description` footprint: **8,540 chars** (avg **285 chars/skill**), keeping always-loaded context overhead compact |
+| Total skills | **31** | Total `description` footprint: **8,956 chars** (avg **289 chars/skill**), keeping always-loaded context overhead compact |
 | Functional orthogonality | **~86%** (~14% overlap) | Adjacent skills differ in method and artifact rather than duplicating workflows |
 | Trigger orthogonality | **~88%** (~12% overlap; raised from ~68%) | Formerly overlapping clusters carry explicit mutual-routing pointers in `description` |
-| Standalone single-purpose skills | **10 / 30 (33.3%)** | Zero domain or trigger overlap (`prompt-polish`, `file-singlify`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
-| Pipeline & complementary cluster skills | **20 / 30 (66.7%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), and agent docs (2) |
+| Standalone single-purpose skills | **11 / 31 (35.5%)** | Zero domain or trigger overlap (`prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
+| Pipeline & complementary cluster skills | **20 / 31 (64.5%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), and agent docs (2) |
 
 Key routing boundaries across adjacent skills:
 
@@ -123,6 +124,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `takeover-agent-sessions`
+
+Use it from any coding agent when picking up unfinished work, recovering context after a rate limit or crash, or looking up local session transcripts recorded by another coding agent (`claude`, `codex`, `cursor`, `windsurf`, `copilot`, `kiro`, `opencode`, `zed`, or `devin`) across macOS, Windows, Linux, and WSL.
+
+Backed by a zero-dependency, strictly read-only Python extractor (`skills/takeover-agent-sessions/scripts/takeover_session.py` — including `file:...?mode=ro` SQLite snapshots, `zstd` rollout/thread decompression, NIST AES-256-GCM + `CortexTrajectory` protobuf decoding for Windsurf `.pb`, VS Code delta-log reduction, and automatic secret redaction), it produces a bounded 5-part Takeover Brief (Goal, Settled Constraints, Files Touched, Commands & Exit Status, Stopping Point) and reconciles transcript intent against live `git status` / `git diff` before resuming work.
+
+Example: `Use $takeover-agent-sessions to inspect my latest Cursor or Codex session for this repo, check what is already on disk, and finish the remaining tests.` In Claude Code and Devin CLI, invoke `/polish:takeover-agent-sessions`.
+
+See [the skill](skills/takeover-agent-sessions/SKILL.md) and [storage paths & parsing pitfalls](skills/takeover-agent-sessions/references/storage-and-pitfalls.md).
 
 ### `analyzing-risk-decisions`
 
@@ -320,6 +331,12 @@ polish/
 ├── skills/benchmark-checklist/
 │   ├── SKILL.md              # throughput/latency/speedup claim checklist
 │   └── agents/openai.yaml
+├── skills/takeover-agent-sessions/
+│   ├── SKILL.md              # cross-agent local session takeover workflow
+│   ├── references/           # 9-harness OS paths, schemas & parsing pitfalls
+│   ├── scripts/              # read-only cross-OS Takeover Brief extractor
+│   ├── tests/                # 9-harness + AES-GCM/zstd/SQLite unit suite
+│   └── agents/openai.yaml
 ├── skills/analyzing-risk-decisions/
 │   ├── SKILL.md              # probabilistic decision analysis & threshold inversion
 │   ├── references/           # JSON schemas and domain modeling patterns
@@ -448,6 +465,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 当前包含：
 
 - `benchmark-checklist` - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
+- `takeover-agent-sessions` - 跨 macOS、Windows、Linux（含 WSL）只读解析 Cursor、Windsurf、Claude Code、GitHub Copilot、Codex、Kiro、OpenCode、Zed 与 Devin 的本地会话记录，提炼五要素接盘简报并与当前 `git status` / `git diff` 对账，让任意 Agent 无缝接力其他 Agent 没干完的活。
 - `analyzing-risk-decisions` - 基于联合有限状态空间、增量净损失函数、CARA 指数效用（$CE_R$）与 `VaR`/`ES` 尾部约束做概率决策分析、切换阈值反推（$p^*$、最高可接受价格 $P^*(R)$、无差异 $R^*$）及风险偏好校准。
 - `consistent-term-translation-polish-guard` - 中英双向翻译与译文润色，统一主译名、绑定缩写、确认核心歧义，并默认附双向术语对照表。
 - `yc-rejection-simulator` - 评审 startup 申请，并作为尖锐反方边界人审视产品逻辑闭环、市场/用户假设与非代码决策，给出最多三条有据反驳与一个最小验证测试。
@@ -482,11 +500,11 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **30** | 全部 `description` 合计 **8,540 字符**（均值 **285 字符/个**），常驻上下文开销紧凑可控 |
+| Skill 总数 | **31** | 全部 `description` 合计 **8,956 字符**（均值 **289 字符/个**），常驻上下文开销紧凑可控 |
 | 功能正交率（方法论/产出不重复） | **~86%**（功能重叠率 ~14%） | 相邻 skill 在方法论、作用对象与交付产物上互补，无冗余废项 |
 | 触发正交率（自动命中不打架） | **~88%**（由调优前 ~68% 提升） | 原 3 个冲突簇已在 `description` 中建立显式互排与分流指针 |
-| 完全正交单点（0% 重叠） | **10 / 30（33.3%）** | 作用对象与目标完全独立（如 `prompt-polish`、`file-singlify`、`benchmark-checklist`、`mattpocock-wizard` 等） |
-| 同域流水线 / 正交协作 | **20 / 30（66.7%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档编写(2) |
+| 完全正交单点（0% 重叠） | **11 / 31（35.5%）** | 作用对象与目标完全独立（如 `prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
+| 同域流水线 / 正交协作 | **20 / 31（64.5%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档编写(2) |
 
 相邻 skill 的核心分流规则：
 
@@ -558,6 +576,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `takeover-agent-sessions`
+
+适用于在任意 coding agent 中接手其他工具没干完的任务、额度/限流切换工具、崩溃或压缩后恢复上下文，以及跨工具检索本地历史会话（支持 `claude`、`codex`、`cursor`、`windsurf`、`copilot`、`kiro`、`opencode`、`zed` 与 `devin`，覆盖 macOS、Windows、Linux 及 WSL 跨系统挂载）。
+
+内置零第三方依赖的只读解析脚本 `skills/takeover-agent-sessions/scripts/takeover_session.py`（自动处理 SQLite `?mode=ro` 只读快照、`zstd` 压缩会话、Windsurf `.pb` AES-256-GCM 认证解密与 `CortexTrajectory` Protobuf 解析、VS Code Copilot 增量状态归约及密钥脱敏），将海量原始日志提炼为五要素 Takeover Brief（目标、已拍板约束、触碰文件、命令与退出码、中断现场），并强制与当前工作区 `git status` / `git diff` 对账后再继续施工。
+
+示例：`使用 $takeover-agent-sessions 读取我刚才在 Cursor 或 Codex 里做到一半的当前仓库会话，核对磁盘改动后把剩下的活干完。` Claude Code 与 Devin CLI 中使用 `/polish:takeover-agent-sessions`。
+
+见 [skill 正文](skills/takeover-agent-sessions/SKILL.md) 和 [存储路径与解析坑点参考](skills/takeover-agent-sessions/references/storage-and-pitfalls.md)。
 
 ### `analyzing-risk-decisions`
 
@@ -748,6 +776,12 @@ polish/
 ├── references/strategies.md  # prompt-polish 策略库
 ├── skills/benchmark-checklist/
 │   ├── SKILL.md              # 吞吐/延迟/加速比测量核查清单
+│   └── agents/openai.yaml
+├── skills/takeover-agent-sessions/
+│   ├── SKILL.md              # 跨工具本地会话读取与未完任务接盘流程
+│   ├── references/           # 9 套工具三端存储路径、Schema 与解析坑点
+│   ├── scripts/              # 零依赖只读跨平台 Takeover Brief 提取器
+│   ├── tests/                # 9 套工具 + AES-GCM/zstd/SQLite 回归测试
 │   └── agents/openai.yaml
 ├── skills/analyzing-risk-decisions/
 │   ├── SKILL.md              # 概率决策分析、尾部约束与切换阈值反推

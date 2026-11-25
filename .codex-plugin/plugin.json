@@ -46,13 +46,15 @@
     "writing-for-agents",
     "wizard",
     "decision-analysis",
-    "risk-inversion"
+    "risk-inversion",
+    "session-handoff",
+    "agent-history"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, primary-source research, two-axis code review, interactive setup wizards, and writing for agents). git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes cross-agent local session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, primary-source research, two-axis code review, interactive setup wizards, and writing for agents). git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -62,6 +64,7 @@
     "defaultPrompt": [
       "Use prompt-polish to rewrite this prompt: ...",
       "Rewrite this question for a better LLM answer.",
+      "Use takeover-agent-sessions to inspect my recent session in another coding agent for this workspace and finish the remaining work.",
       "Use analyzing-risk-decisions to invert the break-even probability, max justifiable cost, and tail-risk trade-offs across these options.",
       "Use find-a-bug to investigate this project's failure and verify the unknowns that could change the diagnosis.",
       "Use project-bug-hunting to explore this repository for unknown functional defects and report evidence and coverage limits.",

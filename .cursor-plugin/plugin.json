@@ -45,7 +45,9 @@
     "writing-for-agents",
     "wizard",
     "decision-analysis",
-    "risk-inversion"
+    "risk-inversion",
+    "session-handoff",
+    "agent-history"
   ],
   "skills": "./skills/"
 }

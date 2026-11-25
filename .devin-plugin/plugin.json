@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.3.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills, including prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including cross-agent session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills.",
   "author": {
     "name": "host452b"
   },
@@ -9,6 +9,8 @@
   "repository": "https://github.com/host452b/polish",
   "keywords": [
     "prompt-engineering",
+    "session-handoff",
+    "agent-history",
     "decision-analysis",
     "risk-inversion",
     "bug-investigation",
