@@ -1,0 +1,4 @@
+interface:
+  display_name: "takeover-agent-sessions"
+  short_description: "Read local sessions across 8+ coding agents to take over unfinished work"
+  default_prompt: "Use $takeover-agent-sessions to find my recent session in another coding agent for this workspace, reconcile it with git status and diff, and finish the remaining work."
