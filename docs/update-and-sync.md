@@ -8,6 +8,7 @@ Paths are relative to the indicated GitHub repository at its original adaptation
 
 | Local skill | Original repository | Skill directory |
 | --- | --- | --- |
+| `prompt-polish` | `cursor/plugins` | `pstack/skills/sharpen` |
 | `superpowers-brainstorming` | `obra/superpowers` | `skills/brainstorming` |
 | `superpowers-systematic-debugging` | `obra/superpowers` | `skills/systematic-debugging` |
 | `superpowers-test-driven-development` | `obra/superpowers` | `skills/test-driven-development` |
