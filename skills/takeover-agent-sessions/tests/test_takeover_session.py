@@ -865,6 +865,50 @@ class TestAllNineHarnessAdapters(unittest.TestCase):
         self.assertEqual(len(user_turns), 1)
         self.assertIn("src/middleware.py", brief["files_touched"])
 
+        # Also verify current Devin CLI 3000.14+ schema (node_id INTEGER, last_activity_at, chat_message.message_id, 'null' metadata)
+        v14_db = devin_dir / "cli_sessions.db"
+        conn2 = sqlite3.connect(v14_db)
+        conn2.executescript(
+            """
+            CREATE TABLE sessions (
+                id TEXT PRIMARY KEY,
+                working_directory TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                last_activity_at INTEGER NOT NULL,
+                title TEXT,
+                main_chain_id INTEGER,
+                hidden INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE TABLE message_nodes (
+                row_id INTEGER PRIMARY KEY,
+                session_id TEXT NOT NULL,
+                node_id INTEGER NOT NULL,
+                parent_node_id INTEGER,
+                chat_message TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                metadata TEXT
+            );
+            """
+        )
+        conn2.execute(
+            "INSERT INTO sessions VALUES ('devin-v14-2', ?, 1763960000, 1763960099, 'V14 Session', 3, 0)",
+            (self.repo_dir,),
+        )
+        conn2.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                ("devin-v14-2", 1, None, json.dumps({"role": "user", "message_id": "m-u1", "content": "Port worker to asyncio"}), 1763960001, "null"),
+                ("devin-v14-2", 2, 1, json.dumps({"role": "user", "message_id": "m-u1", "content": "Port worker to asyncio"}), 1763960020, "null"),
+                ("devin-v14-2", 3, 2, json.dumps({"role": "assistant", "message_id": "m-a1", "content": "Async loop wired; graceful cancel next."}), 1763960030, "null"),
+            ],
+        )
+        conn2.commit()
+        conn2.close()
+
+        b_v14 = ts.build_brief("devin", "devin-v14-2", os_name="linux", home=self.home, env=self.env)
+        self.assertEqual(b_v14["goal"], "Port worker to asyncio")
+        self.assertEqual(len([t for t in b_v14["recent_turns"] if t["role"] == "user"]), 1)
+
     def test_wsl_bridge_and_exclusion_filters(self):
         win_home = Path(self._tmp.name) / "mnt_c_users_alice"
         cdir = win_home / ".copilot" / "session-state" / "wsl-cross-1"

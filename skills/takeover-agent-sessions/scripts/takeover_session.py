@@ -901,107 +901,119 @@ class SessionRecord:
 # ---------------------------------------------------------------------------
 
 
-def _load_claude_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> list[SessionRecord]:
+def _load_claude_sessions(
+    roots: dict[str, list[Path]],
+    warnings: list[str],
+    *,
+    max_items: int | None = None,
+    session_hint: str | None = None,
+) -> list[SessionRecord]:
     out: list[SessionRecord] = []
+    candidates: list[Path] = []
     for proj_root in roots["project_roots"]:
         if not proj_root.is_dir():
             continue
-        candidates: list[Path] = []
-        for entry in sorted(proj_root.iterdir()):
+        for entry in proj_root.iterdir():
             if entry.is_file() and entry.suffix == ".jsonl":
                 candidates.append(entry)
             elif entry.is_dir():
-                candidates.extend(sorted(entry.glob("*.jsonl")))
-        for fpath in candidates:
-            rows, err = iter_jsonl_file(fpath)
-            if err:
-                warnings.append(err)
+                candidates.extend(entry.glob("*.jsonl"))
+    candidates.sort(key=lambda p: p.stat().st_mtime if p.exists() else 0.0, reverse=True)
+    if session_hint:
+        hinted = [p for p in candidates if p.stem.startswith(session_hint)]
+        if hinted:
+            candidates = hinted
+    for fpath in candidates:
+        if max_items is not None and len(out) >= max_items:
+            break
+        rows, err = iter_jsonl_file(fpath)
+        if err:
+            warnings.append(err)
+            continue
+        if not rows:
+            continue
+        mtime = fpath.stat().st_mtime
+        sid = fpath.stem
+        rec = SessionRecord(harness="claude", session_id=sid, source_path=str(fpath))
+        last_ts = ""
+        last_ep = mtime
+        for obj in rows:
+            rtype = obj.get("type")
+            if obj.get("sessionId") and not obj.get("isSidechain"):
+                rec.session_id = str(obj["sessionId"])
+            if not rec.cwd and isinstance(obj.get("cwd"), str):
+                rec.cwd = obj["cwd"]
+            if not rec.git_branch and isinstance(obj.get("gitBranch"), str):
+                rec.git_branch = obj["gitBranch"]
+            if rtype in ("agent-name", "custom-title", "ai-title"):
+                tval = obj.get("agentName") or obj.get("customTitle") or obj.get("aiTitle")
+                if isinstance(tval, str) and tval.strip():
+                    rec.title = tval.strip()
+            if isinstance(obj.get("timestamp"), (str, int, float)):
+                iso, ep = ts_to_iso(obj["timestamp"], mtime)
+                if ep >= last_ep or not last_ts:
+                    last_ts, last_ep = iso, ep
+            if rtype not in ("user", "assistant"):
                 continue
-            if not rows:
+            if obj.get("isMeta") is True:
                 continue
-            mtime = fpath.stat().st_mtime
-            sid = fpath.stem
-            rec = SessionRecord(harness="claude", session_id=sid, source_path=str(fpath))
-            last_ts = ""
-            last_ep = mtime
-            for obj in rows:
-                rtype = obj.get("type")
-                if obj.get("sessionId") and not obj.get("isSidechain"):
-                    rec.session_id = str(obj["sessionId"])
-                if not rec.cwd and isinstance(obj.get("cwd"), str):
-                    rec.cwd = obj["cwd"]
-                if not rec.git_branch and isinstance(obj.get("gitBranch"), str):
-                    rec.git_branch = obj["gitBranch"]
-                if rtype in ("agent-name", "custom-title", "ai-title"):
-                    tval = obj.get("agentName") or obj.get("customTitle") or obj.get("aiTitle")
-                    if isinstance(tval, str) and tval.strip():
-                        rec.title = tval.strip()
-                if isinstance(obj.get("timestamp"), (str, int, float)):
-                    iso, ep = ts_to_iso(obj["timestamp"], mtime)
-                    if ep >= last_ep or not last_ts:
-                        last_ts, last_ep = iso, ep
-                if rtype not in ("user", "assistant"):
-                    continue
-                if obj.get("isMeta") is True:
-                    continue
-                msg = obj.get("message") if isinstance(obj.get("message"), dict) else {}
-                role = str(msg.get("role") or rtype)
-                content = msg.get("content")
-                texts: list[str] = []
-                if isinstance(content, str):
-                    if obj.get("toolUseResult") is None:
-                        texts.append(content)
-                elif isinstance(content, list):
-                    for part in content:
-                        if not isinstance(part, dict):
-                            continue
-                        ptype = part.get("type")
-                        if ptype == "text":
-                            t = part.get("text") or part.get("content") or ""
-                            if isinstance(t, str) and t.strip():
-                                texts.append(t)
-                        elif ptype == "tool_use":
-                            tname = str(part.get("name") or "")
-                            tinp = part.get("input") if isinstance(part.get("input"), dict) else {}
-                            if tname in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
-                                rec.add_file(tinp.get("file_path") or tinp.get("notebook_path"))
-                            elif tname in ("Bash", "Shell", "exec"):
-                                rec.add_command(tinp.get("command"))
-                if texts:
-                    iso_turn, _ = ts_to_iso(obj.get("timestamp"), None)
-                    rec.add_turn("user" if role == "user" else "assistant", "\n".join(texts), iso_turn)
+            msg = obj.get("message") if isinstance(obj.get("message"), dict) else {}
+            role = str(msg.get("role") or rtype)
+            content = msg.get("content")
+            texts: list[str] = []
+            if isinstance(content, str):
+                if obj.get("toolUseResult") is None:
+                    texts.append(content)
+            elif isinstance(content, list):
+                for part in content:
+                    if not isinstance(part, dict):
+                        continue
+                    ptype = part.get("type")
+                    if ptype == "text":
+                        t = part.get("text") or part.get("content") or ""
+                        if isinstance(t, str) and t.strip():
+                            texts.append(t)
+                    elif ptype == "tool_use":
+                        tname = str(part.get("name") or "")
+                        tinp = part.get("input") if isinstance(part.get("input"), dict) else {}
+                        if tname in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
+                            rec.add_file(tinp.get("file_path") or tinp.get("notebook_path"))
+                        elif tname in ("Bash", "Shell", "exec"):
+                            rec.add_command(tinp.get("command"))
+            if texts:
+                iso_turn, _ = ts_to_iso(obj.get("timestamp"), None)
+                rec.add_turn("user" if role == "user" else "assistant", "\n".join(texts), iso_turn)
 
-            # Attach subagents if present
-            sub_dir = fpath.parent / fpath.stem / "subagents"
-            if sub_dir.is_dir():
-                for sf in sorted(sub_dir.glob("agent-*.jsonl")):
-                    srows, _ = iter_jsonl_file(sf)
-                    stask = ""
-                    sreply = ""
-                    for sobj in srows:
-                        msg = sobj.get("message") if isinstance(sobj.get("message"), dict) else {}
-                        cnt = msg.get("content")
-                        txt = ""
-                        if isinstance(cnt, str):
-                            txt = cnt
-                        elif isinstance(cnt, list):
-                            for p in cnt:
-                                if isinstance(p, dict) and p.get("type") == "text":
-                                    txt += str(p.get("text") or "")
-                                elif isinstance(p, dict) and p.get("type") == "tool_use":
-                                    inp = p.get("input") if isinstance(p.get("input"), dict) else {}
-                                    if p.get("name") in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
-                                        rec.add_file(inp.get("file_path") or inp.get("notebook_path"))
-                        if sobj.get("type") == "user" and not stask and txt.strip():
-                            stask = one_line(txt, 140)
-                        elif sobj.get("type") == "assistant" and txt.strip():
-                            sreply = one_line(txt, 180)
-                    if stask or sreply:
-                        rec.subagents.append({"agent_id": sf.stem, "task": stask, "summary": sreply})
+        sub_dir = fpath.parent / fpath.stem / "subagents"
+        if sub_dir.is_dir():
+            for sf in sorted(sub_dir.glob("agent-*.jsonl")):
+                srows, _ = iter_jsonl_file(sf)
+                stask = ""
+                sreply = ""
+                for sobj in srows:
+                    msg = sobj.get("message") if isinstance(sobj.get("message"), dict) else {}
+                    cnt = msg.get("content")
+                    txt = ""
+                    if isinstance(cnt, str):
+                        txt = cnt
+                    elif isinstance(cnt, list):
+                        for p in cnt:
+                            if isinstance(p, dict) and p.get("type") == "text":
+                                txt += str(p.get("text") or "")
+                            elif isinstance(p, dict) and p.get("type") == "tool_use":
+                                inp = p.get("input") if isinstance(p.get("input"), dict) else {}
+                                if p.get("name") in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
+                                    rec.add_file(inp.get("file_path") or inp.get("notebook_path"))
+                    if sobj.get("type") == "user" and not stask and txt.strip():
+                        stask = one_line(txt, 140)
+                    elif sobj.get("type") == "assistant" and txt.strip():
+                        sreply = one_line(txt, 180)
+                if stask or sreply:
+                    rec.subagents.append({"agent_id": sf.stem, "task": stask, "summary": sreply})
 
-            rec.updated_iso, rec.updated_epoch = (last_ts, last_ep) if last_ts else ts_to_iso(None, mtime)
-            if rec.turns or rec.files_touched:
-                out.append(rec)
+        rec.updated_iso, rec.updated_epoch = (last_ts, last_ep) if last_ts else ts_to_iso(None, mtime)
+        if rec.turns or rec.files_touched:
+            out.append(rec)
     return out
 
 
@@ -1011,8 +1023,14 @@ def _codex_uuid_from_filename(name: str) -> str:
     return m.group(1) if m else base
 
 
-def _load_codex_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> list[SessionRecord]:
-    by_uuid: dict[str, Path] = {}
+def _load_codex_sessions(
+    roots: dict[str, list[Path]],
+    warnings: list[str],
+    *,
+    max_items: int | None = None,
+    session_hint: str | None = None,
+) -> list[SessionRecord]:
+    by_uuid: dict[str, tuple[float, Path]] = {}
     for rroot in roots["rollout_roots"]:
         if not rroot.is_dir():
             continue
@@ -1021,19 +1039,24 @@ def _load_codex_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> l
                 if not fpath.is_file():
                     continue
                 uid = _codex_uuid_from_filename(fpath.name)
+                if session_hint and not uid.startswith(session_hint):
+                    continue
+                mt = fpath.stat().st_mtime
                 prev = by_uuid.get(uid)
-                if prev is None or fpath.stat().st_mtime >= prev.stat().st_mtime:
-                    by_uuid[uid] = fpath
+                if prev is None or mt >= prev[0]:
+                    by_uuid[uid] = (mt, fpath)
 
+    ordered = sorted(by_uuid.items(), key=lambda kv: kv[1][0], reverse=True)
     out: list[SessionRecord] = []
-    for uid, fpath in by_uuid.items():
+    for uid, (mtime, fpath) in ordered:
+        if max_items is not None and len(out) >= max_items:
+            break
         rows, err = iter_jsonl_file(fpath)
         if err:
             warnings.append(err)
             continue
         if not rows:
             continue
-        mtime = fpath.stat().st_mtime
         rec = SessionRecord(harness="codex", session_id=uid, source_path=str(fpath))
         seen_meta = False
         pending_calls: dict[str, str] = {}
@@ -1143,9 +1166,16 @@ def _load_codex_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> l
     return out
 
 
-def _load_cursor_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> list[SessionRecord]:
+def _load_cursor_sessions(
+    roots: dict[str, list[Path]],
+    warnings: list[str],
+    *,
+    max_items: int | None = None,
+    session_hint: str | None = None,
+) -> list[SessionRecord]:
     out: list[SessionRecord] = []
     seen_ids: set[str] = set()
+    cap = max_items if max_items is not None else 120
 
     # Build chat_uuid -> cwd map from Cursor CLI ~/.cursor/chats/<md5>/<uuid>/meta.json
     cli_cwd_map: dict[str, str] = {}
@@ -1160,7 +1190,8 @@ def _load_cursor_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> 
                 except Exception:
                     continue
 
-    # 1) Cursor plaintext agent-transcripts
+    # 1) Cursor plaintext agent-transcripts (sorted newest-first)
+    all_tfiles: list[tuple[float, Path]] = []
     for croot in roots["cli_roots"]:
         proj_root = croot / "projects"
         if not proj_root.is_dir():
@@ -1172,67 +1203,75 @@ def _load_cursor_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> 
             for child in at_dir.iterdir():
                 if child.is_dir() and child.name != "subagents":
                     tfiles.extend(child.glob("*.jsonl"))
-            for fpath in sorted(tfiles):
-                rows, err = iter_jsonl_file(fpath)
-                if err or not rows:
-                    if err:
-                        warnings.append(err)
+            for fp in tfiles:
+                if session_hint and not fp.stem.startswith(session_hint):
                     continue
-                sid = fpath.stem
-                mtime = fpath.stat().st_mtime
-                iso, ep = ts_to_iso(None, mtime)
-                rec = SessionRecord(
-                    harness="cursor",
-                    session_id=sid,
-                    source_path=str(fpath),
-                    cwd=cli_cwd_map.get(sid, ""),
-                    updated_iso=iso,
-                    updated_epoch=ep,
-                )
-                for obj in rows:
-                    role = obj.get("role")
-                    if role not in ("user", "assistant"):
-                        continue
-                    msg = obj.get("message") if isinstance(obj.get("message"), dict) else {}
-                    cnt = msg.get("content")
-                    texts: list[str] = []
-                    if isinstance(cnt, str):
-                        texts.append(cnt)
-                    elif isinstance(cnt, list):
-                        for part in cnt:
-                            if not isinstance(part, dict):
-                                continue
-                            ptype = part.get("type")
-                            if ptype == "text" and isinstance(part.get("text"), str):
-                                texts.append(part["text"])
-                            elif ptype == "tool_use":
-                                tname = str(part.get("name") or "")
-                                inp = part.get("input") if isinstance(part.get("input"), dict) else {}
-                                if tname in ("Write", "StrReplace", "Delete", "Edit"):
-                                    rec.add_file(inp.get("path") or inp.get("file_path"))
-                                elif tname == "ApplyPatch":
-                                    for p in extract_patch_paths(str(inp.get("patch") or inp)):
-                                        rec.add_file(p)
-                                elif tname in ("Shell", "Bash"):
-                                    rec.add_command(inp.get("command"))
-                    if texts:
-                        rec.add_turn(role, "\n".join(texts))
+                try:
+                    all_tfiles.append((fp.stat().st_mtime, fp))
+                except OSError:
+                    continue
 
-                sub_dir = fpath.parent / "subagents"
-                if sub_dir.is_dir():
-                    for sf in sorted(sub_dir.glob("*.jsonl")):
-                        srows, _ = iter_jsonl_file(sf)
-                        for sobj in srows:
-                            if sobj.get("role") == "assistant":
-                                msg = sobj.get("message") if isinstance(sobj.get("message"), dict) else {}
-                                for p in msg.get("content") or []:
-                                    if isinstance(p, dict) and p.get("type") == "tool_use":
-                                        inp = p.get("input") if isinstance(p.get("input"), dict) else {}
-                                        if p.get("name") in ("Write", "StrReplace", "Delete"):
-                                            rec.add_file(inp.get("path"))
-                if rec.turns or rec.files_touched:
-                    seen_ids.add(sid)
-                    out.append(rec)
+    all_tfiles.sort(key=lambda item: item[0], reverse=True)
+    for mtime, fpath in all_tfiles[:cap]:
+        rows, err = iter_jsonl_file(fpath)
+        if err or not rows:
+            if err:
+                warnings.append(err)
+            continue
+        sid = fpath.stem
+        iso, ep = ts_to_iso(None, mtime)
+        rec = SessionRecord(
+            harness="cursor",
+            session_id=sid,
+            source_path=str(fpath),
+            cwd=cli_cwd_map.get(sid, ""),
+            updated_iso=iso,
+            updated_epoch=ep,
+        )
+        for obj in rows:
+            role = obj.get("role")
+            if role not in ("user", "assistant"):
+                continue
+            msg = obj.get("message") if isinstance(obj.get("message"), dict) else {}
+            cnt = msg.get("content")
+            texts: list[str] = []
+            if isinstance(cnt, str):
+                texts.append(cnt)
+            elif isinstance(cnt, list):
+                for part in cnt:
+                    if not isinstance(part, dict):
+                        continue
+                    ptype = part.get("type")
+                    if ptype == "text" and isinstance(part.get("text"), str):
+                        texts.append(part["text"])
+                    elif ptype == "tool_use":
+                        tname = str(part.get("name") or "")
+                        inp = part.get("input") if isinstance(part.get("input"), dict) else {}
+                        if tname in ("Write", "StrReplace", "Delete", "Edit"):
+                            rec.add_file(inp.get("path") or inp.get("file_path"))
+                        elif tname == "ApplyPatch":
+                            for p in extract_patch_paths(str(inp.get("patch") or inp)):
+                                rec.add_file(p)
+                        elif tname in ("Shell", "Bash"):
+                            rec.add_command(inp.get("command"))
+            if texts:
+                rec.add_turn(role, "\n".join(texts))
+
+        sub_dir = fpath.parent / "subagents"
+        if sub_dir.is_dir():
+            for sf in sorted(sub_dir.glob("*.jsonl")):
+                srows, _ = iter_jsonl_file(sf)
+                for sobj in srows:
+                    if sobj.get("role") == "assistant":
+                        msg = sobj.get("message") if isinstance(sobj.get("message"), dict) else {}
+                        for p in msg.get("content") or []:
+                            if isinstance(p, dict) and p.get("type") == "tool_use":
+                                inp = p.get("input") if isinstance(p.get("input"), dict) else {}
+                                if p.get("name") in ("Write", "StrReplace", "Delete"):
+                                    rec.add_file(inp.get("path"))
+        if rec.turns or rec.files_touched:
+            seen_ids.add(sid)
+            out.append(rec)
 
     # 2) Cursor IDE globalStorage/state.vscdb
     for uroot in roots["ide_roots"]:
@@ -1256,9 +1295,17 @@ def _load_cursor_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> 
                         except Exception:
                             continue
 
-                composers = conn.execute(
-                    "SELECT substr(key, 14), value FROM cursorDiskKV WHERE key LIKE 'composerData:%'"
-                ).fetchall()
+                if session_hint:
+                    c_prefix = f"composerData:{session_hint}"
+                    c_upper = c_prefix[:-1] + chr(ord(c_prefix[-1]) + 1)
+                    composers = conn.execute(
+                        "SELECT substr(key, 14), value FROM cursorDiskKV WHERE key >= ? AND key < ?",
+                        (c_prefix, c_upper),
+                    ).fetchall()
+                else:
+                    composers = conn.execute(
+                        "SELECT substr(key, 14), value FROM cursorDiskKV WHERE key >= 'composerData:' AND key < 'composerData;'"
+                    ).fetchall()
                 parsed_composers: list[tuple[float, str, str, dict[str, Any], list[Any]]] = []
                 db_mtime = gdb.stat().st_mtime
                 for cid, raw_val in composers:
@@ -1278,7 +1325,7 @@ def _load_cursor_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> 
                     parsed_composers.append((ep, iso, str(cid), cobj, headers))
 
                 parsed_composers.sort(key=lambda item: item[0], reverse=True)
-                for ep, iso, cid, cobj, headers in parsed_composers[:120]:
+                for ep, iso, cid, cobj, headers in parsed_composers[:cap]:
                     title = str(cobj.get("name") or cobj.get("subtitle") or "")
                     rec = SessionRecord(
                         harness="cursor",
@@ -2159,9 +2206,16 @@ def _load_zed_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> lis
     return out
 
 
-def _load_devin_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> list[SessionRecord]:
+def _load_devin_sessions(
+    roots: dict[str, list[Path]],
+    warnings: list[str],
+    *,
+    max_items: int | None = None,
+    session_hint: str | None = None,
+) -> list[SessionRecord]:
     out: list[SessionRecord] = []
     seen: set[str] = set()
+    cap = max_items if max_items is not None else 100
 
     for db_path in roots["dbs"]:
         if not db_path.is_file():
@@ -2172,20 +2226,43 @@ def _load_devin_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> l
                 if not {"sessions", "message_nodes"}.issubset(tables):
                     continue
                 scols = {r[1] for r in conn.execute("PRAGMA table_info(sessions)")}
-                where = "WHERE coalesce(hidden, 0) = 0" if "hidden" in scols else ""
+                mcols = {r[1] for r in conn.execute("PRAGMA table_info(message_nodes)")}
+
+                nid_col = "node_id" if "node_id" in mcols else "id"
+                mid_col = "message_id" if "message_id" in mcols else "NULL"
                 wd_col = "working_directory" if "working_directory" in scols else "''"
                 title_col = "title" if "title" in scols else "''"
-                upd_col = "updated_at" if "updated_at" in scols else ("created_at" if "created_at" in scols else "0")
+                if "last_activity_at" in scols:
+                    upd_col = "last_activity_at"
+                elif "updated_at" in scols:
+                    upd_col = "updated_at"
+                elif "created_at" in scols:
+                    upd_col = "created_at"
+                else:
+                    upd_col = "0"
+
+                clauses: list[str] = []
+                params: list[Any] = []
+                if "hidden" in scols:
+                    clauses.append("coalesce(hidden, 0) = 0")
+                if session_hint:
+                    clauses.append("id LIKE ?")
+                    params.append(f"{session_hint}%")
+                where_sql = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+                params.append(cap)
 
                 srows = conn.execute(
-                    f"SELECT id, {title_col}, {wd_col}, main_chain_id, {upd_col} FROM sessions {where}"
+                    f"SELECT id, {title_col}, {wd_col}, main_chain_id, {upd_col} "
+                    f"FROM sessions {where_sql} ORDER BY coalesce({upd_col}, 0) DESC LIMIT ?",
+                    tuple(params),
                 ).fetchall()
                 for sid_raw, title, wd, head_id, upd_at in srows:
                     sid = str(sid_raw)
-                    if sid in seen or not head_id:
+                    if sid in seen or head_id is None or str(head_id) == "":
                         continue
                     nrows = conn.execute(
-                        "SELECT id, parent_node_id, message_id, created_at, chat_message, metadata FROM message_nodes WHERE session_id = ?",
+                        f"SELECT {nid_col}, parent_node_id, {mid_col}, created_at, chat_message, metadata "
+                        f"FROM message_nodes WHERE session_id = ?",
                         (sid,),
                     ).fetchall()
                     by_id = {str(r[0]): r for r in nrows}
@@ -2211,19 +2288,22 @@ def _load_devin_sessions(roots: dict[str, list[Path]], warnings: list[str]) -> l
                     )
                     seen_msg_ids: set[str] = set()
                     call_cmds: dict[str, str] = {}
-                    for _nid, _pid, mid, n_ts, chat_raw, meta_raw in chain:
-                        if mid:
-                            ms = str(mid)
+                    for _nid, _pid, mid_col_val, n_ts, chat_raw, meta_raw in chain:
+                        try:
+                            meta_parsed = json.loads(meta_raw) if meta_raw else {}
+                            chat_parsed = json.loads(chat_raw) if chat_raw else {}
+                        except Exception:
+                            continue
+                        meta_obj = meta_parsed if isinstance(meta_parsed, dict) else {}
+                        chat_obj = chat_parsed if isinstance(chat_parsed, dict) else {}
+                        if meta_obj.get("is_system_prefix"):
+                            continue
+                        eff_mid = mid_col_val or chat_obj.get("message_id") or chat_obj.get("id")
+                        if eff_mid:
+                            ms = str(eff_mid)
                             if ms in seen_msg_ids:
                                 continue
                             seen_msg_ids.add(ms)
-                        try:
-                            meta_obj = json.loads(meta_raw or "{}")
-                            chat_obj = json.loads(chat_raw or "{}")
-                        except Exception:
-                            continue
-                        if isinstance(meta_obj, dict) and meta_obj.get("is_system_prefix"):
-                            continue
                         role = str(chat_obj.get("role") or "")
                         n_iso, _ = ts_to_iso(n_ts, None)
                         if role in ("user", "assistant"):
@@ -2304,6 +2384,9 @@ LOADERS = {
 # ---------------------------------------------------------------------------
 
 
+SMART_LOADERS = {"claude", "codex", "cursor", "devin"}
+
+
 def collect_records(
     *,
     harnesses: Iterable[str] | str = "all",
@@ -2312,6 +2395,8 @@ def collect_records(
     env: dict[str, str] | None = None,
     exclude_harnesses: Iterable[str] = (),
     exclude_sessions: Iterable[str] = (),
+    max_items: int | None = None,
+    session_hint: str | None = None,
 ) -> tuple[list[SessionRecord], list[str]]:
     selected = normalize_harness_list(harnesses)
     excl_h = {HARNESS_ALIASES.get(x.lower(), x.lower()) for x in exclude_harnesses if x}
@@ -2322,7 +2407,11 @@ def collect_records(
     for h in selected:
         if h in excl_h:
             continue
-        loaded = LOADERS[h](roots[h], warnings)
+        loader = LOADERS[h]
+        if h in SMART_LOADERS:
+            loaded = loader(roots[h], warnings, max_items=max_items, session_hint=session_hint)  # type: ignore[misc]
+        else:
+            loaded = loader(roots[h], warnings)
         for r in loaded:
             if any(r.session_id == ex or r.session_id.startswith(ex) for ex in excl_s):
                 continue
@@ -2376,6 +2465,7 @@ def list_sessions(
     exclude_sessions: Iterable[str] = (),
     limit: int = 20,
 ) -> list[dict[str, Any]]:
+    per_harness_cap = max(limit * 4, 60) if cwd_filter else max(limit * 2, 25)
     records, _ = collect_records(
         harnesses=harnesses,
         os_name=os_name,
@@ -2383,6 +2473,7 @@ def list_sessions(
         env=env,
         exclude_harnesses=exclude_harnesses,
         exclude_sessions=exclude_sessions,
+        max_items=per_harness_cap,
     )
     filtered = [r for r in records if cwd_matches(r.cwd, cwd_filter)]
     out = [r.to_summary() for r in filtered[: max(1, limit)]]
@@ -2440,6 +2531,8 @@ def build_brief(
     exclude_harnesses: Iterable[str] = (),
     exclude_sessions: Iterable[str] = (),
 ) -> dict[str, Any]:
+    hint = session_id.strip() if (session_id and not latest) else None
+    cap = None if hint else (80 if cwd_filter else 20)
     records, warnings = collect_records(
         harnesses=harness,
         os_name=os_name,
@@ -2447,6 +2540,8 @@ def build_brief(
         env=env,
         exclude_harnesses=exclude_harnesses,
         exclude_sessions=exclude_sessions,
+        max_items=cap,
+        session_hint=hint,
     )
     if cwd_filter:
         records = [r for r in records if cwd_matches(r.cwd, cwd_filter)]

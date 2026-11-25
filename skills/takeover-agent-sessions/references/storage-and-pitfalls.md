@@ -152,8 +152,8 @@ Observed local session formats across **Cursor, Windsurf, Claude Code, GitHub Co
 - **Windows:** `%APPDATA%\devin\cli\sessions.db` (`%LOCALAPPDATA%\devin\cli` holds only binaries)
 
 ### Schema & Pitfalls
-- **`message_nodes` is a DAG of rebuilt chains, NOT a flat log:** Whenever the system prefix changes or context compacts, Devin writes a new chain of `message_nodes` reusing earlier `message_id`s. Start at `sessions.main_chain_id`, walk backwards via `parent_node_id`, reverse to chronological order, and **deduplicate by `message_id`**—otherwise user turns appear 2x–5x.
-- **Filter hidden & system-prefix rows:** Skip `sessions.hidden = 1` (deleted via `/rm-session`) and skip nodes whose `metadata` JSON sets `"is_system_prefix": true`. Read `exec` exit codes from `chat_message.metadata.extensions."chisel/terminal_output".exit.exit_code`.
+- **`message_nodes` is a DAG of rebuilt chains, NOT a flat log:** Current builds (3000.14+) store `(row_id, session_id, node_id, parent_node_id, chat_message, created_at, metadata)` with `sessions.last_activity_at` and `message_id` inside `chat_message` JSON (older builds used `id` + `message_id` columns and `updated_at`). Start at `sessions.main_chain_id`, walk backwards via `parent_node_id`, reverse to chronological order, and **deduplicate by `message_id`**—otherwise user turns appear 2x–5x after context rebuilds.
+- **Null JSON & hidden rows:** `metadata` may contain literal JSON `"null"` (`json.loads` returns `None`). Skip `sessions.hidden = 1` (deleted via `/rm-session`) and skip nodes whose `metadata` sets `"is_system_prefix": true`. Read `exec` exit codes from `chat_message.metadata.extensions."chisel/terminal_output".exit.exit_code`.
 
 ---
 
