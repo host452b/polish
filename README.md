@@ -6,7 +6,7 @@
 
 `polish` is a Claude Code, Codex CLI, and Cursor CLI skill/plugin collection for selected personal and adapted skills. The repo/plugin package is named `polish`; individual skill names stay stable so existing triggers and installs do not break.
 
-Plugin version: **0.2.0**, shared by the Codex, Claude Code, and Cursor manifests.
+Plugin version: **0.3.0**, shared by the Codex, Claude Code, and Cursor manifests.
 
 Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` frontmatter `name`, invocation identifier, and `agents/openai.yaml` `interface.display_name`. For example, `git-commit-message` is displayed as `git-commit-message` and invoked as `$git-commit-message` (or `/polish:git-commit-message` in Claude Code).
 
@@ -411,7 +411,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 `polish` 是一个面向 Claude Code、Codex CLI 和 Cursor CLI 的个人自制与适配 skill/plugin 集合。repo/plugin 包名叫 `polish`；里面每个 skill 的名字保持稳定，避免已有触发方式和安装路径失效。
 
-插件版本：**0.2.0**，Codex、Claude Code 和 Cursor 三份清单使用同一版本号。
+插件版本：**0.3.0**，Codex、Claude Code 和 Cursor 三份清单使用同一版本号。
 
 每个 skill 的目录名、`SKILL.md` frontmatter `name`、调用标识和 `agents/openai.yaml` 中的 `interface.display_name` 使用同一个小写连字符名称。例如，`git-commit-message` 的显示名就是 `git-commit-message`，调用时使用 `$git-commit-message`（Claude Code 中为 `/polish:git-commit-message`）。
 
