@@ -61,7 +61,7 @@ Summarize the base and tip, relevant upstream commit links, what changed for use
 | Selective port | Only specific commits or hunks fit. Name each selected change, prerequisites, and the changes to leave upstream. |
 | Skip | The history shows no relevant change, equivalent local behavior, a reverted change, or an incompatibility. Give the specific reason. |
 
-Check Superpowers' prefixed names and standalone handoffs, Stitch's independence from hosted services, and the ADHD skill's task-scoped presentation rules. Use the actual local diff to support the recommendation.
+Check Superpowers' prefixed names, explicit routing boundaries, standalone handoffs, and the 30-second regression-commit follow-up on `superpowers-systematic-debugging`; Matt Pocock skills' prefixed names, explicit routing boundaries, and `mattpocock-grilling` spec handoff; Stitch's independence from hosted services; and the ADHD skill's task-scoped presentation rules. Use the actual local diff to support the recommendation.
 
 ## Apply and record
 

@@ -1,6 +1,6 @@
 ---
 name: superpowers-writing-skills
-description: Use when creating new skills, editing existing skills, or verifying skills work before deployment
+description: Use when TDD-testing, pressure-testing with subagents, or hardening SKILL.md files against rationalizations and loopholes before deployment. For general document structure, context pointers, and editing AGENTS.md or CLAUDE.md, use mattpocock-writing-for-agents.
 ---
 
 # Writing Skills

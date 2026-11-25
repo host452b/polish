@@ -1,6 +1,6 @@
 ---
 name: yc-rejection-simulator
-description: Use when a user submits a startup idea, pitch, business plan, or YC application and requests a rejection simulation, investor objections, sharp critique, 模拟拒信, or 创业挑刺. Not for official YC decisions or admission predictions. Also use when a user wants to critique or reflect on their own idea, current approach, implementation, or overall architecture but does not know how or where to start (不知道怎么挑刺或反省). This additional trigger requires critique or reflection intent, not routine implementation or concept explanations.
+description: Use when a user submits a startup idea, pitch, business plan, or YC application and requests a rejection simulation, investor objections, sharp critique, 模拟拒信, or 创业挑刺. Also use as a sharp devil's-advocate sounding board for product loops, market/user assumptions, business models, go-to-market, or non-code strategic decisions when the user wants help poking holes or closing product logic gaps (产品闭环、商业与非代码决策挑刺). Not for official YC predictions; for unfamiliar codebase idioms or engineering/architecture blind spots, use find-blind-spots.
 ---
 
 # YC Rejection Simulator
@@ -128,12 +128,10 @@ Style example:
 external verification 时，区分 application claims 与新取得的 sourced evidence。
 本 skill 不替用户提交 application、联系 investors 或作真实投资决策。
 
-## Additional Trigger: Self-Critique
+## Additional Trigger: Product & Non-Code Decision Critique
 
-当用户不知道如何给自己的 idea、current approach、implementation 或整体
-architecture 挑刺、反省时，也触发本 skill；这是原有 startup rejection simulation
-之外的增项。不要求用户先整理成 startup application 或列出 objection。
+当用户想对自己的产品想法、产品逻辑闭环、目标用户与市场假设、商业/运营方案或非代码类决策挑刺、反省（不知道从哪个边界开始反问自己）时，也触发本 skill；这是原有 startup rejection simulation 之外的边界人（sounding board）增项，不要求先整理成正式申请表。涉及陌生技术栈代码习惯、工程惯例或纯代码/系统架构盲区时，优先交由 `find-blind-spots`。
 
 从已有上下文开始，沿用原有 evidence discipline、sharp voice 和 feedback structure，
-只选与当前对象有关的 review criteria。没有可识别的材料时，先问一个聚焦问题：
-目前想达到什么 outcome，正在考虑或采用什么 approach？
+只选与当前产品或决策对象有关的 review criteria。没有可识别的材料时，先问一个聚焦问题：
+目前想解决谁的什么问题（或达成什么非代码决策 outcome），正在考虑什么方案与闭环路径？

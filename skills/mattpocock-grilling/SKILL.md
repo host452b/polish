@@ -1,6 +1,6 @@
 ---
 name: mattpocock-grilling
-description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
+description: "Use when stress-testing a plan, decision, or rough idea via multi-question frontier rounds on a design tree (including 'grill', 拷问, or 压测思路 requests) without immediately committing to a formal spec file. When ready to converge step-by-step into a written design spec and implementation plan, use superpowers-brainstorming."
 ---
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
@@ -27,4 +27,4 @@ Each round the user answers reshapes the tree: settled decisions push the fronti
 
 Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent with a fresh context window to find it; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
 
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
+The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding. Once confirmed, if the settled decisions are ready for formal specification or implementation planning, offer a clean handoff to `superpowers-brainstorming` (or draft a concise spec / implementation plan directly when requested).

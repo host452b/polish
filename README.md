@@ -12,12 +12,12 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
-- [`benchmark-checklist`](skills/benchmark-checklist/SKILL.md) - Check measured throughput, latency and speedup claims against completed work and run variability.
+- `benchmark-checklist` - checks measured throughput, latency, and speedup claims against completed work and run variability.
 - `consistent-term-translation-polish-guard` - translates and polishes EN↔ZH content with stable primary terms, acronym bindings, ambiguity checks, and a bilingual terminology table.
-- `yc-rejection-simulator` - reviews startup ideas and applications with evidence-grounded objections, a sharp simulated verdict, and one concrete validation test.
-- `find-blind-spots` - identifies decision-relevant blind spots in conversations, architecture, technology choices, and post-launch plans, with evidence and a bounded validation step.
+- `yc-rejection-simulator` - critiques startup ideas, product loops, market assumptions, and non-code strategic decisions with evidence-grounded objections, a sharp verdict, and one validation test.
+- `find-blind-spots` - surfaces unfamiliar domain/codebase idioms, unspoken engineering conventions, architectural assumptions, and post-launch verification gaps, with evidence and a minimal test.
 - `prompt-polish` - turns a rough question into high-performing, ready-to-paste bilingual LLM prompts.
-- `find-a-bug` - investigates defects across projects with an evidence ledger, competing explanations, decision-changing unknowns, and bounded verification.
+- `find-a-bug` - conducts exploratory, repo-reading defect audits using an evidence ledger, competing hypotheses, decision gates, and a 30s non-blocking regression-commit lookup.
 - `project-bug-hunting` - explores unknown functional defects across C++, Python, and mixed projects by checking applicable contracts against source, installed artifacts, and runtime evidence.
 - `file-singlify` - scans a disk/folder/mount for duplicate files and duplicate directory copies, then proposes a single-copy plan (canonical copy + duplicate-to-canonical mapping) with a read-only dry-run report.
 - `before-git-push` - a final pre-push risk gate: reviews the real diff as a release engineer and returns a PUSH or HOLD verdict before code reaches production.
@@ -28,19 +28,36 @@ Currently included:
 - `google-stitch-frontend-brief-enhancer` - turns vague UI requests into bounded, implementation-ready briefs with explicit assumptions and acceptance criteria.
 - `google-stitch-shadcn-ui` - implements or reviews coherent, accessible, responsive shadcn/ui interfaces using the project's real tokens and primitives.
 - `superpowers-using-git-worktrees` - creates or reuses an isolated workspace before feature work or plan execution.
-- `superpowers-brainstorming` - turns an idea into an approved design and implementation plan before coding begins.
-- `superpowers-test-driven-development` - enforces the red-green-refactor cycle for feature and bug-fix work.
-- `superpowers-systematic-debugging` - investigates root causes before proposing changes.
+- `superpowers-brainstorming` - refines an idea step by step into an approved written design spec and implementation plan before coding begins.
+- `superpowers-test-driven-development` - enforces the red-green-refactor cycle (plus pre-agreed seams and vertical slicing) for feature and bug-fix work.
+- `superpowers-systematic-debugging` - investigates surfaced bugs from logs, stack traces, or issue symptoms before proposing fixes, with a 30s non-blocking regression-commit lookup.
 - `superpowers-verification-before-completion` - requires fresh evidence before success claims.
-- `superpowers-writing-skills` - applies test-driven discipline to creating and maintaining agent skills.
+- `superpowers-writing-skills` - TDD-verifies and pressure-tests `SKILL.md` files against rationalizations using subagent scenarios.
 - `mattpocock-domain-modeling` - builds and sharpens a project's domain model, `GLOSSARY.md`, and ADRs.
 - `mattpocock-codebase-design` - provides shared deep-module vocabulary (`module`, `interface`, `depth`, `seam`, `adapter`) and deepening / design-it-twice guides.
-- `mattpocock-grilling` - stress-tests a plan, decision, or idea in frontier-based rounds of design-tree questions.
+- `mattpocock-grilling` - stress-tests a plan, decision, or rough idea in frontier-based rounds of design-tree questions, with optional handoff to spec planning.
 - `mattpocock-prototype` - builds throwaway logic or UI prototypes to answer concrete design questions fast.
 - `mattpocock-research` - delegates primary-source research to a background agent and captures cited Markdown notes in the repo.
 - `mattpocock-code-review` - reviews changes since a fixed point in parallel along two separate axes: Standards and Spec.
 - `mattpocock-wizard` - generates an interactive bash wizard for manual setup, credential, or migration steps only a human can perform.
-- `mattpocock-writing-for-agents` - reference for writing predictable, concise agent-consumed documents (`SKILL.md`, `AGENTS.md`, `CLAUDE.md`).
+- `mattpocock-writing-for-agents` - reference for structuring, sharpening, and pruning agent-consumed documents (`SKILL.md`, `AGENTS.md`, `CLAUDE.md`).
+
+## Portfolio Orthogonality & Routing
+
+| Metric | Value | Notes |
+| --- | --- | --- |
+| Total skills | **29** | Total `description` footprint: **8,135 chars** (avg **281 chars/skill**), keeping always-loaded context overhead compact |
+| Functional orthogonality | **~86%** (~14% overlap) | Adjacent skills differ in method and artifact rather than duplicating workflows |
+| Trigger orthogonality | **~88%** (~12% overlap; raised from ~68%) | Formerly overlapping clusters carry explicit mutual-routing pointers in `description` |
+| Standalone single-purpose skills | **10 / 29 (34.5%)** | Zero domain or trigger overlap (`prompt-polish`, `file-singlify`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
+| Pipeline & complementary cluster skills | **19 / 29 (65.5%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique (4), and agent docs (2) |
+
+Key routing boundaries across adjacent skills:
+
+- **Debugging**: surfaced logs/errors/issues → `superpowers-systematic-debugging`; exploratory repo-reading & uncertainty-gated defect audit → `find-a-bug`; full-repo C++/Python 7-contract sweep → `project-bug-hunting`.
+- **Ideation**: rapid multi-question frontier stress-test → `mattpocock-grilling`; step-by-step convergence into a committed design spec & plan → `superpowers-brainstorming`.
+- **Critique & blind spots**: product loops, market/business assumptions, and non-code decisions → `yc-rejection-simulator`; unfamiliar codebase idioms, framework conventions, and engineering/ops blind spots → `find-blind-spots`.
+- **Agent authoring**: document structure, pointers, and `AGENTS.md`/`CLAUDE.md` → `mattpocock-writing-for-agents`; subagent pressure-testing and loophole hardening of `SKILL.md` → `superpowers-writing-skills`.
 
 ## Upstream maintenance
 
@@ -113,13 +130,13 @@ The self-contained skill uses Chinese action instructions and English profession
 
 Example: `Use $yc-rejection-simulator to critique this startup application. Be sharp, ground every objection in the material, and identify one test that would change the verdict.` In Claude Code, invoke `/polish:yc-rejection-simulator`.
 
-Additional trigger: use it when you want to critique or reflect on your own idea, current approach, implementation, or overall architecture but do not know how or where to start. This extends the original startup rejection simulation.
+Additional trigger: use it as a sharp devil's-advocate sounding board for product ideas, product loops, market/buyer assumptions, business models, and non-code strategic decisions when you want help poking holes in the logic. Unfamiliar codebase idioms and engineering/architecture blind spots belong to `find-blind-spots`.
 
 See [the skill](skills/yc-rejection-simulator/SKILL.md).
 
 ### `find-blind-spots`
 
-Use it for “what am I missing?” or “what should I know but probably do not?” It separates awareness, evidence, confidence, and decision impact; a known unknown is not automatically a critical assumption. It uses visible context, checks whether the concern was already addressed, and defaults to one useful finding with a minimal test, pass/fail criteria, and the resulting decision branches.
+Use it when entering an unfamiliar technical domain, codebase, or framework ("what idioms or unspoken engineering conventions am I missing?") as well as for architectural, technology-selection, and post-launch verification blind spots. It separates awareness, evidence, confidence, and decision impact; a known unknown is not automatically a critical assumption. It uses visible context, checks whether the concern was already addressed, and defaults to one useful finding with a minimal test, pass/fail criteria, and the resulting decision branches. Pure product/market/business-loop critique routes to `yc-rejection-simulator`.
 
 Architecture, technology selection, post-implementation recovery, and comparable-team practices are conditional lenses, not a mandatory production checklist. It distinguishes knowledge, implementation, and verification gaps, including opportunities to reuse assets or simplify work. At consequential decision checkpoints, an implicit pass stays lightweight and preserves the main task. Missing discussion does not establish user ignorance. An ASCII quadrant table is shown by default, with up to three numbered entries per quadrant ranked by importance and no invented filler. Research background remains available on demand.
 
@@ -146,11 +163,11 @@ See [references/strategies.md](references/strategies.md) for full strategy templ
 
 ### `find-a-bug`
 
-Use it to investigate a reported failure or inspect a bounded project path for a real defect. Adapted from the user-supplied **Uncertainty-First Planning Protocol**, it separates `VERIFIED`, `USER-STATED`, `INFERRED`, and `UNKNOWN`, checks competing explanations, and tests the top 1–3 unknowns that could change the next action.
+Use it for exploratory defect testing starting from reading a repository, module contracts, or risk paths (or ambiguous failure investigations where premises remain unverified; when concrete error logs or reproducer symptoms are already supplied, prefer `superpowers-systematic-debugging`). Adapted from the user-supplied **Uncertainty-First Planning Protocol**, it separates `VERIFIED`, `USER-STATED`, `INFERRED`, and `UNKNOWN`, checks competing explanations, and tests the top 1–3 unknowns that could change the next action.
 
-It adapts to the project's actual files, contracts, tools, and runtime. Each investigation reports a gate (`GO`, `TEST FIRST`, `ASK USER`, `LIMITED EXPERIMENT`, or `STOP`), evidence boundaries, and a checkpoint. Repair proceeds when requested and supported by evidence; finding no confirmed bug is a valid result.
+It adapts to the project's actual files, contracts, tools, and runtime. Each investigation reports a gate (`GO`, `TEST FIRST`, `ASK USER`, `LIMITED EXPERIMENT`, or `STOP`), evidence boundaries, and a checkpoint. Once a root cause is confirmed in a Git repository, it runs a **30-second countdown prompt** (`scripts/prompt-regression-commit.sh`) that defaults to tracing the introducing **regression commit** on timeout or in non-interactive/autonomous runs. Repair proceeds when requested and supported by evidence; finding no confirmed bug is a valid result.
 
-Example: `Use $find-a-bug to investigate this project's intermittent test failure. Identify what could disprove the suspected cause before proposing a fix.` In Claude Code, invoke `/polish:find-a-bug`.
+Example: `Use $find-a-bug to audit this module's boundary handling for hidden defects, verify the top unknowns before proposing a fix, and trace any confirmed bug's regression commit.` In Claude Code, invoke `/polish:find-a-bug`.
 
 See [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md) for the workflow and report contract.
 
@@ -210,11 +227,11 @@ pinned source revision and Apache-2.0 attribution.
 The six `superpowers-*` skills form a complementary workflow:
 
 1. `superpowers-using-git-worktrees` creates or reuses an isolated workspace.
-2. `superpowers-brainstorming` shapes the design and hands off to implementation planning.
+2. `superpowers-brainstorming` refines an idea step by step into a committed design spec and implementation plan (looking up codebase facts itself rather than asking the user, and complementing `mattpocock-grilling`).
 3. `superpowers-test-driven-development` drives implementation from a failing test.
-4. `superpowers-systematic-debugging` investigates when observed behavior diverges from expectations.
+4. `superpowers-systematic-debugging` investigates surfaced bugs from logs, stack traces, or issue symptoms, then prompts with a 30-second non-blocking default to trace the introducing regression commit.
 5. `superpowers-verification-before-completion` checks fresh evidence before any success claim.
-6. `superpowers-writing-skills` applies the same testing discipline to skill authoring and validation.
+6. `superpowers-writing-skills` pressure-tests and TDD-hardens `SKILL.md` files against rationalizations before deployment.
 
 These skills are adapted from [`obra/superpowers`](https://github.com/obra/superpowers). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned upstream revision and MIT license.
 
@@ -276,23 +293,30 @@ See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
 
 ```text
 polish/
+├── docs/update-and-sync.md   # upstream adaptation review and sync workflow
 ├── references/strategies.md  # prompt-polish strategy library
 ├── skills/benchmark-checklist/
+│   ├── SKILL.md              # throughput/latency/speedup claim checklist
+│   └── agents/openai.yaml
 ├── skills/consistent-term-translation-polish-guard/
 │   ├── SKILL.md              # EN↔ZH translation and terminology consistency
 │   └── agents/openai.yaml
 ├── skills/yc-rejection-simulator/
-│   ├── SKILL.md              # evidence-grounded startup review and simulation
+│   ├── SKILL.md              # startup, product-loop, and non-code decision critique
 │   └── agents/openai.yaml    # matching display and invocation name
+├── skills/find-blind-spots/
+│   ├── SKILL.md              # unfamiliar codebase idioms & engineering blind spots
+│   ├── references/           # knowledge model, decision lenses, prompt strategies
+│   └── agents/openai.yaml    # discovery and implicit-checkpoint metadata
 ├── skills/i-have-adhd-actionable-output/
 │   ├── SKILL.md              # actionable output with completeness safeguards
 │   └── agents/openai.yaml    # matching display and invocation name
 ├── skills/prompt-polish/
 │   └── SKILL.md              # canonical prompt-polish skill contract
 ├── skills/find-a-bug/
-│   ├── SKILL.md              # uncertainty-first defect investigation
+│   ├── SKILL.md              # exploratory repo-reading defect audit
 │   ├── references/           # tight feedback loops and debugging hygiene
-│   ├── scripts/              # human-in-the-loop reproduction template
+│   ├── scripts/              # HITL repro template + 30s regression-commit gate
 │   └── agents/openai.yaml    # discovery and invocation metadata
 ├── skills/project-bug-hunting/
 │   ├── SKILL.md              # project-wide contract and defect exploration
@@ -393,12 +417,12 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
-- [`benchmark-checklist`](skills/benchmark-checklist/SKILL.md) - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
+- `benchmark-checklist` - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
 - `consistent-term-translation-polish-guard` - 中英双向翻译与译文润色，统一主译名、绑定缩写、确认核心歧义，并默认附双向术语对照表。
-- `yc-rejection-simulator` - 用有据可查的 objections、尖锐的模拟 verdict 和一个具体 validation test 评审 startup ideas 与 applications。
+- `yc-rejection-simulator` - 评审 startup 申请，并作为尖锐反方边界人审视产品逻辑闭环、市场/用户假设与非代码决策，给出最多三条有据反驳与一个最小验证测试。
+- `find-blind-spots` - 识别不熟悉领域的代码习惯（idioms）、框架潜规则、行业工程惯例及架构/上线验证盲点，给出证据和最小验证动作。
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
-- `find-blind-spots` - 从聊天、架构、选型与上线计划中发现影响决策的盲点，给出证据和最小验证动作。
-- `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
+- `find-a-bug` - 偏向探索性测试：从读取 repo、模块契约与边界入手按工程管理学/不确定性门禁找 bug，确认根因后支持 30 秒倒数无阻塞查找 regression commit。
 - `project-bug-hunting` - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
 - `before-git-push` - push 前最后一道风险闸门：以发布工程师视角从真实 diff 追踪受影响的调用方，给出 PUSH 或 HOLD 建议。
@@ -409,19 +433,36 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `google-stitch-frontend-brief-enhancer` - 把模糊 UI 需求转换为边界清晰、假设透明且可验收的实施 Brief。
 - `google-stitch-shadcn-ui` - 基于项目真实 token 与 primitives 实现或审查一致、无障碍、响应式的 shadcn/ui 界面。
 - `superpowers-using-git-worktrees` - 在功能开发或执行计划前创建或复用隔离工作区。
-- `superpowers-brainstorming` - 在写代码前把想法收敛为已批准的设计与实施计划。
-- `superpowers-test-driven-development` - 用 red-green-refactor 约束功能与 bugfix 实现。
-- `superpowers-systematic-debugging` - 先定位根因，再提出修改方案。
+- `superpowers-brainstorming` - 在写代码前一步一问把想法收敛为已批准的设计规格（spec）与实施计划。
+- `superpowers-test-driven-development` - 用 red-green-refactor（含预确认 seam 与垂直切片指南）约束功能与 bugfix 实现。
+- `superpowers-systematic-debugging` - 面向已出现报错日志、堆栈或 Issue 现象的根因调试，确认根因后支持 30 秒倒数无阻塞查找 regression commit。
 - `superpowers-verification-before-completion` - 在声称成功前要求最新验证证据。
-- `superpowers-writing-skills` - 用测试驱动的方法创建、维护并验证 agent skills。
+- `superpowers-writing-skills` - 用子 agent 压力测试与 TDD 纪律检验并加固 `SKILL.md` 防绕过能力。
 - `mattpocock-domain-modeling` - 构建并打磨项目领域模型、`GLOSSARY.md` 词汇表与 ADR。
 - `mattpocock-codebase-design` - 提供深模块设计共享词汇（`module`、`interface`、`depth`、`seam`、`adapter`）及深化与多方案对比指南。
-- `mattpocock-grilling` - 按设计树分轮拷问方案、决策与想法，消除隐含假设。
+- `mattpocock-grilling` - 按设计树分轮批量拷问方案、决策与想法以消除隐含假设，收敛后可按需衔接正式 spec。
 - `mattpocock-prototype` - 快速构建抛弃型逻辑或 UI 原型以验证设计问题。
 - `mattpocock-research` - 用后台 agent 基于一手资料调研并沉淀带引用的 Markdown 笔记。
 - `mattpocock-code-review` - 基于指定 Git 基准并行执行 Standards 与 Spec 双轴评审。
 - `mattpocock-wizard` - 为必须人工执行的配置、凭证或迁移步骤生成交互式 bash 向导脚本。
-- `mattpocock-writing-for-agents` - 面向 agent 文档（`SKILL.md`、`AGENTS.md`、`CLAUDE.md`）的写作参考。
+- `mattpocock-writing-for-agents` - 面向 agent 文档（`SKILL.md`、`AGENTS.md`、`CLAUDE.md`）的结构、指针与精简写作参考。
+
+## 技能正交度与路由总览
+
+| 指标 | 当前数值 | 解读 |
+| --- | --- | --- |
+| Skill 总数 | **29** | 全部 `description` 合计 **8,135 字符**（均值 **281 字符/个**），常驻上下文开销紧凑可控 |
+| 功能正交率（方法论/产出不重复） | **~86%**（功能重叠率 ~14%） | 相邻 skill 在方法论、作用对象与交付产物上互补，无冗余废项 |
+| 触发正交率（自动命中不打架） | **~88%**（由调优前 ~68% 提升） | 原 3 个冲突簇已在 `description` 中建立显式互排与分流指针 |
+| 完全正交单点（0% 重叠） | **10 / 29（34.5%）** | 作用对象与目标完全独立（如 `prompt-polish`、`file-singlify`、`benchmark-checklist`、`mattpocock-wizard` 等） |
+| 同域流水线 / 正交协作 | **19 / 29（65.5%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲与挑刺(4)、Agent 文档编写(2) |
+
+相邻 skill 的核心分流规则：
+
+- **缺陷排查三层分流**：有报错日志 / Issue 现象 → `superpowers-systematic-debugging`；从读 repo 出发按工程管理学/不确定性门禁做探索性找 bug → `find-a-bug`；C++/Python 全仓 7 类契约盘点 → `project-bug-hunting`。
+- **方案推敲双模式**：早期想法设计树分轮高密度拷问 → `mattpocock-grilling`；一步一问收敛并落盘正式设计 spec 与实施计划 → `superpowers-brainstorming`（两者互通长板）。
+- **挑刺与盲点分工**：产品闭环、市场/商业假设与非代码决策的尖锐反方边界人 → `yc-rejection-simulator`；陌生领域代码习惯（idioms）、框架潜规则、行业工程惯例与架构上线盲区 → `find-blind-spots`。
+- **Agent 文档分工**：文档信息架构、上下文指针与 `AGENTS.md`/`CLAUDE.md` 编写精简 → `mattpocock-writing-for-agents`；子 agent 压力测试与 `SKILL.md` 防借口加固 → `superpowers-writing-skills`。
 
 ## 上游维护
 
@@ -494,13 +535,13 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 
 示例：`使用 $yc-rejection-simulator 评审这份 startup application，反馈要尖锐，每条 objection 都要对应材料，并给出一个能改变 verdict 的 validation test。` Claude Code 中使用 `/polish:yc-rejection-simulator`。
 
-额外触发：当用户不知道如何给自己的 idea、current approach、implementation 或整体 architecture 挑刺、反省时，也可使用；这是原有 startup rejection simulation 之外的增项。
+额外触发：当用户想对自己的产品想法、产品逻辑闭环、市场/用户假设、商业方案或非代码决策挑刺、反省（需要尖锐反方边界人协助补齐闭环）时也可使用；陌生技术领域的代码习惯、框架潜规则与工程架构盲区则交由 `find-blind-spots`。
 
 见 [skill 正文](skills/yc-rejection-simulator/SKILL.md)。
 
 ### `find-blind-spots`
 
-用于“我漏掉了什么”“基于聊天告诉我一件必要但可能不知道的事”，也用于架构、技术选型、改造后恢复能力和同行实践差距审视。分别处理觉察、证据、信心和决策影响，明确“已知未知”不一定是关键假设。
+聚焦技术与工程盲区：特别适用于进入不熟悉的技术领域、语言/框架或陌生代码库时排查“我不熟的代码习惯（idioms）、框架潜规则或行业工程惯例”，也用于架构、技术选型、改造后恢复能力和同行工程实践差距审视。分别处理觉察、证据、信心和决策影响，明确“已知未知”不一定是关键假设；纯产品与非代码商业决策挑刺交由 `yc-rejection-simulator`。
 
 默认只给一个最有价值的发现，附 ASCII 四象限表，每格按重要程度用 1、2、3 编号、最多三项，有几项列几项，无证据不凑数；随后说明依据、最小验证及通过／失败后的选择。区分知识、落实与验证缺口，同时寻找复用与简化的收益机会。隐式触发仅在关键决策处轻量检查，保留主任务。聊天没提到不等于用户不知道；已经处理过的事项不反复提醒。研究来源按需展开，原型试用不会自动套用生产级清单。
 
@@ -528,11 +569,11 @@ Claude Code 中使用 `/polish:find-blind-spots`。
 
 ### `find-a-bug`
 
-用于定位已报告的故障，或在明确范围内检查项目中的真实缺陷。改写自用户提供的 **Uncertainty-First Planning Protocol**：区分 `VERIFIED`、`USER-STATED`、`INFERRED` 和 `UNKNOWN`，保留竞争解释，优先验证最可能改变下一步动作的 1–3 个未知数。
+偏向探索性测试：用于从读取 repo、模块边界与契约出发按工程管理学方法主动排查缺陷，或调查前提尚未核实的疑难故障（已有明确报错日志、堆栈或 Issue 现象时优先使用 `superpowers-systematic-debugging`）。改写自用户提供的 **Uncertainty-First Planning Protocol**：区分 `VERIFIED`、`USER-STATED`、`INFERRED` 和 `UNKNOWN`，保留竞争解释，优先验证最可能改变下一步动作的 1–3 个未知数。
 
-根据项目实际文件、契约、工具和运行状态选择调查方法。每轮报告 `GO`、`TEST FIRST`、`ASK USER`、`LIMITED EXPERIMENT` 或 `STOP` 门槛，以及证据边界和下一检查点。已要求修复且证据充分时继续修复；本轮没有发现已确认 bug 也是有效结论。
+根据项目实际文件、契约、工具和运行状态选择调查方法。每轮报告 `GO`、`TEST FIRST`、`ASK USER`、`LIMITED EXPERIMENT` 或 `STOP` 门槛，以及证据边界和下一检查点。在 Git 仓库内确认 bug 根因后，会通过 `scripts/prompt-regression-commit.sh` 提示是否继续定位引入该问题的 **regression commit**（交互终端默认倒数 30 秒，超时或全自动/非交互模式下默认不阻塞自动寻找）。已要求修复且证据充分时继续修复；本轮没有发现已确认 bug 也是有效结论。
 
-示例：`使用 $find-a-bug 排查这个项目的间歇性测试失败，先找能推翻当前怀疑的证据，再提出修复。` Claude Code 中可用 `/polish:find-a-bug`。
+示例：`使用 $find-a-bug 从仓库模块边界出发做探索性缺陷排查，先验证关键未知数，确认 bug 后一并定位引入它的 regression commit。` Claude Code 中可用 `/polish:find-a-bug`。
 
 完整流程与输出契约见 [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md)。
 
@@ -590,11 +631,11 @@ Claude Code 中使用 `/polish:find-blind-spots`。
 六个 `superpowers-*` skills 组成一套互补工作流：
 
 1. `superpowers-using-git-worktrees` 创建或复用隔离工作区。
-2. `superpowers-brainstorming` 完成设计，并衔接到实施计划。
+2. `superpowers-brainstorming` 一步一问把想法收敛为正式设计规格（spec）并衔接到实施计划（自行查证代码事实，只把取舍交给用户，与 `mattpocock-grilling` 互补）。
 3. `superpowers-test-driven-development` 从失败测试开始驱动实现。
-4. `superpowers-systematic-debugging` 在实际行为偏离预期时调查根因。
+4. `superpowers-systematic-debugging` 面向已给定的报错日志、堆栈或 Issue 现象调查根因，确认根因后支持 30 秒倒数无阻塞继续定位 regression commit。
 5. `superpowers-verification-before-completion` 在任何成功声明前检查最新证据。
-6. `superpowers-writing-skills` 把相同的测试纪律用于 skill 编写与验证。
+6. `superpowers-writing-skills` 用子 agent 压力测试与 TDD 纪律验证并加固 `SKILL.md`。
 
 这些 skills 适配自 [`obra/superpowers`](https://github.com/obra/superpowers)。固定的上游版本和 MIT license 见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
@@ -651,23 +692,30 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 
 ```text
 polish/
+├── docs/update-and-sync.md   # 上游适配审查与同步工作流
 ├── references/strategies.md  # prompt-polish 策略库
 ├── skills/benchmark-checklist/
+│   ├── SKILL.md              # 吞吐/延迟/加速比测量核查清单
+│   └── agents/openai.yaml
 ├── skills/consistent-term-translation-polish-guard/
 │   ├── SKILL.md              # EN↔ZH translation and terminology consistency
 │   └── agents/openai.yaml
 ├── skills/yc-rejection-simulator/
-│   ├── SKILL.md              # 有据可查的 startup review 与 simulation
+│   ├── SKILL.md              # 产品闭环、商业假设与非代码决策挑刺
 │   └── agents/openai.yaml    # 一致的显示名与调用名
+├── skills/find-blind-spots/
+│   ├── SKILL.md              # 陌生领域代码习惯、工程惯例与架构盲点
+│   ├── references/           # 认知模型、决策视角与提示词策略
+│   └── agents/openai.yaml    # 发现与关键工程节点隐式检查元数据
 ├── skills/i-have-adhd-actionable-output/
 │   ├── SKILL.md              # 可执行回答与完整性保护
 │   └── agents/openai.yaml    # 一致的展示名与调用名
 ├── skills/prompt-polish/
 │   └── SKILL.md              # prompt-polish 的主行为契约
 ├── skills/find-a-bug/
-│   ├── SKILL.md              # 未知数优先的缺陷调查
+│   ├── SKILL.md              # 从读仓库出发的探索性缺陷排查
 │   ├── references/           # 紧反馈复现阶梯与调试卫生补充
-│   ├── scripts/              # 人工在环复现脚本模板
+│   ├── scripts/              # HITL 复现模板 + 30s regression commit 门禁
 │   └── agents/openai.yaml    # 发现与调用元数据
 ├── skills/project-bug-hunting/
 │   ├── SKILL.md              # 项目级契约一致性与未知缺陷探索

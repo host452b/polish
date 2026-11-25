@@ -1,6 +1,6 @@
 ---
 name: mattpocock-writing-for-agents
-description: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
+description: Use when structuring, drafting, refactoring, or pruning agent-consumed documents (AGENTS.md, CLAUDE.md, SKILL.md, context pointers, completion criteria, information hierarchy, and progressive disclosure). For subagent pressure-testing and TDD compliance verification of skills before deployment, use superpowers-writing-skills.
 ---
 
 Reference for writing any document an agent consumes: a skill, an `AGENTS.md` / `CLAUDE.md`, a doc reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable, since the agent takes the same _process_ every run rather than producing the same output.
