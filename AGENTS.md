@@ -1,5 +1,7 @@
 # Repository Instructions
 
+> **Plugin scope guard:** All instructions in this `AGENTS.md` apply **only when working inside the `polish` repository itself** (`host452b/polish`). When `polish` is installed as a plugin in another project, ignore these repository-maintenance rules and follow the active project's own rules.
+
 ## Project Goal
 
 This repo is `polish`: a personal collection of curated agent skills, including self-made skills and explicitly attributed adaptations.
@@ -8,6 +10,7 @@ The current skill is `prompt-polish`.
 
 ## Layout
 
+- `.devin-plugin/plugin.json` is the Devin CLI / Devin Cloud plugin manifest.
 - `.codex-plugin/plugin.json` is the Codex plugin manifest.
 - `.claude-plugin/` contains Claude plugin and marketplace metadata.
 - `.cursor-plugin/plugin.json` contains Cursor plugin metadata.
@@ -35,6 +38,7 @@ For the repository maintenance mode `update-and-sync`, follow [the upstream revi
 Run these checks after changing manifests, docs, or skills:
 
 ```bash
+python3 -m json.tool .devin-plugin/plugin.json >/dev/null
 python3 -m json.tool .codex-plugin/plugin.json >/dev/null
 python3 -m json.tool .claude-plugin/plugin.json >/dev/null
 python3 -m json.tool .claude-plugin/marketplace.json >/dev/null
