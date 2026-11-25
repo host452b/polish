@@ -241,6 +241,40 @@
           "notes": "Versioned documentation/API replay checks."
         }
       ]
+    },
+    {
+      "id": "jlreyes-agent-history-skills",
+      "repo": "jlreyes/agent-history-skills",
+      "url": "https://github.com/jlreyes/agent-history-skills",
+      "license": "MIT",
+      "commit": "493c49665ade4762aed523451020101b662742e6",
+      "synced_at": "2026-11-25",
+      "entries": [
+        {
+          "skill": "takeover-agent-sessions",
+          "local_path": "skills/takeover-agent-sessions/references/storage-and-pitfalls.md",
+          "upstream_path": "skills",
+          "mode": "cherry-pick",
+          "notes": "Read-only session exploration patterns and pitfalls for Claude Code, Codex CLI, and Cursor."
+        }
+      ]
+    },
+    {
+      "id": "vshulcz-deja-vu",
+      "repo": "vshulcz/deja-vu",
+      "url": "https://github.com/vshulcz/deja-vu",
+      "license": "MIT",
+      "commit": "c97753d2ae7d3b62a45730fa2a0ce082839e14e8",
+      "synced_at": "2026-11-25",
+      "entries": [
+        {
+          "skill": "takeover-agent-sessions",
+          "local_path": "skills/takeover-agent-sessions/references/storage-and-pitfalls.md",
+          "upstream_path": "docs/registry",
+          "mode": "cherry-pick",
+          "notes": "Multi-OS session store format specifications and schema invariants across coding agents."
+        }
+      ]
     }
   ]
 }
