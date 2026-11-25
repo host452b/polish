@@ -13,6 +13,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 Currently included:
 
 - `benchmark-checklist` - checks measured throughput, latency, and speedup claims against completed work and run variability.
+- `analyzing-risk-decisions` - models uncertain options via joint state-wise net losses, CARA exponential utility ($CE_R$), and `VaR`/`ES` tail constraints, with deterministic threshold inversion ($p^*$, reservation price $P^*(R)$, indifference $R^*$) and preference calibration.
 - `consistent-term-translation-polish-guard` - translates and polishes EN↔ZH content with stable primary terms, acronym bindings, ambiguity checks, and a bilingual terminology table.
 - `yc-rejection-simulator` - critiques startup ideas, product loops, market assumptions, and non-code strategic decisions with evidence-grounded objections, a sharp verdict, and one validation test.
 - `find-blind-spots` - surfaces unfamiliar domain/codebase idioms, unspoken engineering conventions, architectural assumptions, and post-launch verification gaps, with evidence and a minimal test.
@@ -46,17 +47,17 @@ Currently included:
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **29** | Total `description` footprint: **8,135 chars** (avg **281 chars/skill**), keeping always-loaded context overhead compact |
+| Total skills | **30** | Total `description` footprint: **8,540 chars** (avg **285 chars/skill**), keeping always-loaded context overhead compact |
 | Functional orthogonality | **~86%** (~14% overlap) | Adjacent skills differ in method and artifact rather than duplicating workflows |
 | Trigger orthogonality | **~88%** (~12% overlap; raised from ~68%) | Formerly overlapping clusters carry explicit mutual-routing pointers in `description` |
-| Standalone single-purpose skills | **10 / 29 (34.5%)** | Zero domain or trigger overlap (`prompt-polish`, `file-singlify`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
-| Pipeline & complementary cluster skills | **19 / 29 (65.5%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique (4), and agent docs (2) |
+| Standalone single-purpose skills | **10 / 30 (33.3%)** | Zero domain or trigger overlap (`prompt-polish`, `file-singlify`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
+| Pipeline & complementary cluster skills | **20 / 30 (66.7%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), and agent docs (2) |
 
 Key routing boundaries across adjacent skills:
 
 - **Debugging**: surfaced logs/errors/issues → `superpowers-systematic-debugging`; exploratory repo-reading & uncertainty-gated defect audit → `find-a-bug`; full-repo C++/Python 7-contract sweep → `project-bug-hunting`.
 - **Ideation**: rapid multi-question frontier stress-test → `mattpocock-grilling`; step-by-step convergence into a committed design spec & plan → `superpowers-brainstorming`.
-- **Critique & blind spots**: product loops, market/business assumptions, and non-code decisions → `yc-rejection-simulator`; unfamiliar codebase idioms, framework conventions, and engineering/ops blind spots → `find-blind-spots`.
+- **Critique, blind spots & risk math**: product loops, market/business assumptions, and qualitative non-code critique → `yc-rejection-simulator`; unfamiliar codebase idioms, framework conventions, and engineering/ops blind spots → `find-blind-spots`; quantitative payoffs, tail constraints, CARA utility, and break-even / reservation-price / $R^*$ inversion → `analyzing-risk-decisions`.
 - **Agent authoring**: document structure, pointers, and `AGENTS.md`/`CLAUDE.md` → `mattpocock-writing-for-agents`; subagent pressure-testing and loophole hardening of `SKILL.md` → `superpowers-writing-skills`.
 
 ## Upstream maintenance
@@ -111,6 +112,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `analyzing-risk-decisions`
+
+Use it when comparing options under uncertain losses or payoffs (insurance/warranties, cloud SLA/DR, QA/CI gating, AI model/tool tiers, capex lease-vs-buy, staged R&D pilots), inverting switching thresholds, or calibrating risk tolerance. Every input is tagged as `fact`, `estimate`, `assumption`, or `preference` so stress assumptions are never disguised as empirical odds, and portfolio increments respect deductibles, coinsurance, caps, prior compensation, and forward-looking NPV (charging today's exit value while excluding sunk costs).
+
+Backed by a stdlib-only deterministic engine (`skills/analyzing-risk-decisions/scripts/decision_engine.py`), it provides `compare` (EV, incremental RTP, `VaR`/`ES`, buffer-breach probability, CARA certainty-equivalent loss $CE_R$, strict dominance), `invert` (`break_even_probability` $p^*$, closed-form `reservation_price` $P^*(R)$, `indifference_r` $R^*$ regimes, `budget_tail_frontier`), `calibrate` (consistent $[R_{\min}, R_{\max}]$ bounds and conflict detection), and `cashflow`.
+
+Example: `Use $analyzing-risk-decisions to compare single-AZ, multi-AZ, and multi-region failover under correlated outage states, invert the minimum budget for a 0.5% breach limit, and report switching boundaries.` In Claude Code, invoke `/polish:analyzing-risk-decisions`.
+
+See [the skill](skills/analyzing-risk-decisions/SKILL.md) and [JSON schemas & domain patterns](skills/analyzing-risk-decisions/references/schemas-and-patterns.md).
 
 ### `consistent-term-translation-polish-guard`
 
@@ -298,6 +309,12 @@ polish/
 ├── skills/benchmark-checklist/
 │   ├── SKILL.md              # throughput/latency/speedup claim checklist
 │   └── agents/openai.yaml
+├── skills/analyzing-risk-decisions/
+│   ├── SKILL.md              # probabilistic decision analysis & threshold inversion
+│   ├── references/           # JSON schemas and domain modeling patterns
+│   ├── scripts/              # deterministic stdlib decision engine
+│   ├── tests/                # vertical-slice unit & CLI regression suite
+│   └── agents/openai.yaml
 ├── skills/consistent-term-translation-polish-guard/
 │   ├── SKILL.md              # EN↔ZH translation and terminology consistency
 │   └── agents/openai.yaml
@@ -418,6 +435,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 当前包含：
 
 - `benchmark-checklist` - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
+- `analyzing-risk-decisions` - 基于联合有限状态空间、增量净损失函数、CARA 指数效用（$CE_R$）与 `VaR`/`ES` 尾部约束做概率决策分析、切换阈值反推（$p^*$、最高可接受价格 $P^*(R)$、无差异 $R^*$）及风险偏好校准。
 - `consistent-term-translation-polish-guard` - 中英双向翻译与译文润色，统一主译名、绑定缩写、确认核心歧义，并默认附双向术语对照表。
 - `yc-rejection-simulator` - 评审 startup 申请，并作为尖锐反方边界人审视产品逻辑闭环、市场/用户假设与非代码决策，给出最多三条有据反驳与一个最小验证测试。
 - `find-blind-spots` - 识别不熟悉领域的代码习惯（idioms）、框架潜规则、行业工程惯例及架构/上线验证盲点，给出证据和最小验证动作。
@@ -451,17 +469,17 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **29** | 全部 `description` 合计 **8,135 字符**（均值 **281 字符/个**），常驻上下文开销紧凑可控 |
+| Skill 总数 | **30** | 全部 `description` 合计 **8,540 字符**（均值 **285 字符/个**），常驻上下文开销紧凑可控 |
 | 功能正交率（方法论/产出不重复） | **~86%**（功能重叠率 ~14%） | 相邻 skill 在方法论、作用对象与交付产物上互补，无冗余废项 |
 | 触发正交率（自动命中不打架） | **~88%**（由调优前 ~68% 提升） | 原 3 个冲突簇已在 `description` 中建立显式互排与分流指针 |
-| 完全正交单点（0% 重叠） | **10 / 29（34.5%）** | 作用对象与目标完全独立（如 `prompt-polish`、`file-singlify`、`benchmark-checklist`、`mattpocock-wizard` 等） |
-| 同域流水线 / 正交协作 | **19 / 29（65.5%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲与挑刺(4)、Agent 文档编写(2) |
+| 完全正交单点（0% 重叠） | **10 / 30（33.3%）** | 作用对象与目标完全独立（如 `prompt-polish`、`file-singlify`、`benchmark-checklist`、`mattpocock-wizard` 等） |
+| 同域流水线 / 正交协作 | **20 / 30（66.7%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档编写(2) |
 
 相邻 skill 的核心分流规则：
 
 - **缺陷排查三层分流**：有报错日志 / Issue 现象 → `superpowers-systematic-debugging`；从读 repo 出发按工程管理学/不确定性门禁做探索性找 bug → `find-a-bug`；C++/Python 全仓 7 类契约盘点 → `project-bug-hunting`。
 - **方案推敲双模式**：早期想法设计树分轮高密度拷问 → `mattpocock-grilling`；一步一问收敛并落盘正式设计 spec 与实施计划 → `superpowers-brainstorming`（两者互通长板）。
-- **挑刺与盲点分工**：产品闭环、市场/商业假设与非代码决策的尖锐反方边界人 → `yc-rejection-simulator`；陌生领域代码习惯（idioms）、框架潜规则、行业工程惯例与架构上线盲区 → `find-blind-spots`。
+- **挑刺、盲点与概率决策分工**：产品闭环、市场/商业假设与定性非代码决策挑刺 → `yc-rejection-simulator`；陌生领域代码习惯（idioms）、框架潜规则、行业工程惯例与架构上线盲区 → `find-blind-spots`；明确含成本/损失分布、尾部风险约束、CARA 效用与回本概率/保留价格/$R^*$ 切换边界反推 → `analyzing-risk-decisions`。
 - **Agent 文档分工**：文档信息架构、上下文指针与 `AGENTS.md`/`CLAUDE.md` 编写精简 → `mattpocock-writing-for-agents`；子 agent 压力测试与 `SKILL.md` 防借口加固 → `superpowers-writing-skills`。
 
 ## 上游维护
@@ -516,6 +534,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.cursor/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `analyzing-risk-decisions`
+
+适用于存在不确定成本、收益或大额损失的多方案权衡（保险/延保配置、云服务 SLA/容灾备份、QA/CI 回归资源分配、AI 模型与工具档位选择、设备租买更新、分阶段验证投入）。强制区分 `fact`（合同与报价事实）、`estimate`（经验统计）、`assumption`（压力假设）与 `preference`（预算、承受线与风险偏好），按组合增量扣减免赔、比例、封顶及已赔余额，并在多期持有决策中计入当前退出机会成本、剔除沉没成本。
+
+内置零外部依赖的可审计计算脚本 `skills/analyzing-risk-decisions/scripts/decision_engine.py`，支持四种子命令：`compare`（期望净损失、增量 RTP、深尾部 `VaR`/`ES`、缓冲突破概率、CARA 确定等价损失 $CE_R$ 与严格支配检测）、`invert`（反推回本概率 $p^*$、解析保留价格 $P^*(R)$、无差异风险承受参数 $R^*$ 分段与预算—尾部 Pareto 前沿）、`calibrate`（由取舍题反推一致 $[R_{\min}, R_{\max}]$ 区间并定位矛盾回答）与 `cashflow`。
+
+示例：`使用 $analyzing-risk-decisions 在含共同故障状态的单 AZ、多 AZ 与跨区容灾方案间反推满足 0.5% 尾部突破上限的最低成本，并给出选择切换边界。` Claude Code 中使用 `/polish:analyzing-risk-decisions`。
+
+见 [skill 正文](skills/analyzing-risk-decisions/SKILL.md) 和 [JSON Schema 与领域模式](skills/analyzing-risk-decisions/references/schemas-and-patterns.md)。
 
 ### `consistent-term-translation-polish-guard`
 
@@ -696,6 +724,12 @@ polish/
 ├── references/strategies.md  # prompt-polish 策略库
 ├── skills/benchmark-checklist/
 │   ├── SKILL.md              # 吞吐/延迟/加速比测量核查清单
+│   └── agents/openai.yaml
+├── skills/analyzing-risk-decisions/
+│   ├── SKILL.md              # 概率决策分析、尾部约束与切换阈值反推
+│   ├── references/           # JSON Schema 与领域建模模式
+│   ├── scripts/              # Python 标准库零依赖可审计计算引擎
+│   ├── tests/                # 垂直切片单元与 CLI 回归测试
 │   └── agents/openai.yaml
 ├── skills/consistent-term-translation-polish-guard/
 │   ├── SKILL.md              # EN↔ZH translation and terminology consistency

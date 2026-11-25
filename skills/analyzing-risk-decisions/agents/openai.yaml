@@ -1,0 +1,4 @@
+interface:
+  display_name: "analyzing-risk-decisions"
+  short_description: "Probabilistic decision analysis and risk threshold inversion"
+  default_prompt: "Use $analyzing-risk-decisions to model options as state-wise incremental net losses, compute EV/ES/CARA certainty equivalents, and invert switching thresholds."

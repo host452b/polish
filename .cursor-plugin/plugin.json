@@ -43,7 +43,9 @@
     "research",
     "grilling",
     "writing-for-agents",
-    "wizard"
+    "wizard",
+    "decision-analysis",
+    "risk-inversion"
   ],
   "skills": "./skills/"
 }
