@@ -12,6 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
+- [`benchmark-checklist`](skills/benchmark-checklist/SKILL.md) - Check measured throughput, latency and speedup claims against completed work and run variability.
 - `consistent-term-translation-polish-guard` - translates and polishes EN↔ZH content with stable primary terms, acronym bindings, ambiguity checks, and a bilingual terminology table.
 - `yc-rejection-simulator` - reviews startup ideas and applications with evidence-grounded objections, a sharp simulated verdict, and one concrete validation test.
 - `find-blind-spots` - identifies decision-relevant blind spots in conversations, architecture, technology choices, and post-launch plans, with evidence and a bounded validation step.
@@ -145,6 +146,10 @@ Example: `Use $find-a-bug to investigate this project's intermittent test failur
 
 See [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md) for the workflow and report contract.
 
+### `benchmark-checklist`
+
+Use `$benchmark-checklist` to review a measured speedup or regression before reporting it. For example, ask whether a higher GPU submission rate supports a claim about completed requests per second. In Claude Code, invoke `/polish:benchmark-checklist`.
+
 ### `project-bug-hunting`
 
 Use it when there is no supplied error and you want project-wide exploration of unknown functional defects. It separates contract relationships, runtime scenarios, and verification methods, then builds a project map, contract inventory, and candidate pool across seven groups: documentation/usage, interfaces/calls, configuration/dispatch, data/artifacts, state/lifecycle, versions/delivery, and tests/real behavior.
@@ -243,6 +248,7 @@ See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish strategy library
+├── skills/benchmark-checklist/
 ├── skills/consistent-term-translation-polish-guard/
 │   ├── SKILL.md              # EN↔ZH translation and terminology consistency
 │   └── agents/openai.yaml
@@ -329,6 +335,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
+- [`benchmark-checklist`](skills/benchmark-checklist/SKILL.md) - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
 - `consistent-term-translation-polish-guard` - 中英双向翻译与译文润色，统一主译名、绑定缩写、确认核心歧义，并默认附双向术语对照表。
 - `yc-rejection-simulator` - 用有据可查的 objections、尖锐的模拟 verdict 和一个具体 validation test 评审 startup ideas 与 applications。
 - `prompt-polish` - 把粗糙问题改写成高质量、可直接粘贴使用的中英双语 LLM 提示词。
@@ -336,7 +343,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `find-a-bug` - 跨项目调查缺陷：区分证据类别、保留竞争解释、优先验证会翻转路线的未知数。
 - `project-bug-hunting` - 面向 C++、Python 及混合项目主动探索未知功能缺陷，核对适用契约与源码、安装产物和运行证据。
 - `file-singlify` - 扫描磁盘/目录/挂载路径，找出重复文件和重复目录副本，生成「单副本化」方案（保留一份 canonical copy + duplicate→canonical 映射），默认只读 dry-run 报告。
-- `before-git-push` - push 前最后一道风险闸门：以发布工程师视角只依据真实 diff 审查本次改动，给出 PUSH 或 HOLD 建议。
+- `before-git-push` - push 前最后一道风险闸门：以发布工程师视角从真实 diff 追踪受影响的调用方，给出 PUSH 或 HOLD 建议。
 - `git-commit-message` - 按 GitLab / GitHub 各自规范生成和检查提交信息，优先遵守目标仓库规则。
 - `i-have-adhd-actionable-output` - 让答案和交接更易执行，同时保留完整信息、证据边界和 agent 自主完成工作的能力。
 - `google-stitch-frontend-taste-design` - 建立或审查有证据支撑的前端视觉方向，避免泛化的 AI 风格和虚构产品内容。
@@ -463,6 +470,10 @@ Claude Code 中使用 `/polish:find-blind-spots`。
 
 完整流程与输出契约见 [skills/find-a-bug/SKILL.md](skills/find-a-bug/SKILL.md)。
 
+### `benchmark-checklist`
+
+在报告加速或回退前，使用 `$benchmark-checklist` 核对测量证据。例如，“GPU 请求提交速率提高了，现有数据能支持完成吞吐提升的结论吗？” Claude Code 中使用 `/polish:benchmark-checklist`。
+
 ### `project-bug-hunting`
 
 用于没有现成报错时的项目级未知功能缺陷探索。将契约关系、运行场景、验证手段分开组织，建立项目地图、契约清单与候选问题池，覆盖文档与使用、接口与调用、配置与分派、数据与产物、状态与生命周期、版本与交付、测试与真实行为七组关系。
@@ -554,6 +565,7 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 ```text
 polish/
 ├── references/strategies.md  # prompt-polish 策略库
+├── skills/benchmark-checklist/
 ├── skills/consistent-term-translation-polish-guard/
 │   ├── SKILL.md              # EN↔ZH translation and terminology consistency
 │   └── agents/openai.yaml

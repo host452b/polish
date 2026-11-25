@@ -1,0 +1,4 @@
+interface:
+  display_name: "benchmark-checklist"
+  short_description: "Review the evidence behind performance claims"
+  default_prompt: "Use $benchmark-checklist to assess whether these benchmark results support the reported speedup."

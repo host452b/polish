@@ -23,6 +23,16 @@ Use this reference while building the project map and selecting candidates. Thes
 - Check migration/deprecation notes before treating differences as regressions. An explicitly archived v1 page need not describe v2. If a page advertised for the current release is inaccurate, determine whether the defect is in that page, the example, or the implementation; do not silently nominate code as authoritative.
 - When two current authoritative sources conflict and intent cannot be resolved, report the inconsistency and keep implementation attribution unresolved.
 
+#### Repeatable documentation/API check
+
+When another engineer will recheck a documented call on the next release, keep one row per promise in the investigation report. Reuse an existing example or test command where possible.
+
+| Documentation version, permalink and original example | Installed artifact version, origin and loaded entry point | Setup and exact replay command | Expected result and contract source | Observed result, evidence and attribution |
+| --- | --- | --- | --- | --- |
+| <release, source lines and public call> | <distribution/build, install source, runtime module path or binary> | <working directory, inputs and runnable command> | <observable value, status or error promised by that version> | <actual value or error, artifact, confirmed mismatch or missing evidence> |
+
+For the next release, update the versioned documentation and installation together, verify what the command actually loaded, then rerun it. Preserve each observation with its version. Use a migration note, accepted specification or regression test to assign a discrepancy to the docs or implementation when possible. If intent is unresolved, record both observations and the open question.
+
 ### 2. Interfaces and Calls
 
 - Compare actual callers with signatures and implementation: defaults, keyword names, units, ranges, return structure, exception/status translation, and preconditions.
