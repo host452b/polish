@@ -1,6 +1,6 @@
 ---
 name: takeover-agent-sessions
-description: "Use when picking up unfinished work, recovering context, or reading local session transcripts from another coding agent (Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, or Devin) across macOS, Windows, or Linux — including quota or rate-limit switches, mid-task IDE/CLI handoffs, post-crash or post-compaction recovery, and cross-agent history lookup (跨工具接力、读取其他 Agent 本地会话继续干活、额度耗尽切工具接盘)."
+description: "Use when picking up unfinished work, checking which local sessions are still running, waiting for user input, interrupted after a reboot or closed window, or colliding on the same repository, or reading session transcripts across Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, and Devin on macOS, Windows, or Linux (跨窗口会话雷达巡检、排查重启或关窗遗留未完任务、跨工具接力继续干活). For designing custom cross-session user memory or RAG pipelines in an application, use architecting-agent-memory-rag."
 allowed-tools:
   - read
   - grep
@@ -9,7 +9,7 @@ allowed-tools:
 
 # takeover-agent-sessions
 
-Read another coding agent's local session store on **macOS, Windows, or Linux (including WSL <-> Windows)**, compress it into a **5-part Takeover Brief**, reconcile it against live repository state (`git status` / `git diff` / files on disk), and finish the remaining work without redoing completed steps.
+Audit live/interrupted sessions and read another coding agent's local session store on **macOS, Windows, or Linux (including WSL <-> Windows)**, compress the target session into a **5-part Takeover Brief**, reconcile it against live repository state (`git status` / `git diff` / files on disk), and finish the remaining work without redoing completed steps.
 
 **Universal Agent-to-Agent Portability:** Any host agent (Devin, Claude Code, Codex, Cursor, Windsurf, Copilot, Kiro, OpenCode, Zed, or others) can run this skill to read sessions recorded by any other agent on the same machine.
 
@@ -27,13 +27,16 @@ Read another coding agent's local session store on **macOS, Windows, or Linux (i
   3. **Direct CLI / SQLite fallback:** When Python is unavailable or inspecting an unfamiliar version, consult [`references/storage-and-pitfalls.md`](references/storage-and-pitfalls.md) for per-OS paths, schemas, and `sqlite3 "file:...?mode=ro"` / `jq` / `zstd -dc` recipes.
 - *Completion criterion:* Reader tier selected and target store directory readable (or read permission requested).
 
-### 2. Locate the Target Session (Filter First, Exclude Self)
+### 2. Run Session Radar or Locate the Target Session (Filter First, Exclude Self)
 
-List or search metadata before reading any full session. Pass `--exclude-harness <your-own-harness>` (or `--exclude-session <current-id>`) when scanning `--harness all` so you never "take over" your own active turn:
+Triage active/unfinished sessions or search metadata before reading any full session. Pass `--exclude-harness <your-own-harness>` (or `--exclude-session <current-id>`) when scanning `--harness all` so you never flag or "take over" your own active turn:
 
 ```bash
 # Check which agent stores exist on this machine (macOS / Linux / Windows / WSL)
 python3 "$SKILL_DIR/scripts/takeover_session.py" discover
+
+# Cross-window radar: triage running, interrupted/post-reboot, waiting-for-user, and repo-contended sessions
+python3 "$SKILL_DIR/scripts/takeover_session.py" radar --harness all --since-hours 72
 
 # List recent sessions for the current workspace (newest first)
 python3 "$SKILL_DIR/scripts/takeover_session.py" list --cwd "$PWD" --harness all --limit 10
@@ -42,9 +45,14 @@ python3 "$SKILL_DIR/scripts/takeover_session.py" list --cwd "$PWD" --harness all
 python3 "$SKILL_DIR/scripts/takeover_session.py" search "webhook retry" --harness cursor,claude,codex
 ```
 
-- If `--cwd "$PWD"` returns nothing (common for Cursor `agent-transcripts` without a CLI `meta.json`, or sessions started from a parent monorepo root / git worktree), re-run `list` without `--cwd` and match by title/prompt/files.
+- **When the user asks what is still running, waiting, or forgotten after a reboot/closed terminal:** Run `radar` first. It derives four actionable buckets strictly read-only from session locks/PIDs, tail message roles, built-in `todo_write` / `TodoWrite` / `update_plan` checklists, and Git worktree roots:
+  - `Running Now`: Live process lock or active mid-turn tool execution.
+  - `Interrupted / Unfinished`: Dead lock PID or stalled mid-turn stream, or a closed session that still has `pending` / `in_progress` todo items.
+  - `Waiting for User`: Cleanly finished turn ending on a decision question or paused in a live session with open todos.
+  - `Workspace Contention`: Two or more active/waiting sessions targeting the same Git repository (including linked `git worktree` checkouts and cross-directory file edits).
+- If `--cwd "$PWD"` returns nothing (common for Cursor `agent-transcripts` without a CLI `meta.json`, or sessions started from a parent monorepo root / git worktree), re-run `list` or `radar` without `--cwd` and match by title/prompt/files.
 - If **one** session clearly matches the user's request, proceed directly; if **2+ plausible sessions** compete (e.g. IDE chat vs CLI rollout, or two branches), show the top 3–5 candidates (`[harness] id | updated_at | cwd | title`) and ask the user which one to pick up.
-- *Completion criterion:* Exact `harness` + `session_id` identified.
+- *Completion criterion:* Session radar reported (for status queries) or exact `harness` + `session_id` identified (for takeover).
 
 ### 3. Extract a Bounded 5-Part Takeover Brief
 
@@ -95,7 +103,19 @@ Report a concise **Takeover Summary** before making edits:
 - **Drift / Re-diagnose:** Any mismatch with `git status` / worktrees / merged PRs, or prior workarounds needing verification
 - **Next Actions:** Concrete remaining steps (aligned with the repository's branch, Draft-PR/MR, and Git-identity rules before committing or pushing)
 
-If the user asked only to *inspect/summarize* the session, stop after the summary. If the user asked to *continue/take over* the work and there is no destructive conflict or wrong-branch hazard, proceed immediately to execute the remaining steps. Pause for confirmation only when uncommitted changes conflict, files were partially clobbered, or the checkout is on an unexpected branch.
+If the user asked only to *inspect/summarize* the session or view the cross-window radar, stop after the summary. If the user asked to *continue/take over* the work and there is no destructive conflict or wrong-branch hazard, proceed immediately to execute the remaining steps. Pause for confirmation only when uncommitted changes conflict, another `running` session is actively mutating the same repository (`Workspace Contention`), files were partially clobbered, or the checkout is on an unexpected branch.
+
+---
+
+## Three-Tier Continuity & Checkpoint Architecture (Zero Dual-Write)
+
+Avoid standalone global todo databases that go stale when terminals crash, get force-closed, or have PRs merged externally. Keep continuity split across three orthogonal carriers:
+
+| Tier | Scope & Problem Solved | Carrier & Practice | Why It Stays Accurate |
+| --- | --- | --- | --- |
+| **1. Cross-Window Session Radar** *(Trajectory)* | Recover forgotten sessions after reboots/closed windows; see what is running, waiting on decisions, or colliding on a repo | `takeover_session.py radar` (optional shell alias `agent-radar` for zero-token terminal checks) | Pure read-only derivation from `.lock`/PID liveness, tail events, and built-in `todo_write` / `TodoWrite` / `update_plan` state — works even after `SIGKILL` |
+| **2. Multi-Batch Project Checkpoints** *(Project State)* | Hand off multi-day, multi-batch milestones across branches, machines, or different coding agents | Versioned files inside the target Git repository (e.g. `<repo>/HANDOFF.md` or `<repo>/CHECKPOINT.md`) | Committed alongside code, branch-aware, portable across machines, and verifiable against `git log` and live PR/MR status |
+| **3. Durable User Conventions** *(User Memory)* | Enforce stable identity, review, and verification rules across projects | Global and per-repository `AGENTS.md` / `CLAUDE.md` | Holds long-lived invariants without daily task churn that rots overnight or invalidates prompt caches |
 
 ---
 

@@ -14,7 +14,7 @@ Currently included:
 
 - `synthesizing-time-series-chronicles` - turns timestamped corpora (event logs, changelogs, incident histories, release archives, or literature streams) into atomic 4-slot digests, Sinkhorn mass-conserving Sankey & sub-signal velocity SVG charts, and living multi-chapter chronicles/PDFs with rollover-safe `AUTO-SYNC` slots.
 - `benchmark-checklist` - checks measured throughput, latency, and speedup claims against completed work and run variability.
-- `takeover-agent-sessions` - reads local session stores across Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, and Devin on macOS, Windows, and Linux into a bounded 5-part Takeover Brief, reconciles against live `git status` / `git diff`, and resumes unfinished work from any host agent.
+- `takeover-agent-sessions` - triages running, interrupted/post-reboot, waiting-for-user, and workspace-contended local sessions (`radar`) and extracts bounded 5-part Takeover Briefs across Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, and Devin on macOS, Windows, and Linux, reconciling against live `git status` / `git diff` to resume unfinished work.
 - `analyzing-risk-decisions` - models uncertain options via joint state-wise net losses, CARA exponential utility ($CE_R$), and `VaR`/`ES` tail constraints, with deterministic threshold inversion ($p^*$, reservation price $P^*(R)$, indifference $R^*$) and preference calibration.
 - `consistent-term-translation-polish-guard` - translates and polishes EN↔ZH content with stable primary terms, acronym bindings, ambiguity checks, and a bilingual terminology table.
 - `yc-rejection-simulator` - critiques startup ideas, product loops, market assumptions, and non-code strategic decisions with evidence-grounded objections, a sharp verdict, and one validation test.
@@ -147,11 +147,11 @@ See [the skill](skills/synthesizing-time-series-chronicles/SKILL.md) and [visual
 
 ### `takeover-agent-sessions`
 
-Use it from any coding agent when picking up unfinished work, recovering context after a rate limit or crash, or looking up local session transcripts recorded by another coding agent (`claude`, `codex`, `cursor`, `windsurf`, `copilot`, `kiro`, `opencode`, `zed`, or `devin`) across macOS, Windows, Linux, and WSL.
+Use it from any coding agent when checking which local sessions are still running, waiting on your reply, forgotten after a reboot/closed window, or colliding on the same repository, or when picking up unfinished work recorded by another coding agent (`claude`, `codex`, `cursor`, `windsurf`, `copilot`, `kiro`, `opencode`, `zed`, or `devin`) across macOS, Windows, Linux, and WSL.
 
-Backed by a zero-dependency, strictly read-only Python extractor (`skills/takeover-agent-sessions/scripts/takeover_session.py` — including `file:...?mode=ro` SQLite snapshots, `zstd` rollout/thread decompression, NIST AES-256-GCM + `CortexTrajectory` protobuf decoding for Windsurf `.pb`, VS Code delta-log reduction, and automatic secret redaction), it produces a bounded 5-part Takeover Brief (Goal, Settled Constraints, Files Touched, Commands & Exit Status, Stopping Point) and reconciles transcript intent against live `git status` / `git diff` before resuming work.
+Backed by a zero-dependency, strictly read-only Python extractor (`skills/takeover-agent-sessions/scripts/takeover_session.py` — including `file:...?mode=ro` SQLite snapshots, `zstd` rollout/thread decompression, NIST AES-256-GCM + `CortexTrajectory` protobuf decoding for Windsurf `.pb`, VS Code delta-log reduction, and automatic secret redaction), it provides a zero-dual-write `radar` triage command (deriving `running`, `interrupted`, `waiting_for_user`, and `repo_contention` across linked Git worktrees, touched repositories, PID locks, and built-in `todo_write` / `TodoWrite` / `update_plan` checklists) alongside a bounded 5-part Takeover Brief reconciled against live `git status` / `git diff` and in-repo Git checkpoints.
 
-Example: `Use $takeover-agent-sessions to inspect my latest Cursor or Codex session for this repo, check what is already on disk, and finish the remaining tests.` In Claude Code and Devin CLI, invoke `/polish:takeover-agent-sessions`.
+Example: `Use $takeover-agent-sessions to run a cross-agent session radar for unfinished or waiting sessions, inspect my latest session for this repo, and finish the remaining tests.` In Claude Code and Devin CLI, invoke `/polish:takeover-agent-sessions`.
 
 See [the skill](skills/takeover-agent-sessions/SKILL.md) and [storage paths & parsing pitfalls](skills/takeover-agent-sessions/references/storage-and-pitfalls.md).
 
@@ -539,7 +539,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 - `synthesizing-time-series-chronicles` - 将任意领域的带时间戳数据流（事故复盘、版本变更、工单日志、市场/监管事件或文献库）提炼为单条四维摘要、质量守恒 Sinkhorn 桑基图与子信号速度热力图，以及带跨年安全 `AUTO-SYNC` 动态槽位的活体编年史章节与教材级矢量 PDF。
 - `benchmark-checklist` - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
-- `takeover-agent-sessions` - 跨 macOS、Windows、Linux（含 WSL）只读解析 Cursor、Windsurf、Claude Code、GitHub Copilot、Codex、Kiro、OpenCode、Zed 与 Devin 的本地会话记录，提炼五要素接盘简报并与当前 `git status` / `git diff` 对账，让任意 Agent 无缝接力其他 Agent 没干完的活。
+- `takeover-agent-sessions` - 跨 macOS、Windows、Linux（含 WSL）只读巡检所有本地会话态势（`radar`：识别运行中、重启/关窗中断遗留、等待用户拍板及同仓库并发撞车），解析 Cursor、Windsurf、Claude Code、GitHub Copilot、Codex、Kiro、OpenCode、Zed 与 Devin 会话并提炼五要素接盘简报，与实时 `git status` / `git diff` 对账后无缝续接。
 - `analyzing-risk-decisions` - 基于联合有限状态空间、增量净损失函数、CARA 指数效用（$CE_R$）与 `VaR`/`ES` 尾部约束做概率决策分析、切换阈值反推（$p^*$、最高可接受价格 $P^*(R)$、无差异 $R^*$）及风险偏好校准。
 - `consistent-term-translation-polish-guard` - 中英双向翻译与译文润色，统一主译名、绑定缩写、确认核心歧义，并默认附双向术语对照表。
 - `yc-rejection-simulator` - 评审 startup 申请，并作为尖锐反方边界人审视产品逻辑闭环、市场/用户假设与非代码决策，给出最多三条有据反驳与一个最小验证测试。
@@ -672,11 +672,11 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 
 ### `takeover-agent-sessions`
 
-适用于在任意 coding agent 中接手其他工具没干完的任务、额度/限流切换工具、崩溃或压缩后恢复上下文，以及跨工具检索本地历史会话（支持 `claude`、`codex`、`cursor`、`windsurf`、`copilot`、`kiro`、`opencode`、`zed` 与 `devin`，覆盖 macOS、Windows、Linux 及 WSL 跨系统挂载）。
+适用于跨窗口排查哪些本地会话仍在运行、停在等待拍板、因重启或关窗中断遗留未完待办、或并发修改同一仓库，以及在任意 coding agent 中接手其他工具没干完的任务（支持 `claude`、`codex`、`cursor`、`windsurf`、`copilot`、`kiro`、`opencode`、`zed` 与 `devin`，覆盖 macOS、Windows、Linux 及 WSL 跨系统挂载）。
 
-内置零第三方依赖的只读解析脚本 `skills/takeover-agent-sessions/scripts/takeover_session.py`（自动处理 SQLite `?mode=ro` 只读快照、`zstd` 压缩会话、Windsurf `.pb` AES-256-GCM 认证解密与 `CortexTrajectory` Protobuf 解析、VS Code Copilot 增量状态归约及密钥脱敏），将海量原始日志提炼为五要素 Takeover Brief（目标、已拍板约束、触碰文件、命令与退出码、中断现场），并强制与当前工作区 `git status` / `git diff` 对账后再继续施工。
+内置零第三方依赖的只读解析脚本 `skills/takeover-agent-sessions/scripts/takeover_session.py`（自动处理 SQLite `?mode=ro` 只读快照、`zstd` 压缩会话、Windsurf `.pb` AES-256-GCM 认证解密与 `CortexTrajectory` Protobuf 解析、VS Code Copilot 增量状态归约及密钥脱敏），提供零双写的 `radar` 态势巡检子命令（结合进程锁存活、尾帧状态、内置 `todo_write` / `TodoWrite` / `update_plan` 未完项及关联 `git worktree` / 触碰仓库自动分桶为运行中、中断遗留、等待回复与同仓并发占用），并提炼五要素 Takeover Brief 与仓库内 Git Checkpoint 及实时 `git status` / `git diff` 对账后继续施工。
 
-示例：`使用 $takeover-agent-sessions 读取我刚才在 Cursor 或 Codex 里做到一半的当前仓库会话，核对磁盘改动后把剩下的活干完。` Claude Code 与 Devin CLI 中使用 `/polish:takeover-agent-sessions`。
+示例：`使用 $takeover-agent-sessions 巡检本机等待处理或中断遗留的会话，读取当前仓库最近一次会话并核对磁盘改动后把剩下的测试跑完。` Claude Code 与 Devin CLI 中使用 `/polish:takeover-agent-sessions`。
 
 见 [skill 正文](skills/takeover-agent-sessions/SKILL.md) 和 [存储路径与解析坑点参考](skills/takeover-agent-sessions/references/storage-and-pitfalls.md)。
 

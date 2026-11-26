@@ -34,7 +34,7 @@ import sys
 import tempfile
 import urllib.parse
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 ALL_HARNESSES = (
     "claude",
@@ -219,6 +219,154 @@ def extract_patch_paths(patch_text: str) -> list[str]:
     if not patch_text:
         return []
     return [m.group(1).strip() for m in PATCH_HEADER_RE.finditer(patch_text) if m.group(1).strip()]
+
+
+TODO_TOOL_NAMES = frozenset({"todo_write", "todowrite", "manage_todo_list", "update_plan"})
+
+
+def extract_todo_items(tool_name: str | None, raw_args: Any) -> list[dict[str, str]] | None:
+    if not tool_name or tool_name.strip().lower() not in TODO_TOOL_NAMES:
+        return None
+    args = raw_args
+    if isinstance(raw_args, str):
+        try:
+            args = json.loads(raw_args)
+        except json.JSONDecodeError:
+            return None
+    if not isinstance(args, dict):
+        return None
+    raw_list: Any = None
+    for key in ("todos", "todoList", "plan"):
+        if key in args and isinstance(args[key], list):
+            raw_list = args[key]
+            break
+    if raw_list is None:
+        return None
+    normalized: list[dict[str, str]] = []
+    for item in raw_list:
+        if not isinstance(item, dict):
+            continue
+        text = str(
+            item.get("content") or item.get("step") or item.get("title") or item.get("description") or ""
+        ).strip()
+        if not text:
+            continue
+        st_raw = str(item.get("status") or "pending").strip().lower().replace("-", "_")
+        if st_raw in ("completed", "complete", "done"):
+            status = "completed"
+        elif st_raw in ("in_progress", "active", "started"):
+            status = "in_progress"
+        elif st_raw in ("cancelled", "canceled", "skipped"):
+            status = "cancelled"
+        else:
+            status = "pending"
+        normalized.append({"content": one_line(redact_secrets(text), 200), "status": status})
+    return normalized
+
+
+def is_pid_alive(pid: int, os_name: str = "auto") -> bool:
+    if pid <= 0:
+        return False
+    os_norm = normalize_os_name(os_name)
+    if os_norm == "windows" and os.name == "nt":
+        try:
+            import ctypes
+
+            kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
+            handle = kernel32.OpenProcess(0x1000, False, int(pid))
+            if not handle:
+                return False
+            try:
+                exit_code = ctypes.c_ulong(0)
+                if kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                    return int(exit_code.value) == 259
+                return True
+            finally:
+                kernel32.CloseHandle(handle)
+        except Exception:
+            return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    proc_stat = Path(f"/proc/{pid}/stat")
+    if proc_stat.is_file():
+        try:
+            stat_txt = proc_stat.read_text(encoding="utf-8", errors="replace")
+            rparen = stat_txt.rfind(")")
+            if rparen != -1 and stat_txt[rparen + 2 : rparen + 3] == "Z":
+                return False
+        except OSError:
+            pass
+    return True
+
+
+def resolve_git_repo_group(path_str: str | None, home: Path | None = None) -> str:
+    if not path_str:
+        return ""
+    raw = decode_file_uri(str(path_str)).strip()
+    if not raw or not (raw.startswith("/") or re.match(r"^[A-Za-z]:[\\/]", raw)):
+        return ""
+    try:
+        cur = Path(raw)
+        existing_cur: Path | None = None
+        for probe in (cur, *cur.parents):
+            if probe.exists():
+                existing_cur = probe.resolve()
+                break
+        if existing_cur is None or str(existing_cur) in ("/", "."):
+            return ""
+        if home is not None:
+            try:
+                if existing_cur == home.resolve():
+                    return ""
+            except OSError:
+                pass
+        for candidate in (existing_cur, *existing_cur.parents):
+            git_marker = candidate / ".git"
+            if git_marker.is_dir():
+                return normalize_path_for_match(str(candidate.resolve()))
+            if git_marker.is_file():
+                first = git_marker.read_text(encoding="utf-8", errors="replace").splitlines()
+                if first and first[0].lower().startswith("gitdir:"):
+                    gitdir_raw = first[0].split(":", 1)[1].strip()
+                    gitdir_path = Path(gitdir_raw)
+                    if not gitdir_path.is_absolute():
+                        gitdir_path = (candidate / gitdir_path).resolve()
+                    else:
+                        gitdir_path = gitdir_path.resolve()
+                    parts = list(gitdir_path.parts)
+                    for idx in range(len(parts) - 1):
+                        if parts[idx] == ".git" and parts[idx + 1] == "worktrees" and idx > 0:
+                            main_root = Path(*parts[:idx]).resolve()
+                            return normalize_path_for_match(str(main_root))
+                return normalize_path_for_match(str(candidate.resolve()))
+    except OSError:
+        pass
+    return ""
+
+
+def resolve_workspace_group(cwd: str | None, home: Path | None = None) -> str:
+    norm = normalize_path_for_match(cwd)
+    if not norm or norm in ("/", ".") or re.match(r"^[a-z]:$", norm):
+        return ""
+    if home is not None and norm == normalize_path_for_match(str(home)):
+        return ""
+    git_group = resolve_git_repo_group(cwd, home=home)
+    if git_group:
+        return git_group
+    raw = decode_file_uri(str(cwd or "")).strip()
+    try:
+        cur = Path(raw)
+        if cur.exists() and home is not None and cur.resolve() == home.resolve():
+            return ""
+    except OSError:
+        pass
+    return norm
 
 
 # ---------------------------------------------------------------------------
@@ -812,6 +960,18 @@ class SessionRecord:
         self.commands: list[dict[str, Any]] = []
         self.subagents: list[dict[str, Any]] = []
         self.warnings: list[str] = []
+        self.todos: list[dict[str, str]] = []
+        self.last_event_role: str = ""
+        self.has_dangling_tool_call: bool = False
+        self.lock_pid: int | None = None
+        self.lock_alive: bool | None = None
+
+    def set_todos(self, items: list[dict[str, str]] | None) -> None:
+        if items is not None:
+            self.todos = items
+
+    def open_todos(self) -> list[dict[str, str]]:
+        return [t for t in self.todos if t.get("status") in ("pending", "in_progress")]
 
     def add_file(self, path_str: str | None) -> None:
         if not path_str:
@@ -830,6 +990,7 @@ class SessionRecord:
         self.commands.append(entry)
 
     def add_turn(self, role: str, text: str, timestamp: str = "") -> None:
+        self.last_event_role = role
         cleaned = clean_prompt_text(text) if role == "user" else redact_secrets(text).strip()
         if not cleaned:
             return
@@ -860,6 +1021,7 @@ class SessionRecord:
             "title": self.display_title(),
             "turn_count": len(self.turns),
             "files_touched_count": len(self.files_touched),
+            "open_todo_count": len(self.open_todos()),
             "source_path": self.source_path,
             "warnings": self.warnings,
         }
@@ -883,6 +1045,7 @@ class SessionRecord:
             "user_followups_and_decisions": decisions[-8:],
             "files_touched": self.files_touched[:60],
             "commands": self.commands[-20:],
+            "open_todos": self.open_todos()[:30],
             "recent_turns": [
                 {
                     "role": t["role"],
@@ -937,6 +1100,8 @@ def _load_claude_sessions(
         rec = SessionRecord(harness="claude", session_id=sid, source_path=str(fpath))
         last_ts = ""
         last_ep = mtime
+        open_tc_ids: set[str] = set()
+        stream_last_role = ""
         for obj in rows:
             rtype = obj.get("type")
             if obj.get("sessionId") and not obj.get("isSidechain"):
@@ -960,7 +1125,10 @@ def _load_claude_sessions(
             msg = obj.get("message") if isinstance(obj.get("message"), dict) else {}
             role = str(msg.get("role") or rtype)
             content = msg.get("content")
+            if role == "assistant" and obj.get("toolUseResult") is None:
+                open_tc_ids.clear()
             texts: list[str] = []
+            saw_tool_result = obj.get("toolUseResult") is not None
             if isinstance(content, str):
                 if obj.get("toolUseResult") is None:
                     texts.append(content)
@@ -976,13 +1144,31 @@ def _load_claude_sessions(
                     elif ptype == "tool_use":
                         tname = str(part.get("name") or "")
                         tinp = part.get("input") if isinstance(part.get("input"), dict) else {}
+                        tu_id = str(part.get("id") or f"anon-{len(open_tc_ids)}")
+                        open_tc_ids.add(tu_id)
+                        rec.set_todos(extract_todo_items(tname, tinp))
                         if tname in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
                             rec.add_file(tinp.get("file_path") or tinp.get("notebook_path"))
                         elif tname in ("Bash", "Shell", "exec"):
                             rec.add_command(tinp.get("command"))
+                    elif ptype == "tool_result":
+                        saw_tool_result = True
+                        tu_ref = str(part.get("tool_use_id") or "")
+                        if tu_ref:
+                            open_tc_ids.discard(tu_ref)
             if texts:
                 iso_turn, _ = ts_to_iso(obj.get("timestamp"), None)
-                rec.add_turn("user" if role == "user" else "assistant", "\n".join(texts), iso_turn)
+                norm_role = "user" if role == "user" else "assistant"
+                rec.add_turn(norm_role, "\n".join(texts), iso_turn)
+                stream_last_role = norm_role
+                if norm_role == "user":
+                    open_tc_ids.clear()
+            elif saw_tool_result:
+                stream_last_role = "tool"
+                if obj.get("toolUseResult") is not None and not isinstance(content, list):
+                    open_tc_ids.clear()
+            elif role == "assistant":
+                stream_last_role = "assistant"
 
         sub_dir = fpath.parent / fpath.stem / "subagents"
         if sub_dir.is_dir():
@@ -1012,7 +1198,10 @@ def _load_claude_sessions(
                     rec.subagents.append({"agent_id": sf.stem, "task": stask, "summary": sreply})
 
         rec.updated_iso, rec.updated_epoch = (last_ts, last_ep) if last_ts else ts_to_iso(None, mtime)
-        if rec.turns or rec.files_touched:
+        if stream_last_role:
+            rec.last_event_role = stream_last_role
+        rec.has_dangling_tool_call = bool(open_tc_ids)
+        if rec.turns or rec.files_touched or rec.todos:
             out.append(rec)
     return out
 
@@ -1060,6 +1249,8 @@ def _load_codex_sessions(
         rec = SessionRecord(harness="codex", session_id=uid, source_path=str(fpath))
         seen_meta = False
         pending_calls: dict[str, str] = {}
+        open_fc_ids: set[str] = set()
+        stream_last_role = ""
         roled_turns: list[tuple[str, str, str]] = []
         event_turns: list[tuple[str, str, str]] = []
         last_iso, last_ep = ts_to_iso(None, mtime)
@@ -1083,12 +1274,24 @@ def _load_codex_sessions(
             if otype == "response_item":
                 ptype = payload.get("type")
                 role = payload.get("role")
-                if ptype == "custom_tool_call" and payload.get("name") == "apply_patch":
-                    for p in extract_patch_paths(str(payload.get("input") or "")):
-                        rec.add_file(p)
+                if ptype == "custom_tool_call":
+                    cid = str(payload.get("call_id") or f"anon-{len(open_fc_ids)}")
+                    open_fc_ids.add(cid)
+                    stream_last_role = "assistant"
+                    if payload.get("name") == "apply_patch":
+                        for p in extract_patch_paths(str(payload.get("input") or "")):
+                            rec.add_file(p)
+                elif ptype == "custom_tool_call_output":
+                    cid = str(payload.get("call_id") or "")
+                    if cid:
+                        open_fc_ids.discard(cid)
+                    stream_last_role = "tool"
                 elif ptype == "function_call":
                     fname = str(payload.get("name") or "")
                     raw_args = payload.get("arguments")
+                    cid = str(payload.get("call_id") or f"anon-{len(open_fc_ids)}")
+                    open_fc_ids.add(cid)
+                    stream_last_role = "assistant"
                     args = {}
                     if isinstance(raw_args, str):
                         try:
@@ -1097,11 +1300,12 @@ def _load_codex_sessions(
                             args = {}
                     elif isinstance(raw_args, dict):
                         args = raw_args
+                    rec.set_todos(extract_todo_items(fname, args))
                     if fname in ("exec_command", "shell_command", "shell"):
                         cmd = str(args.get("cmd") or args.get("command") or "")
-                        cid = str(payload.get("call_id") or "")
-                        if cid and cmd:
-                            pending_calls[cid] = cmd
+                        raw_cid = str(payload.get("call_id") or "")
+                        if raw_cid and cmd:
+                            pending_calls[raw_cid] = cmd
                         elif cmd:
                             rec.add_command(cmd)
                     elif fname == "apply_patch":
@@ -1109,6 +1313,9 @@ def _load_codex_sessions(
                             rec.add_file(p)
                 elif ptype == "function_call_output":
                     cid = str(payload.get("call_id") or "")
+                    if cid:
+                        open_fc_ids.discard(cid)
+                    stream_last_role = "tool"
                     out_txt = str(payload.get("output") or "")
                     m_exit = EXIT_CODE_RE.search(out_txt)
                     code = int(m_exit.group(1)) if m_exit else None
@@ -1129,6 +1336,8 @@ def _load_codex_sessions(
                     joined = "\n".join(parts_txt).strip()
                     if joined:
                         roled_turns.append((role, joined, iso))
+                        stream_last_role = role
+                        open_fc_ids.clear()
 
             elif otype == "event_msg":
                 etype = payload.get("type")
@@ -1160,8 +1369,11 @@ def _load_codex_sessions(
         chosen = roled_turns if roled_turns else event_turns
         for role, txt, iso in chosen:
             rec.add_turn(role, txt, iso)
+        if stream_last_role:
+            rec.last_event_role = stream_last_role
+        rec.has_dangling_tool_call = bool(open_fc_ids)
         rec.updated_iso, rec.updated_epoch = last_iso, last_ep
-        if rec.turns or rec.files_touched:
+        if rec.turns or rec.files_touched or rec.todos:
             out.append(rec)
     return out
 
@@ -1247,6 +1459,7 @@ def _load_cursor_sessions(
                     elif ptype == "tool_use":
                         tname = str(part.get("name") or "")
                         inp = part.get("input") if isinstance(part.get("input"), dict) else {}
+                        rec.set_todos(extract_todo_items(tname, inp))
                         if tname in ("Write", "StrReplace", "Delete", "Edit"):
                             rec.add_file(inp.get("path") or inp.get("file_path"))
                         elif tname == "ApplyPatch":
@@ -1381,6 +1594,7 @@ def _load_cursor_sessions(
                                     params = {}
                             elif isinstance(params_raw, dict):
                                 params = params_raw
+                            rec.set_todos(extract_todo_items(tname, params))
                             for k in ("target_file", "path", "file_path", "relativeWorkspacePath"):
                                 if isinstance(params.get(k), str):
                                     rec.add_file(params[k])
@@ -1564,6 +1778,7 @@ def _parse_copilot_event_stream(fpath: Path, default_cwd: str = "") -> SessionRe
         elif etype == "tool.execution_start":
             tname = str(data.get("toolName") or "")
             args = data.get("arguments")
+            rec.set_todos(extract_todo_items(tname, args))
             if isinstance(args, str) and tname == "apply_patch":
                 for p in extract_patch_paths(args):
                     rec.add_file(p)
@@ -2212,10 +2427,12 @@ def _load_devin_sessions(
     *,
     max_items: int | None = None,
     session_hint: str | None = None,
+    pid_checker: Callable[[int], bool] | None = None,
 ) -> list[SessionRecord]:
     out: list[SessionRecord] = []
     seen: set[str] = set()
     cap = max_items if max_items is not None else 100
+    check_pid = pid_checker or is_pid_alive
 
     for db_path in roots["dbs"]:
         if not db_path.is_file():
@@ -2288,6 +2505,8 @@ def _load_devin_sessions(
                     )
                     seen_msg_ids: set[str] = set()
                     call_cmds: dict[str, str] = {}
+                    open_tc_ids: set[str] = set()
+                    stream_last_role = ""
                     for _nid, _pid, mid_col_val, n_ts, chat_raw, meta_raw in chain:
                         try:
                             meta_parsed = json.loads(meta_raw) if meta_raw else {}
@@ -2307,6 +2526,8 @@ def _load_devin_sessions(
                         role = str(chat_obj.get("role") or "")
                         n_iso, _ = ts_to_iso(n_ts, None)
                         if role in ("user", "assistant"):
+                            stream_last_role = role
+                            open_tc_ids.clear()
                             cnt = chat_obj.get("content")
                             txt = ""
                             if isinstance(cnt, str):
@@ -2321,6 +2542,8 @@ def _load_devin_sessions(
                                 if not isinstance(tc, dict):
                                     continue
                                 tname = str(tc.get("name") or "")
+                                tc_id = str(tc.get("id") or f"anon-{len(open_tc_ids)}")
+                                open_tc_ids.add(tc_id)
                                 raw_a = tc.get("arguments")
                                 targs = {}
                                 if isinstance(raw_a, str):
@@ -2330,6 +2553,7 @@ def _load_devin_sessions(
                                         targs = {}
                                 elif isinstance(raw_a, dict):
                                     targs = raw_a
+                                rec.set_todos(extract_todo_items(tname, targs))
                                 if tname in ("edit", "write", "notebook_edit"):
                                     rec.add_file(targs.get("file_path") or targs.get("notebook_path"))
                                 elif tname == "apply_patch":
@@ -2337,13 +2561,16 @@ def _load_devin_sessions(
                                         rec.add_file(p)
                                 elif tname == "exec":
                                     cmd = str(targs.get("command") or "")
-                                    tc_id = str(tc.get("id") or "")
-                                    if tc_id and cmd:
-                                        call_cmds[tc_id] = cmd
+                                    raw_tc_id = str(tc.get("id") or "")
+                                    if raw_tc_id and cmd:
+                                        call_cmds[raw_tc_id] = cmd
                                     elif cmd:
                                         rec.add_command(cmd)
                         elif role == "tool":
+                            stream_last_role = "tool"
                             tc_id = str(chat_obj.get("tool_call_id") or "")
+                            if tc_id:
+                                open_tc_ids.discard(tc_id)
                             ext = (
                                 ((chat_obj.get("metadata") or {}).get("extensions") or {}).get(
                                     "chisel/terminal_output"
@@ -2358,7 +2585,19 @@ def _load_devin_sessions(
                                 )
                     for cmd in call_cmds.values():
                         rec.add_command(cmd)
-                    if rec.turns or rec.files_touched:
+                    if stream_last_role:
+                        rec.last_event_role = stream_last_role
+                    rec.has_dangling_tool_call = bool(open_tc_ids)
+                    lock_file = db_path.parent / "session_locks" / f"{sid}.lock"
+                    if lock_file.is_file():
+                        try:
+                            raw_pid = lock_file.read_text(encoding="utf-8", errors="replace").strip()
+                            if raw_pid.isdigit():
+                                rec.lock_pid = int(raw_pid)
+                                rec.lock_alive = bool(check_pid(rec.lock_pid))
+                        except OSError:
+                            pass
+                    if rec.turns or rec.files_touched or rec.todos:
                         seen.add(sid)
                         out.append(rec)
         except Exception as exc:
@@ -2397,6 +2636,7 @@ def collect_records(
     exclude_sessions: Iterable[str] = (),
     max_items: int | None = None,
     session_hint: str | None = None,
+    pid_checker: Callable[[int], bool] | None = None,
 ) -> tuple[list[SessionRecord], list[str]]:
     selected = normalize_harness_list(harnesses)
     excl_h = {HARNESS_ALIASES.get(x.lower(), x.lower()) for x in exclude_harnesses if x}
@@ -2408,7 +2648,15 @@ def collect_records(
         if h in excl_h:
             continue
         loader = LOADERS[h]
-        if h in SMART_LOADERS:
+        if h == "devin":
+            loaded = _load_devin_sessions(
+                roots[h],
+                warnings,
+                max_items=max_items,
+                session_hint=session_hint,
+                pid_checker=pid_checker,
+            )
+        elif h in SMART_LOADERS:
             loaded = loader(roots[h], warnings, max_items=max_items, session_hint=session_hint)  # type: ignore[misc]
         else:
             loaded = loader(roots[h], warnings)
@@ -2490,10 +2738,19 @@ def search_sessions(
     home: Path | None = None,
     env: dict[str, str] | None = None,
     cwd_filter: str | None = None,
+    exclude_harnesses: Iterable[str] = (),
+    exclude_sessions: Iterable[str] = (),
     limit: int = 20,
 ) -> list[dict[str, Any]]:
     q = query.strip().lower()
-    records, _ = collect_records(harnesses=harnesses, os_name=os_name, home=home, env=env)
+    records, _ = collect_records(
+        harnesses=harnesses,
+        os_name=os_name,
+        home=home,
+        env=env,
+        exclude_harnesses=exclude_harnesses,
+        exclude_sessions=exclude_sessions,
+    )
     hits: list[dict[str, Any]] = []
     for r in records:
         if not cwd_matches(r.cwd, cwd_filter):
@@ -2562,7 +2819,7 @@ def build_brief(
             if len(matches) == 1:
                 target = matches[0]
             elif len(matches) > 1:
-                ids = ", ".join(f"{m.harness}:{m.session_id[:14]}" for m in matches[:5])
+                ids = ", ".join(f"{m.harness}:{m.session_id}" for m in matches[:5])
                 raise LookupError(f"Ambiguous session prefix '{needle}'; matches: {ids}")
     if target is None:
         raise LookupError(f"Session '{session_id}' not found under harness='{harness}'")
@@ -2614,6 +2871,11 @@ def format_brief_markdown(brief: dict[str, Any]) -> str:
         for sa in brief["subagents"]:
             lines.append(f"- **`{sa['agent_id']}`**: {sa.get('task') or '-'} -> {sa.get('summary') or '-'}")
 
+    if brief.get("open_todos"):
+        lines.extend(["", "## Open Todos", ""])
+        for td in brief["open_todos"]:
+            lines.append(f"- `[{td.get('status', 'pending')}]` {td.get('content', '')}")
+
     lines.extend(["", "## 6. Recent Conversation Turns (Stopping Point)", ""])
     for t in brief.get("recent_turns") or []:
         ts_label = f" ({t['timestamp']})" if t.get("timestamp") else ""
@@ -2625,6 +2887,196 @@ def format_brief_markdown(brief: dict[str, Any]) -> str:
         lines.extend(["## Warnings", ""])
         for w in brief["warnings"]:
             lines.append(f"- {w}")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def classify_session_state(
+    rec: SessionRecord,
+    *,
+    now_epoch: float,
+    active_window_sec: float = 180.0,
+) -> tuple[str, str]:
+    open_td = rec.open_todos()
+    last_role = rec.last_event_role or (rec.turns[-1]["role"] if rec.turns else "")
+    mid_turn = rec.has_dangling_tool_call or last_role in ("user", "tool")
+    recent = rec.updated_epoch > 0 and (now_epoch - rec.updated_epoch) <= active_window_sec
+
+    last_assistant_text = ""
+    if rec.turns and rec.turns[-1]["role"] == "assistant":
+        last_assistant_text = rec.turns[-1]["text"].strip()
+    non_empty_lines = [ln.strip() for ln in last_assistant_text.splitlines() if ln.strip()]
+    tail_line = non_empty_lines[-1].rstrip(")\"'”’`*） 】]>") if non_empty_lines else ""
+    ends_with_question = bool(tail_line.endswith(("?", "？")))
+
+    if mid_turn:
+        if rec.lock_alive is True or (rec.lock_alive is None and recent):
+            return ("running", "active_tool_call" if rec.has_dangling_tool_call else f"awaiting_{last_role}_turn")
+        return ("interrupted", "dead_lock_mid_turn" if rec.lock_alive is False else "stalled_mid_turn")
+    if ends_with_question:
+        return ("waiting_for_user", "assistant_question")
+    if open_td:
+        if rec.lock_alive is True:
+            return ("waiting_for_user", "open_todos_in_live_session")
+        return ("interrupted", "unfinished_todos")
+    return ("idle", "completed")
+
+
+def radar_sessions(
+    *,
+    harnesses: Iterable[str] | str = "all",
+    os_name: str = "auto",
+    home: Path | None = None,
+    env: dict[str, str] | None = None,
+    cwd_filter: str | None = None,
+    exclude_harnesses: Iterable[str] = (),
+    exclude_sessions: Iterable[str] = (),
+    since_hours: float = 72.0,
+    active_minutes: float = 3.0,
+    include_idle: bool = False,
+    limit: int = 30,
+    now_epoch: float | None = None,
+    pid_checker: Callable[[int], bool] | None = None,
+) -> dict[str, Any]:
+    now_ep = float(dt.datetime.now(tz=dt.timezone.utc).timestamp() if now_epoch is None else now_epoch)
+    active_window_sec = max(15.0, float(active_minutes) * 60.0)
+    cutoff_ep = (now_ep - float(since_hours) * 3600.0) if since_hours and since_hours > 0 else 0.0
+    eff_home = home or Path((env or os.environ).get("USERPROFILE") or (env or os.environ).get("HOME") or str(Path.home()))
+
+    per_harness_cap = max(limit * 3, 60)
+    records, warnings = collect_records(
+        harnesses=harnesses,
+        os_name=os_name,
+        home=home,
+        env=env,
+        exclude_harnesses=exclude_harnesses,
+        exclude_sessions=exclude_sessions,
+        max_items=per_harness_cap,
+        pid_checker=pid_checker,
+    )
+
+    buckets: dict[str, list[dict[str, Any]]] = {
+        "running": [],
+        "interrupted": [],
+        "waiting_for_user": [],
+        "idle": [],
+    }
+    by_workspace: dict[str, list[dict[str, Any]]] = {}
+
+    for rec in records:
+        if not cwd_matches(rec.cwd, cwd_filter):
+            continue
+        state, reason = classify_session_state(rec, now_epoch=now_ep, active_window_sec=active_window_sec)
+        if cutoff_ep > 0 and rec.updated_epoch > 0 and rec.updated_epoch < cutoff_ep and state == "idle":
+            continue
+        if cutoff_ep > 0 and rec.updated_epoch > 0 and rec.updated_epoch < cutoff_ep and rec.lock_alive is not True:
+            if state != "interrupted":
+                continue
+
+        last_turn_tail = ""
+        if rec.turns:
+            last_turn_tail = one_line(rec.turns[-1]["text"][-220:], 140)
+        ws_group = resolve_workspace_group(rec.cwd, home=eff_home)
+        touched_groups: set[str] = {ws_group} if ws_group else set()
+        for fp in rec.files_touched[-20:]:
+            g = resolve_git_repo_group(fp, home=eff_home)
+            if g:
+                touched_groups.add(g)
+        open_td = rec.open_todos()
+        entry: dict[str, Any] = {
+            "harness": rec.harness,
+            "session_id": rec.session_id,
+            "state": state,
+            "reason": reason,
+            "updated_at": rec.updated_iso,
+            "cwd": rec.cwd,
+            "workspace_group": ws_group,
+            "git_branch": rec.git_branch,
+            "title": rec.display_title(),
+            "lock_pid": rec.lock_pid,
+            "lock_alive": rec.lock_alive,
+            "open_todos": open_td[:10],
+            "last_turn_tail": last_turn_tail,
+        }
+        if state != "idle" or include_idle:
+            if len(buckets[state]) < max(1, limit):
+                buckets[state].append(entry)
+        if state in ("running", "waiting_for_user", "interrupted"):
+            for grp_key in touched_groups:
+                by_workspace.setdefault(grp_key, []).append(entry)
+
+    contention: list[dict[str, Any]] = []
+    for ws, items in by_workspace.items():
+        distinct = {f"{it['harness']}:{it['session_id']}": it for it in items}
+        if len(distinct) >= 2 and any(it["state"] in ("running", "waiting_for_user") for it in distinct.values()):
+            contention.append(
+                {
+                    "workspace": ws,
+                    "sessions": list(distinct.keys()),
+                    "states": [f"{k} ({v['state']})" for k, v in distinct.items()],
+                }
+            )
+
+    return {
+        "counts": {
+            "running": len(buckets["running"]),
+            "interrupted": len(buckets["interrupted"]),
+            "waiting_for_user": len(buckets["waiting_for_user"]),
+            "idle": len(buckets["idle"]),
+            "repo_contention": len(contention),
+        },
+        "repo_contention": contention,
+        "buckets": buckets,
+        "warnings": warnings,
+    }
+
+
+def format_radar_markdown(report: dict[str, Any], *, include_idle: bool = False) -> str:
+    counts = report.get("counts") or {}
+    lines = [
+        "# Cross-Agent Session Radar",
+        "",
+        (
+            f"- **Running**: {counts.get('running', 0)} | "
+            f"**Interrupted / Unfinished**: {counts.get('interrupted', 0)} | "
+            f"**Waiting for User**: {counts.get('waiting_for_user', 0)} | "
+            f"**Workspace Contention**: {counts.get('repo_contention', 0)}"
+        ),
+    ]
+    if report.get("repo_contention"):
+        lines.extend(["", "## Workspace Contention", ""])
+        for item in report["repo_contention"]:
+            joined = ", ".join(f"`{s}`" for s in item.get("states") or item.get("sessions") or [])
+            lines.append(f"- **`{item['workspace']}`**: {joined}")
+
+    sections = [
+        ("running", "Running Now"),
+        ("interrupted", "Interrupted / Unfinished"),
+        ("waiting_for_user", "Waiting for User"),
+    ]
+    if include_idle:
+        sections.append(("idle", "Recently Idle"))
+
+    buckets = report.get("buckets") or {}
+    any_shown = bool(report.get("repo_contention"))
+    for key, heading in sections:
+        rows = buckets.get(key) or []
+        if not rows:
+            continue
+        any_shown = True
+        lines.extend(["", f"## {heading}", ""])
+        for r in rows:
+            pid_note = f" (pid={r['lock_pid']})" if r.get("lock_pid") and r.get("lock_alive") else ""
+            lines.append(
+                f"- `[{r['harness']}]` `{r['session_id']}`{pid_note} | {r.get('updated_at') or '?'} | "
+                f"`{r.get('cwd') or '?'}` | {r.get('title') or '(untitled)'} — *{r.get('reason')}*"
+            )
+            for td in (r.get("open_todos") or [])[:3]:
+                lines.append(f"  - todo `[{td['status']}]`: {td['content']}")
+            if r.get("last_turn_tail") and key == "waiting_for_user":
+                lines.append(f"  - last: {r['last_turn_tail']}")
+
+    if not any_shown:
+        lines.extend(["", "No active, waiting, or interrupted sessions found in the selected window."])
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -2653,6 +3105,20 @@ def run_selftest() -> dict[str, Any]:
         roots = resolve_harness_roots(os_name=os_n, home=Path(hm), env={})
         assert set(roots.keys()) == set(ALL_HARNESSES)
 
+    # 4) Radar todo normalization & state classification invariants
+    parsed_todos = extract_todo_items(
+        "todo_write",
+        {"todos": [{"content": "Ship patch", "status": "in-progress"}, {"content": "Done step", "status": "done"}]},
+    )
+    assert parsed_todos == [
+        {"content": "Ship patch", "status": "in_progress"},
+        {"content": "Done step", "status": "completed"},
+    ]
+    probe_rec = SessionRecord(harness="devin", session_id="selftest-1", source_path="mem", updated_epoch=100.0)
+    probe_rec.add_turn("user", "Run unit tests")
+    probe_rec.lock_alive = False
+    assert classify_session_state(probe_rec, now_epoch=500.0)[0] == "interrupted"
+
     return {
         "ok": True,
         "harnesses_supported": list(ALL_HARNESSES),
@@ -2662,6 +3128,7 @@ def run_selftest() -> dict[str, Any]:
             "tamper_rejected": tamper_rejected,
             "secrets_redacted": True,
             "sqlite_readonly_uri": True,
+            "radar_state_classification": True,
         },
     }
 
@@ -2672,30 +3139,47 @@ def main(argv: list[str] | None = None) -> int:
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    for name in ("discover", "list", "search", "brief", "selftest"):
+    for name in ("discover", "list", "search", "brief", "radar", "selftest"):
         sp = sub.add_parser(name)
         if name != "selftest":
             sp.add_argument("--os", default="auto", choices=["auto", "macos", "linux", "windows"])
             sp.add_argument("--home", default=None, help="Override HOME/USERPROFILE root")
             sp.add_argument("--format", default="markdown", choices=["markdown", "json"])
-        if name in ("list", "search", "brief"):
+        if name in ("list", "search", "brief", "radar"):
             sp.add_argument(
                 "--harness",
                 default="all",
                 help="Comma-separated harnesses (claude,codex,cursor,windsurf,copilot,kiro,opencode,zed,devin,all)",
             )
             sp.add_argument("--cwd", default=None, help="Filter sessions matching workspace path")
-        if name in ("list", "brief"):
             sp.add_argument("--exclude-harness", action="append", default=[], help="Exclude host harness")
             sp.add_argument("--exclude-session", action="append", default=[], help="Exclude active session ID/prefix")
-        if name in ("list", "search"):
-            sp.add_argument("--limit", type=int, default=15)
+        if name in ("list", "search", "radar"):
+            sp.add_argument("--limit", type=int, default=15 if name != "radar" else 30)
         if name == "search":
             sp.add_argument("query", help="Keyword or phrase to search across transcripts")
         if name == "brief":
             sp.add_argument("--session", default=None, help="Session ID or unique prefix")
             sp.add_argument("--latest", action="store_true", help="Pick most recent matching session")
             sp.add_argument("--turns", type=int, default=6, help="Number of trailing turns to include")
+        if name == "radar":
+            sp.add_argument(
+                "--since-hours",
+                type=float,
+                default=72.0,
+                help="Lookback window in hours for inactive sessions (0 = unlimited)",
+            )
+            sp.add_argument(
+                "--active-minutes",
+                type=float,
+                default=3.0,
+                help="Recency threshold in minutes to treat lockless mid-turn transcripts as running",
+            )
+            sp.add_argument(
+                "--include-idle",
+                action="store_true",
+                help="Also list cleanly completed idle sessions",
+            )
 
     args = parser.parse_args(argv)
     if args.cmd == "selftest":
@@ -2734,7 +3218,7 @@ def main(argv: list[str] | None = None) -> int:
                     print("No matching sessions found.")
                 for r in rows:
                     print(
-                        f"- `[{r['harness']}]` `{r['session_id'][:14]}` | {r['updated_at'] or '?'} | "
+                        f"- `[{r['harness']}]` `{r['session_id']}` | {r['updated_at'] or '?'} | "
                         f"`{r['cwd'] or '?'}` | {r['title']} (turns={r['turn_count']}, files={r['files_touched_count']})"
                     )
             return 0
@@ -2746,6 +3230,8 @@ def main(argv: list[str] | None = None) -> int:
                 os_name=args.os,
                 home=home_path,
                 cwd_filter=args.cwd,
+                exclude_harnesses=args.exclude_harness,
+                exclude_sessions=args.exclude_session,
                 limit=args.limit,
             )
             if args.format == "json":
@@ -2755,9 +3241,28 @@ def main(argv: list[str] | None = None) -> int:
                     print("No matching sessions found.")
                 for r in hits:
                     print(
-                        f"- `[{r['harness']}]` `{r['session_id'][:14]}` | {r['updated_at'] or '?'} | "
+                        f"- `[{r['harness']}]` `{r['session_id']}` | {r['updated_at'] or '?'} | "
                         f"`{r['cwd'] or '?'}` | {r['match_snippet']}"
                     )
+            return 0
+
+        if args.cmd == "radar":
+            report = radar_sessions(
+                harnesses=args.harness,
+                os_name=args.os,
+                home=home_path,
+                cwd_filter=args.cwd,
+                exclude_harnesses=args.exclude_harness,
+                exclude_sessions=args.exclude_session,
+                since_hours=args.since_hours,
+                active_minutes=args.active_minutes,
+                include_idle=args.include_idle,
+                limit=args.limit,
+            )
+            if args.format == "json":
+                print(json.dumps(report, indent=2, ensure_ascii=False))
+            else:
+                print(format_radar_markdown(report, include_idle=args.include_idle), end="")
             return 0
 
         if args.cmd == "brief":

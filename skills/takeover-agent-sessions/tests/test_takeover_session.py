@@ -959,5 +959,537 @@ class TestAllNineHarnessAdapters(unittest.TestCase):
         self.assertTrue(payload["ok"])
 
 
+class TestSessionRadarAndCheckpoints(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.home = Path(self._tmp.name) / "home"
+        self.xdg_data = self.home / ".local" / "share"
+        self.xdg_config = self.home / ".config"
+        for p in (self.home, self.xdg_data, self.xdg_config):
+            p.mkdir(parents=True, exist_ok=True)
+        self.env = {
+            "HOME": str(self.home),
+            "USERPROFILE": str(self.home),
+            "XDG_DATA_HOME": str(self.xdg_data),
+            "XDG_CONFIG_HOME": str(self.xdg_config),
+        }
+        self.now_epoch = 1795608000.0  # 2026-11-25T12:00:00Z
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _create_devin_store(self) -> tuple[Path, Path]:
+        devin_dir = self.xdg_data / "devin" / "cli"
+        locks_dir = devin_dir / "session_locks"
+        locks_dir.mkdir(parents=True, exist_ok=True)
+        db = devin_dir / "sessions.db"
+        conn = sqlite3.connect(db)
+        conn.executescript(
+            """
+            CREATE TABLE sessions (
+                id TEXT PRIMARY KEY,
+                working_directory TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                last_activity_at INTEGER NOT NULL,
+                title TEXT,
+                main_chain_id INTEGER,
+                hidden INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE TABLE message_nodes (
+                row_id INTEGER PRIMARY KEY,
+                session_id TEXT NOT NULL,
+                node_id INTEGER NOT NULL,
+                parent_node_id INTEGER,
+                chat_message TEXT NOT NULL,
+                created_at INTEGER NOT NULL,
+                metadata TEXT
+            );
+            """
+        )
+        conn.commit()
+        conn.close()
+        return db, locks_dir
+
+    def test_radar_classifies_running_interrupted_waiting_and_idle(self):
+        db, locks_dir = self._create_devin_store()
+        conn = sqlite3.connect(db)
+
+        # 1) Running Devin session: live lock PID 1001 + dangling exec tool_call
+        conn.execute(
+            "INSERT INTO sessions VALUES ('amber-falcon-alpha', '/work/acme-payments', ?, ?, 'Run integration suite', 2, 0)",
+            (int(self.now_epoch - 120), int(self.now_epoch - 5)),
+        )
+        conn.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    "amber-falcon-alpha",
+                    1,
+                    None,
+                    json.dumps({"role": "user", "message_id": "u1", "content": "Run payment integration suite"}),
+                    int(self.now_epoch - 120),
+                    "null",
+                ),
+                (
+                    "amber-falcon-alpha",
+                    2,
+                    1,
+                    json.dumps(
+                        {
+                            "role": "assistant",
+                            "message_id": "a1",
+                            "content": "Running pytest now.",
+                            "tool_calls": [
+                                {"id": "tc-run-1", "name": "exec", "arguments": json.dumps({"command": "pytest -q"})}
+                            ],
+                        }
+                    ),
+                    int(self.now_epoch - 5),
+                    "null",
+                ),
+            ],
+        )
+        (locks_dir / "amber-falcon-alpha.lock").write_text("1001\n", encoding="utf-8")
+
+        # 2) Interrupted Devin session: dead lock PID 1002 + stopped on tool output mid-turn
+        conn.execute(
+            "INSERT INTO sessions VALUES ('cobalt-otter-bravo', '/work/billing-worker', ?, ?, 'Migrate retry queue', 3, 0)",
+            (int(self.now_epoch - 3600), int(self.now_epoch - 1800)),
+        )
+        conn.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    "cobalt-otter-bravo",
+                    1,
+                    None,
+                    json.dumps({"role": "user", "message_id": "u2", "content": "Migrate retry queue to Redis streams"}),
+                    int(self.now_epoch - 3600),
+                    "null",
+                ),
+                (
+                    "cobalt-otter-bravo",
+                    2,
+                    1,
+                    json.dumps(
+                        {
+                            "role": "assistant",
+                            "message_id": "a2",
+                            "content": "",
+                            "tool_calls": [
+                                {
+                                    "id": "tc-todo-2",
+                                    "name": "todo_write",
+                                    "arguments": json.dumps(
+                                        {
+                                            "todos": [
+                                                {"content": "Wire stream consumer", "status": "in_progress"},
+                                                {"content": "Add dead-letter tests", "status": "pending"},
+                                            ]
+                                        }
+                                    ),
+                                }
+                            ],
+                        }
+                    ),
+                    int(self.now_epoch - 1810),
+                    "null",
+                ),
+                (
+                    "cobalt-otter-bravo",
+                    3,
+                    2,
+                    json.dumps({"role": "tool", "tool_call_id": "tc-todo-2", "content": "Todos updated"}),
+                    int(self.now_epoch - 1800),
+                    "null",
+                ),
+            ],
+        )
+        (locks_dir / "cobalt-otter-bravo.lock").write_text("1002\n", encoding="utf-8")
+
+        # 3) Cleanly completed idle Devin session: dead lock PID 1003 + all todos completed
+        conn.execute(
+            "INSERT INTO sessions VALUES ('emerald-heron-delta', '/work/docs-portal', ?, ?, 'Fix broken links', 3, 0)",
+            (int(self.now_epoch - 7200), int(self.now_epoch - 7000)),
+        )
+        conn.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    "emerald-heron-delta",
+                    1,
+                    None,
+                    json.dumps({"role": "user", "message_id": "u3", "content": "Fix broken anchor links"}),
+                    int(self.now_epoch - 7200),
+                    "null",
+                ),
+                (
+                    "emerald-heron-delta",
+                    2,
+                    1,
+                    json.dumps(
+                        {
+                            "role": "assistant",
+                            "message_id": "a3-tc",
+                            "content": "",
+                            "tool_calls": [
+                                {
+                                    "id": "tc-todo-3",
+                                    "name": "todo_write",
+                                    "arguments": json.dumps(
+                                        {"todos": [{"content": "Fix README anchors", "status": "completed"}]}
+                                    ),
+                                }
+                            ],
+                        }
+                    ),
+                    int(self.now_epoch - 7050),
+                    "null",
+                ),
+                (
+                    "emerald-heron-delta",
+                    3,
+                    2,
+                    json.dumps(
+                        {
+                            "role": "assistant",
+                            "message_id": "a3-done",
+                            "content": "All anchor links have been updated and verified.",
+                        }
+                    ),
+                    int(self.now_epoch - 7000),
+                    "null",
+                ),
+            ],
+        )
+        (locks_dir / "emerald-heron-delta.lock").write_text("1003\n", encoding="utf-8")
+        conn.commit()
+        conn.close()
+
+        # 4) Waiting-for-user Codex session: assistant finished by asking a decision question + open update_plan item
+        codex_dir = self.home / ".codex" / "sessions" / "2026" / "11" / "25"
+        codex_dir.mkdir(parents=True, exist_ok=True)
+        codex_file = codex_dir / "rollout-2026-11-25T10-00-00-11111111-2222-3333-4444-555555555555.jsonl"
+        codex_rows = [
+            {
+                "timestamp": "2026-11-25T10:00:00Z",
+                "type": "session_meta",
+                "payload": {"id": "11111111-2222-3333-4444-555555555555", "cwd": "/work/auth-gateway"},
+            },
+            {
+                "timestamp": "2026-11-25T10:00:05Z",
+                "type": "response_item",
+                "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Add rate limiter"}]},
+            },
+            {
+                "timestamp": "2026-11-25T10:00:10Z",
+                "type": "response_item",
+                "payload": {
+                    "type": "function_call",
+                    "call_id": "plan-1",
+                    "name": "update_plan",
+                    "arguments": json.dumps(
+                        {
+                            "plan": [
+                                {"step": "Inspect middleware", "status": "completed"},
+                                {"step": "Implement token bucket", "status": "pending"},
+                            ]
+                        }
+                    ),
+                },
+            },
+            {
+                "timestamp": "2026-11-25T10:00:11Z",
+                "type": "response_item",
+                "payload": {"type": "function_call_output", "call_id": "plan-1", "output": "Plan updated"},
+            },
+            {
+                "timestamp": "2026-11-25T10:00:20Z",
+                "type": "response_item",
+                "payload": {
+                    "type": "message",
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "output_text",
+                            "text": "Should we key the token bucket by API key or by client IP?",
+                        }
+                    ],
+                },
+            },
+        ]
+        codex_file.write_text("\n".join(json.dumps(r) for r in codex_rows) + "\n", encoding="utf-8")
+
+        # 5) Claude session closed while TodoWrite still had pending items (no question asked) -> interrupted
+        claude_proj = self.home / ".claude" / "projects" / "-work-search-indexer"
+        claude_proj.mkdir(parents=True, exist_ok=True)
+        claude_file = claude_proj / "sess-claude-unfinished.jsonl"
+        claude_rows = [
+            {
+                "type": "user",
+                "sessionId": "sess-claude-unfinished",
+                "cwd": "/work/search-indexer",
+                "timestamp": "2026-11-25T09:00:00Z",
+                "message": {"role": "user", "content": "Add BM25 index rebuild command"},
+            },
+            {
+                "type": "assistant",
+                "sessionId": "sess-claude-unfinished",
+                "cwd": "/work/search-indexer",
+                "timestamp": "2026-11-25T09:01:00Z",
+                "message": {
+                    "role": "assistant",
+                    "content": [
+                        {"type": "text", "text": "Created schema migration; moving to CLI entrypoint next."},
+                        {
+                            "type": "tool_use",
+                            "id": "tu-todo-1",
+                            "name": "TodoWrite",
+                            "input": {
+                                "todos": [
+                                    {"content": "Create schema migration", "status": "completed"},
+                                    {"content": "Wire CLI rebuild flag", "status": "in_progress"},
+                                ]
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                "type": "user",
+                "sessionId": "sess-claude-unfinished",
+                "cwd": "/work/search-indexer",
+                "timestamp": "2026-11-25T09:01:01Z",
+                "toolUseResult": "ok",
+                "message": {
+                    "role": "user",
+                    "content": [{"type": "tool_result", "tool_use_id": "tu-todo-1", "content": "saved"}],
+                },
+            },
+            {
+                "type": "assistant",
+                "sessionId": "sess-claude-unfinished",
+                "cwd": "/work/search-indexer",
+                "timestamp": "2026-11-25T09:01:10Z",
+                "message": {
+                    "role": "assistant",
+                    "content": [{"type": "text", "text": "Schema migration saved."}],
+                },
+            },
+        ]
+        claude_file.write_text("\n".join(json.dumps(r) for r in claude_rows) + "\n", encoding="utf-8")
+
+        report = ts.radar_sessions(
+            harnesses=["devin", "codex", "claude"],
+            os_name="linux",
+            home=self.home,
+            env=self.env,
+            now_epoch=self.now_epoch,
+            since_hours=72.0,
+            include_idle=True,
+            pid_checker=lambda pid: pid == 1001,
+        )
+
+        running_ids = [s["session_id"] for s in report["buckets"]["running"]]
+        interrupted_ids = [s["session_id"] for s in report["buckets"]["interrupted"]]
+        waiting_ids = [s["session_id"] for s in report["buckets"]["waiting_for_user"]]
+        idle_ids = [s["session_id"] for s in report["buckets"]["idle"]]
+
+        self.assertEqual(running_ids, ["amber-falcon-alpha"])
+        self.assertIn("cobalt-otter-bravo", interrupted_ids)
+        self.assertIn("sess-claude-unfinished", interrupted_ids)
+        self.assertEqual(waiting_ids, ["11111111-2222-3333-4444-555555555555"])
+        self.assertEqual(idle_ids, ["emerald-heron-delta"])
+
+        cobalt_entry = next(s for s in report["buckets"]["interrupted"] if s["session_id"] == "cobalt-otter-bravo")
+        self.assertEqual(len(cobalt_entry["open_todos"]), 2)
+
+        brief = ts.build_brief("devin", "cobalt-otter-bravo", os_name="linux", home=self.home, env=self.env)
+        self.assertEqual(len(brief["open_todos"]), 2)
+        self.assertIn("Wire stream consumer", format_md := ts.format_brief_markdown(brief))
+        self.assertIn("Open Todos", format_md)
+
+    def test_radar_detects_workspace_contention_across_linked_git_worktrees(self):
+        main_repo = Path(self._tmp.name) / "repos" / "acme-payments"
+        (main_repo / ".git" / "worktrees" / "wt-retry").mkdir(parents=True, exist_ok=True)
+        wt_repo = Path(self._tmp.name) / "worktrees" / "acme-wt-retry"
+        wt_repo.mkdir(parents=True, exist_ok=True)
+        (wt_repo / ".git").write_text(
+            f"gitdir: {(main_repo / '.git' / 'worktrees' / 'wt-retry').as_posix()}\n",
+            encoding="utf-8",
+        )
+
+        db, locks_dir = self._create_devin_store()
+        conn = sqlite3.connect(db)
+        conn.execute(
+            "INSERT INTO sessions VALUES ('devin-main-worker', '/work/scratch-launchpad', ?, ?, 'Edit main checkout', 2, 0)",
+            (int(self.now_epoch - 60), int(self.now_epoch - 5)),
+        )
+        conn.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                ("devin-main-worker", 1, None, json.dumps({"role": "user", "content": "Refactor retry policy"}), int(self.now_epoch - 60), "null"),
+                (
+                    "devin-main-worker",
+                    2,
+                    1,
+                    json.dumps(
+                        {
+                            "role": "assistant",
+                            "content": "Editing retry.py",
+                            "tool_calls": [
+                                {
+                                    "id": "tc1",
+                                    "name": "edit",
+                                    "arguments": json.dumps({"file_path": str(main_repo / "retry.py")}),
+                                }
+                            ],
+                        }
+                    ),
+                    int(self.now_epoch - 5),
+                    "null",
+                ),
+            ],
+        )
+        (locks_dir / "devin-main-worker.lock").write_text("2001\n", encoding="utf-8")
+
+        # Two unrelated sessions in $HOME should NOT trigger repo contention
+        conn.execute(
+            "INSERT INTO sessions VALUES ('home-chat-1', ?, ?, ?, 'Home question 1', 2, 0)",
+            (str(self.home), int(self.now_epoch - 50), int(self.now_epoch - 10)),
+        )
+        conn.execute(
+            "INSERT INTO sessions VALUES ('home-chat-2', ?, ?, ?, 'Home question 2', 2, 0)",
+            (str(self.home), int(self.now_epoch - 40), int(self.now_epoch - 8)),
+        )
+        conn.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                ("home-chat-1", 1, None, json.dumps({"role": "user", "content": "Check shell config"}), int(self.now_epoch - 50), "null"),
+                ("home-chat-1", 2, 1, json.dumps({"role": "assistant", "content": "Want zsh or bash?"}), int(self.now_epoch - 10), "null"),
+                ("home-chat-2", 1, None, json.dumps({"role": "user", "content": "Check aliases"}), int(self.now_epoch - 40), "null"),
+                ("home-chat-2", 2, 1, json.dumps({"role": "assistant", "content": "Keep existing alias?"}), int(self.now_epoch - 8), "null"),
+            ],
+        )
+        (locks_dir / "home-chat-1.lock").write_text("2002\n", encoding="utf-8")
+        (locks_dir / "home-chat-2.lock").write_text("2003\n", encoding="utf-8")
+        conn.commit()
+        conn.close()
+
+        # Parallel Claude session operating in linked worktree of the same repository
+        claude_proj = self.home / ".claude" / "projects" / "-worktrees-acme-wt-retry"
+        claude_proj.mkdir(parents=True, exist_ok=True)
+        claude_file = claude_proj / "sess-claude-wt.jsonl"
+        claude_rows = [
+            {
+                "type": "user",
+                "sessionId": "sess-claude-wt",
+                "cwd": str(wt_repo / "src"),
+                "timestamp": "2026-11-25T11:59:50Z",
+                "message": {"role": "user", "content": "Also update retry backoff constants"},
+            },
+            {
+                "type": "assistant",
+                "sessionId": "sess-claude-wt",
+                "cwd": str(wt_repo / "src"),
+                "timestamp": "2026-11-25T11:59:55Z",
+                "message": {"role": "assistant", "content": "**(Should we cap max delay at 30s or 60s?)**"},
+            },
+        ]
+        claude_file.write_text("\n".join(json.dumps(r) for r in claude_rows) + "\n", encoding="utf-8")
+
+        report = ts.radar_sessions(
+            harnesses=["devin", "claude"],
+            os_name="linux",
+            home=self.home,
+            env=self.env,
+            now_epoch=self.now_epoch,
+            since_hours=72.0,
+            pid_checker=lambda pid: pid in (2001, 2002, 2003),
+        )
+        self.assertEqual(len(report["repo_contention"]), 1)
+        contended = report["repo_contention"][0]
+        self.assertIn("acme-payments", contended["workspace"])
+        self.assertEqual(
+            set(contended["sessions"]),
+            {"devin:devin-main-worker", "claude:sess-claude-wt"},
+        )
+
+    def test_cli_preserves_full_session_ids_and_supports_radar_and_search_exclusion(self):
+        db, locks_dir = self._create_devin_store()
+        conn = sqlite3.connect(db)
+        long_id = "cobalt-otter-bravo-session"
+        conn.execute(
+            "INSERT INTO sessions VALUES (?, '/work/acme-payments', ?, ?, 'Webhook retry audit', 2, 0)",
+            (long_id, int(self.now_epoch - 100), int(self.now_epoch - 20)),
+        )
+        conn.executemany(
+            "INSERT INTO message_nodes (session_id, node_id, parent_node_id, chat_message, created_at, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                (long_id, 1, None, json.dumps({"role": "user", "content": "Audit webhook retry queue"}), int(self.now_epoch - 100), "null"),
+                (long_id, 2, 1, json.dumps({"role": "assistant", "content": "Ready to apply retry patch?"}), int(self.now_epoch - 20), "null"),
+            ],
+        )
+        (locks_dir / f"{long_id}.lock").write_text("3001\n", encoding="utf-8")
+        conn.commit()
+        conn.close()
+
+        script = SCRIPTS_DIR / "takeover_session.py"
+        list_proc = subprocess.run(
+            [sys.executable, str(script), "list", "--os", "linux", "--home", str(self.home), "--harness", "devin"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(list_proc.returncode, 0, msg=list_proc.stderr)
+        self.assertIn(long_id, list_proc.stdout)
+
+        excl_search = subprocess.run(
+            [
+                sys.executable,
+                str(script),
+                "search",
+                "webhook",
+                "--os",
+                "linux",
+                "--home",
+                str(self.home),
+                "--harness",
+                "devin",
+                "--exclude-session",
+                long_id,
+            ],
+            env=self.env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(excl_search.returncode, 0, msg=excl_search.stderr)
+        self.assertIn("No matching sessions found", excl_search.stdout)
+
+        radar_proc = subprocess.run(
+            [
+                sys.executable,
+                str(script),
+                "radar",
+                "--os",
+                "linux",
+                "--home",
+                str(self.home),
+                "--harness",
+                "devin",
+                "--since-hours",
+                "0",
+            ],
+            env=self.env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(radar_proc.returncode, 0, msg=radar_proc.stderr)
+        self.assertIn(long_id, radar_proc.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()
