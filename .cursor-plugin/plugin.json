@@ -1,8 +1,8 @@
 {
   "name": "polish",
   "displayName": "Polish",
-  "description": "Personal collection of curated, self-made, and adapted agent skills, including uncertainty-first defect investigation, project-wide contract exploration, portable frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, research, two-axis code review, setup wizards, and writing for agents). Includes consistent-term-translation-polish-guard.",
-  "version": "0.4.0",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including longitudinal time-series chronicle and Sankey synthesis, uncertainty-first defect investigation, project-wide contract exploration, portable frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, research, two-axis code review, setup wizards, and writing for agents). Includes consistent-term-translation-polish-guard.",
+  "version": "0.5.0",
   "author": {
     "name": "host452b"
   },
@@ -47,7 +47,10 @@
     "decision-analysis",
     "risk-inversion",
     "session-handoff",
-    "agent-history"
+    "agent-history",
+    "time-series",
+    "sankey",
+    "chronicle"
   ],
   "skills": "./skills/"
 }

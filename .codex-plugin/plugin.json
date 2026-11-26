@@ -1,7 +1,7 @@
 {
   "name": "polish",
-  "version": "0.4.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills for prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety. Includes consistent-term-translation-polish-guard and prefixed Matt Pocock engineering skills.",
+  "version": "0.5.0",
+  "description": "Personal collection of curated, self-made, and adapted agent skills for longitudinal time-series chronicle synthesis, prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety. Includes consistent-term-translation-polish-guard and prefixed Matt Pocock engineering skills.",
   "author": {
     "name": "host452b"
   },
@@ -48,13 +48,16 @@
     "decision-analysis",
     "risk-inversion",
     "session-handoff",
-    "agent-history"
+    "agent-history",
+    "time-series",
+    "sankey",
+    "chronicle"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes cross-agent local session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, primary-source research, two-axis code review, interactive setup wizards, and writing for agents). git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes longitudinal time-series chronicle and Sankey synthesis, cross-agent local session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, primary-source research, two-axis code review, interactive setup wizards, and writing for agents). git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [
@@ -65,6 +68,7 @@
       "Use prompt-polish to rewrite this prompt: ...",
       "Rewrite this question for a better LLM answer.",
       "Use takeover-agent-sessions to inspect my recent session in another coding agent for this workspace and finish the remaining work.",
+      "Use synthesizing-time-series-chronicles to turn this multi-year event archive into conservation Sankey charts, velocity heatmaps, and a living multi-chapter chronicle.",
       "Use analyzing-risk-decisions to invert the break-even probability, max justifiable cost, and tail-risk trade-offs across these options.",
       "Use find-a-bug to investigate this project's failure and verify the unknowns that could change the diagnosis.",
       "Use project-bug-hunting to explore this repository for unknown functional defects and report evidence and coverage limits.",
