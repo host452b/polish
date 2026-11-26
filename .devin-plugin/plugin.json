@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.5.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills, including longitudinal time-series chronicle and Sankey synthesis, cross-agent session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including AI Agent & Harness engineering (KV-cache context, Poka-yoke MCP tools, AST-scanned harness hardening, multi-agent workflows, dual-layer memory & RAG, async/voice/GUI ingress, paired evaluation & self-evolution, skill auditing), longitudinal time-series chronicle and Sankey synthesis, cross-agent session takeover, prompt rewriting, probabilistic risk threshold inversion, defect investigation, frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills.",
   "author": {
     "name": "host452b"
   },
@@ -25,6 +25,13 @@
     "translation",
     "time-series",
     "sankey",
+    "ai-agent",
+    "harness-engineering",
+    "context-engineering",
+    "kv-cache",
+    "mcp",
+    "multi-agent",
+    "agent-evaluation",
     "personal-skills"
   ],
   "skills": "skills"

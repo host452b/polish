@@ -4,13 +4,13 @@
     "name": "host452b"
   },
   "metadata": {
-    "description": "Curated agent skills for longitudinal time-series chronicle synthesis, prompt rewriting, probabilistic decision analysis, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety. Includes English-Chinese translation and prefixed Matt Pocock engineering skills."
+    "description": "Curated agent skills for AI Agent & Harness engineering, longitudinal time-series chronicle synthesis, prompt rewriting, probabilistic decision analysis, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety. Includes English-Chinese translation and prefixed Matt Pocock engineering skills."
   },
   "plugins": [
     {
       "name": "polish",
       "source": "./",
-      "description": "Personal collection of curated, self-made, and adapted agent skills. Includes longitudinal time-series chronicle and Sankey synthesis, cross-agent local session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste and design-system workflows, shadcn/ui guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, research, two-axis code review, setup wizards, and writing for agents). Also includes git-commit-message and consistent-term-translation-polish-guard."
+      "description": "Personal collection of curated, self-made, and adapted agent skills. Includes an 8-skill AI Agent & Harness engineering suite (skill auditing, KV-cache context architecture, Poka-yoke MCP tools, AST-scanned harness hardening, multi-agent workflows, dual-layer memory & RAG, async/voice/GUI ingress, paired evaluation & self-evolution), longitudinal time-series chronicle and Sankey synthesis, cross-agent session takeover, prompt rewriting, probabilistic risk threshold inversion, defect investigation, frontend design workflows, prefixed Superpowers workflows, prefixed Matt Pocock engineering skills, git-commit-message, and consistent-term-translation-polish-guard."
     }
   ]
 }

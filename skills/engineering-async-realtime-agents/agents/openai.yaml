@@ -1,0 +1,7 @@
+interface:
+  display_name: "engineering-async-realtime-agents"
+  short_description: "Build async event ingress, fast/slow voice, Computer Use, and GenUI apps"
+  default_prompt: "Use $engineering-async-realtime-agents to design or audit our webhook/queue event ingress, fast/slow voice handoff, GUI grounding, and data-layer RLS."
+
+policy:
+  allow_implicit_invocation: true

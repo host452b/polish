@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.5.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills for longitudinal time-series chronicle synthesis, prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety. Includes consistent-term-translation-polish-guard and prefixed Matt Pocock engineering skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills for AI Agent & Harness engineering (KV-cache context, MCP tools, AST-scanned harness hardening, multi-agent workflows, memory & RAG, async/voice/GUI ingress, paired evaluation, skill auditing), longitudinal time-series chronicle synthesis, prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety.",
   "author": {
     "name": "host452b"
   },
@@ -51,13 +51,20 @@
     "agent-history",
     "time-series",
     "sankey",
-    "chronicle"
+    "chronicle",
+    "ai-agent",
+    "harness-engineering",
+    "context-engineering",
+    "kv-cache",
+    "mcp",
+    "multi-agent",
+    "agent-evaluation"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Polish",
     "shortDescription": "Curated personal skills for agent workflows",
-    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes longitudinal time-series chronicle and Sankey synthesis, cross-agent local session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, primary-source research, two-axis code review, interactive setup wizards, and writing for agents). git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
+    "longDescription": "Polish is a personal collection of curated, self-made, and adapted agent skills. It includes an 8-skill AI Agent & Harness engineering suite (skill auditing, KV-cache context architecture, Poka-yoke MCP tools, AST-scanned harness hardening, multi-agent workflows, dual-layer memory & RAG, async/voice/GUI ingress, paired evaluation & self-evolution), longitudinal time-series chronicle and Sankey synthesis, cross-agent local session takeover, prompt rewriting, probabilistic decision analysis and risk threshold inversion, uncertainty-first defect investigation, project-wide contract exploration, duplicate-file planning, pre-push risk review, portable frontend taste, design-system extraction, brief enhancement, shadcn/ui implementation guidance, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills (domain modeling, deep-module design, grilling, prototyping, primary-source research, two-axis code review, interactive setup wizards, and writing for agents). git-commit-message drafts and reviews messages using GitLab and GitHub conventions. consistent-term-translation-polish-guard provides English-Chinese translation and polishing with stable terminology and acronym bindings.",
     "developerName": "host452b",
     "category": "Productivity",
     "capabilities": [

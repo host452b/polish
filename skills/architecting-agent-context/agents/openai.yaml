@@ -1,0 +1,7 @@
+interface:
+  display_name: "architecting-agent-context"
+  short_description: "Design KV-cache-friendly context windows, status bars, and compression"
+  default_prompt: "Use $architecting-agent-context to audit or design our agent's message loop, KV cache prefix stability, status bar, and context compression."
+
+policy:
+  allow_implicit_invocation: true

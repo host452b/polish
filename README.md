@@ -44,23 +44,32 @@ Currently included:
 - `mattpocock-code-review` - reviews changes since a fixed point in parallel along two separate axes: Standards and Spec.
 - `mattpocock-wizard` - generates an interactive bash wizard for manual setup, credential, or migration steps only a human can perform.
 - `mattpocock-writing-for-agents` - reference for structuring, sharpening, and pruning agent-consumed documents (`SKILL.md`, `AGENTS.md`, `CLAUDE.md`).
+- `auditing-agent-skills` - scans `SKILL.md` / `AGENTS.md` collections for SDO workflow-summary shortcuts, dead repo paths, sprawl, KV-cache busting, and injection surfaces (`scripts/audit_skills.py`) and diagnoses the 4-layer skill benefit funnel.
+- `architecting-agent-context` - designs stateless LLM API loops, KV/Prompt Cache prefix invariance, provider thinking-block continuations, code-maintained Status Bars (`scripts/estimate_status_bar_cache_cost.py`), and 5-tier compression vs. subagent isolation.
+- `designing-agent-tools-mcp` - designs Poka-yoke ACI tools, Code Mode vs. dedicated interfaces, byte/Unicode parameter fidelity, MCP supply-chain defenses, and 2-stage active tool discovery.
+- `hardening-agent-harness` - scans Python/TS agent codebases for `H001`–`H007` fragility anti-patterns (`scripts/scan_agent_repo.py`) and hardens the 5-pillar Harness against silent data fabrication, hung streams, retry death spirals, non-idempotent replays, and cross-provider failover crashes.
+- `orchestrating-multi-agent-workflows` - applies the New-Information Criterion across Single-Agent, Workflow, and Multi-Agent systems (`load_skill` vs. `transfer_to_agent`, Proposer–Reviewer / LoopX / MEA loops, atomic SQLite CAS settlement, 4-zone VFS, and A2A).
+- `architecting-agent-memory-rag` - designs Dual-Layer User Memory (`Advanced JSON Cards` + `User as Code` + ADD-only logs), Contextual + Hybrid `BM25`/Dense RRF retrieval, `RAPTOR`/`GraphRAG`, index-level tenant ACLs, and PR-reviewed knowledge updates.
+- `engineering-async-realtime-agents` - builds Unified Event Ingress (`ACK-after-append` + 3-progress split), Fast/Slow full-duplex voice handoffs, Computer Use grounding & coordinate scaling, and Generative UI + Data-Layer RLS.
+- `evaluating-evolving-agents` - evaluates `Model + Harness` systems with `Pass@k` / `Pass^k`, Dual-Control verifiers, paired McNemar/bootstrap stats (`scripts/paired_eval_stats.py`), trajectory-prefix regressions, and 4-carrier / post-training routing.
 
 ## Portfolio Orthogonality & Routing
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **32** | Total `description` footprint: **9,353 chars** (avg **292 chars/skill**), keeping always-loaded context overhead compact |
-| Functional orthogonality | **~86%** (~14% overlap) | Adjacent skills differ in method and artifact rather than duplicating workflows |
-| Trigger orthogonality | **~88%** (~12% overlap; raised from ~68%) | Formerly overlapping clusters carry explicit mutual-routing pointers in `description` |
-| Standalone single-purpose skills | **12 / 32 (37.5%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
-| Pipeline & complementary cluster skills | **20 / 32 (62.5%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), and agent docs (2) |
+| Total skills | **40** | Total `description` footprint: **12,298 chars** (avg **307 chars/skill**), keeping always-loaded context overhead compact |
+| Functional orthogonality | **~90%** (~10% overlap) | Adjacent skills differ in method, target boundary, and output contract rather than duplicating workflows |
+| Trigger orthogonality | **~91%** (~9% overlap; raised from ~68%) | Overlapping clusters carry explicit mutual-routing pointers in `description` |
+| Standalone single-purpose skills | **12 / 40 (30.0%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
+| Pipeline & complementary cluster skills | **28 / 40 (70.0%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), agent docs/skills (3), and AI Agent & Harness engineering (7) |
 
 Key routing boundaries across adjacent skills:
 
 - **Debugging**: surfaced logs/errors/issues → `superpowers-systematic-debugging`; exploratory repo-reading & uncertainty-gated defect audit → `find-a-bug`; full-repo C++/Python 7-contract sweep → `project-bug-hunting`.
 - **Ideation**: rapid multi-question frontier stress-test → `mattpocock-grilling`; step-by-step convergence into a committed design spec & plan → `superpowers-brainstorming`.
 - **Critique, blind spots & risk math**: product loops, market/business assumptions, and qualitative non-code critique → `yc-rejection-simulator`; unfamiliar codebase idioms, framework conventions, and engineering/ops blind spots → `find-blind-spots`; quantitative payoffs, tail constraints, CARA utility, and break-even / reservation-price / $R^*$ inversion → `analyzing-risk-decisions`.
-- **Agent authoring**: document structure, pointers, and `AGENTS.md`/`CLAUDE.md` → `mattpocock-writing-for-agents`; subagent pressure-testing and loophole hardening of `SKILL.md` → `superpowers-writing-skills`.
+- **Agent authoring & skill governance**: prose hierarchy, context pointers, and `AGENTS.md`/`CLAUDE.md` pruning → `mattpocock-writing-for-agents`; deterministic linting of `SKILL.md`/`AGENTS.md` for SDO leaks, dead paths, KV-cache busting, and 4-layer benefit funnel diagnosis → `auditing-agent-skills`; subagent pressure-testing and loophole hardening → `superpowers-writing-skills`.
+- **AI Agent & Harness engineering**: prompt/KV-cache/status-bar/compression layout → `architecting-agent-context`; ACI tool schemas, MCP security, and active discovery → `designing-agent-tools-mcp`; AST fragility scanning (`scan_agent_repo.py`), anti-fabrication, watchdogs, idempotency, and neutral failover → `hardening-agent-harness`; multi-agent topologies, Loop/MEA verification, VFS locks, and A2A → `orchestrating-multi-agent-workflows`; dual-layer user memory, Contextual/Hybrid RAG, `RAPTOR`/`GraphRAG`, and index ACLs → `architecting-agent-memory-rag`; Unified Event Ingress, fast/slow voice, Computer Use grounding, and GenUI/RLS → `engineering-async-realtime-agents`; `Pass^k`, paired McNemar/bootstrap stats, prefix regressions, and post-training/evolution routing → `evaluating-evolving-agents`.
 
 ## Upstream maintenance
 
@@ -333,6 +342,19 @@ In Claude Code, invoke `/polish:i-have-adhd-actionable-output`.
 See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
 [upstream attribution](THIRD_PARTY_NOTICES.md#i-have-adhd-actionable-output).
 
+### AI Agent & Harness Engineering Suite (8 skills)
+
+Distilled and restructured from *AI Agents in Depth* ([`bojieli/ai-agent-book`](https://github.com/bojieli/ai-agent-book) v3.0, Apache-2.0) into eight self-contained, verified skills:
+
+1. `auditing-agent-skills` — runs zero-dependency static checks (`scripts/audit_skills.py`), a 10-class defect taxonomy, and 4-layer skill benefit funnel diagnostics with a locked `PASS_SKILL_AUDIT / FIX_BEFORE_INSTALL` output contract.
+2. `architecting-agent-context` — designs KV-cache-invariant message loops, provider-specific preserved-thinking continuations, code-computed Status Bars (`scripts/estimate_status_bar_cache_cost.py`), and 5-tier compression.
+3. `designing-agent-tools-mcp` — designs Poka-yoke ACI tools, Code Mode vs. dedicated tools, byte/Unicode parameter fidelity, MCP supply-chain checks, and 2-stage active tool discovery.
+4. `hardening-agent-harness` — runs AST/pattern fragility scans (`scripts/scan_agent_repo.py`) and hardens the 5-pillar Harness against silent data fabrication, hung streams, error-hook death spirals, non-idempotent retries, and cross-provider signature crashes (`SHIP_HARNESS / BLOCK_HARNESS` gate).
+5. `orchestrating-multi-agent-workflows` — enforces the New-Information Criterion (`KEEP_SINGLE_AGENT` gate), `load_skill` vs. `transfer_to_agent`, Proposer–Reviewer / LoopX / MEA loops, atomic SQLite CAS winner settlement, and 4-zone virtual filesystems.
+6. `architecting-agent-memory-rag` — architects Dual-Layer User Memory (`Advanced JSON Cards` + `User as Code` + ADD-only logs), Contextual + Hybrid `BM25`/Dense RRF retrieval, `RAPTOR`/`GraphRAG`, index-level tenant ACLs, and PR-reviewed knowledge updates.
+7. `engineering-async-realtime-agents` — engineers Unified Event Ingress (`ACK-after-append` + 3-progress split), Fast/Slow full-duplex voice, Computer Use grounding & coordinate scaling, and Generative UI + Data-Layer RLS.
+8. `evaluating-evolving-agents` — evaluates `Model + Harness` with `Pass@k` / `Pass^k`, Dual-Control verifiers, paired McNemar/bootstrap stats (`scripts/paired_eval_stats.py`), trajectory-prefix regressions, and 4-carrier / post-training routing.
+
 ## Structure
 
 ```text
@@ -442,6 +464,46 @@ polish/
 ├── skills/mattpocock-writing-for-agents/
 │   ├── SKILL.md              # writing reference for agent-consumed docs
 │   └── agents/openai.yaml
+├── skills/auditing-agent-skills/
+│   ├── SKILL.md              # 10-class SKILL.md / AGENTS.md auditor & 4-layer funnel
+│   ├── references/           # 22-skill v3.0 empirical audit & diff extraction
+│   ├── scripts/              # zero-dependency audit_skills.py scanner
+│   ├── tests/                # scanner unit suite
+│   └── agents/openai.yaml
+├── skills/architecting-agent-context/
+│   ├── SKILL.md              # KV-cache context layout, thinking & compression
+│   ├── references/           # provider thinking rules & compression benchmarks
+│   ├── scripts/              # status-bar replace-vs-append cache cost model
+│   ├── tests/                # cache cost unit suite
+│   └── agents/openai.yaml
+├── skills/designing-agent-tools-mcp/
+│   ├── SKILL.md              # ACI tool schemas, fidelity, MCP & active discovery
+│   ├── references/           # MCP primitives, file-edit & discovery playbook
+│   └── agents/openai.yaml
+├── skills/hardening-agent-harness/
+│   ├── SKILL.md              # 5-pillar Harness reliability & security hardening
+│   ├── references/           # 12-item production fragility catalog & loop skeleton
+│   ├── scripts/              # AST + pattern fragility scanner (scan_agent_repo.py)
+│   ├── tests/                # fragility scanner unit suite
+│   └── agents/openai.yaml
+├── skills/orchestrating-multi-agent-workflows/
+│   ├── SKILL.md              # New-Info criterion, Loop/MEA, VFS & A2A workflows
+│   ├── references/           # atomic SQLite CAS + outbox & topology patterns
+│   └── agents/openai.yaml
+├── skills/architecting-agent-memory-rag/
+│   ├── SKILL.md              # Dual-Layer Memory, Contextual/Hybrid RAG & PR updates
+│   ├── references/           # memory formats, ANNOY/HNSW & RAPTOR/GraphRAG matrix
+│   └── agents/openai.yaml
+├── skills/engineering-async-realtime-agents/
+│   ├── SKILL.md              # Unified Event Ingress, Fast/Slow voice, GUI & GenUI
+│   ├── references/           # envelope schema, M/M/1 queueing & coordinate math
+│   └── agents/openai.yaml
+├── skills/evaluating-evolving-agents/
+│   ├── SKILL.md              # Pass^k, paired stats, prefix regressions & evolution
+│   ├── references/           # 9-class attribution, post-training & sleep routine
+│   ├── scripts/              # paired McNemar/bootstrap & Pass^k CLI calculator
+│   ├── tests/                # paired stats unit suite
+│   └── agents/openai.yaml
 ├── upstream-sources.json     # machine-readable upstream provenance for update-sync
 ├── THIRD_PARTY_NOTICES.md    # pinned upstream revisions and license notices
 ├── .claude-plugin/
@@ -507,23 +569,32 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `mattpocock-code-review` - 基于指定 Git 基准并行执行 Standards 与 Spec 双轴评审。
 - `mattpocock-wizard` - 为必须人工执行的配置、凭证或迁移步骤生成交互式 bash 向导脚本。
 - `mattpocock-writing-for-agents` - 面向 agent 文档（`SKILL.md`、`AGENTS.md`、`CLAUDE.md`）的结构、指针与精简写作参考。
+- `auditing-agent-skills` - 扫描 `SKILL.md` / `AGENTS.md` 的描述剧透跳步陷阱、失效相对路径、上下文臃肿、KV Cache 破坏与注入面（附零依赖 `scripts/audit_skills.py`），并按四层收益漏斗诊断激活与遵循问题。
+- `architecting-agent-context` - 设计无状态消息循环、KV Cache 前缀不变性、各厂商思考块续接协议、代码状态栏成本计算（`scripts/estimate_status_bar_cache_cost.py`）与五层压缩/子 Agent 隔离。
+- `designing-agent-tools-mcp` - 设计 ACI 防呆工具、Code Mode 取舍、Unicode 参数保真、MCP 供应链三毒防御与百级工具两阶段主动发现。
+- `hardening-agent-harness` - 静态扫描 Python/TS Agent 仓库中的 `H001`–`H007` 脆弱反模式（`scripts/scan_agent_repo.py`），加固五支柱 Harness 防超时编造假数据、流式静默卡死、报错钩子死亡螺旋、非幂等重发与跨厂商签名崩溃。
+- `orchestrating-multi-agent-workflows` - 基于新信息判据选型单/多 Agent 与工作流，覆盖 `load_skill` vs 换 `system`、Proposer–Reviewer / LoopX / MEA 循环、SQLite 原子 CAS 抢锁级联取消、四区虚拟文件系统与 A2A。
+- `architecting-agent-memory-rag` - 设计双层用户记忆（`Advanced JSON Cards` + `User as Code` + 只增不改事件流）、上下文感知混合 `BM25`/稠密 RRF 检索、`RAPTOR`/`GraphRAG`、检索层租户权限过滤与异源 PR 知识更新。
+- `engineering-async-realtime-agents` - 构建统一事件接入层（先落盘秒回 ACK + 三进度分离）、快慢双脑全双工语音、Computer Use 视觉定位与坐标反算，以及生成式 UI + 数据层 RLS。
+- `evaluating-evolving-agents` - 评估与持续进化 `Model + Harness`：区分 `Pass@k` 与 `Pass^k`、双控环境、配对 McNemar/Bootstrap 显著性（`scripts/paired_eval_stats.py`）、首错轨迹前缀回归与四载体/后训练分流。
 
 ## 技能正交度与路由总览
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **32** | 全部 `description` 合计 **9,353 字符**（均值 **292 字符/个**），常驻上下文开销紧凑可控 |
-| 功能正交率（方法论/产出不重复） | **~86%**（功能重叠率 ~14%） | 相邻 skill 在方法论、作用对象与交付产物上互补，无冗余废项 |
-| 触发正交率（自动命中不打架） | **~88%**（由调优前 ~68% 提升） | 原 3 个冲突簇已在 `description` 中建立显式互排与分流指针 |
-| 完全正交单点（0% 重叠） | **12 / 32（37.5%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
-| 同域流水线 / 正交协作 | **20 / 32（62.5%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档编写(2) |
+| Skill 总数 | **40** | 全部 `description` 合计 **12,298 字符**（均值 **307 字符/个**），常驻上下文开销紧凑可控 |
+| 功能正交率（方法论/产出不重复） | **~90%**（功能重叠率 ~10%） | 相邻 skill 在方法论、作用对象与强制输出契约上严格分界 |
+| 触发正交率（自动命中不打架） | **~91%**（由调优前 ~68% 提升） | 冲突簇已在 `description` 中建立显式互排与分流指针 |
+| 完全正交单点（0% 重叠） | **12 / 40（30.0%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
+| 同域流水线 / 正交协作 | **28 / 40（70.0%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档与 Skill 治理(3)、AI Agent 与 Harness 工程(7) |
 
 相邻 skill 的核心分流规则：
 
 - **缺陷排查三层分流**：有报错日志 / Issue 现象 → `superpowers-systematic-debugging`；从读 repo 出发按工程管理学/不确定性门禁做探索性找 bug → `find-a-bug`；C++/Python 全仓 7 类契约盘点 → `project-bug-hunting`。
 - **方案推敲双模式**：早期想法设计树分轮高密度拷问 → `mattpocock-grilling`；一步一问收敛并落盘正式设计 spec 与实施计划 → `superpowers-brainstorming`（两者互通长板）。
 - **挑刺、盲点与概率决策分工**：产品闭环、市场/商业假设与定性非代码决策挑刺 → `yc-rejection-simulator`；陌生领域代码习惯（idioms）、框架潜规则、行业工程惯例与架构上线盲区 → `find-blind-spots`；明确含成本/损失分布、尾部风险约束、CARA 效用与回本概率/保留价格/$R^*$ 切换边界反推 → `analyzing-risk-decisions`。
-- **Agent 文档分工**：文档信息架构、上下文指针与 `AGENTS.md`/`CLAUDE.md` 编写精简 → `mattpocock-writing-for-agents`；子 agent 压力测试与 `SKILL.md` 防借口加固 → `superpowers-writing-skills`。
+- **Agent 文档与 Skill 治理分工**：文档信息架构、上下文指针与 `AGENTS.md`/`CLAUDE.md` 编写精简 → `mattpocock-writing-for-agents`；对现有 `SKILL.md`/`AGENTS.md` 做描述剧透、失效路径、缓存破坏静态扫描与四层收益漏斗诊断 → `auditing-agent-skills`；子 agent 压力测试与防借口加固 → `superpowers-writing-skills`。
+- **AI Agent 与 Harness 工程七件套分工**：上下文/KV Cache/状态栏/压缩 → `architecting-agent-context`；ACI 工具/参数保真/MCP/主动发现 → `designing-agent-tools-mcp`；AST 仓库脆弱扫描（`scan_agent_repo.py`）与五支柱防造假/看门狗/死循环熔断/幂等/中立接管 → `hardening-agent-harness`；多 Agent 拓扑/Loop 互审/原子抢锁/四区文件系统/A2A → `orchestrating-multi-agent-workflows`；双层用户记忆、混合/上下文感知 RAG、`RAPTOR`/`GraphRAG` 与检索层权限 → `architecting-agent-memory-rag`；统一事件接入层、快慢双脑语音、Computer Use 视觉定位与生成式 UI+RLS → `engineering-async-realtime-agents`；`Pass^k`/配对统计检验/首错前缀回归/后训练与自进化分流 → `evaluating-evolving-agents`。
 
 ## 上游维护
 
@@ -790,6 +861,19 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 见 [skill 正文](skills/i-have-adhd-actionable-output/SKILL.md) 和
 [上游归属](THIRD_PARTY_NOTICES.md#i-have-adhd-actionable-output)。
 
+### AI Agent 与 Harness 工程系列（8 个 Skills）
+
+系统提炼与重构自《深入理解 AI Agent：设计原理与工程实践》（[`bojieli/ai-agent-book`](https://github.com/bojieli/ai-agent-book) v3.0，Apache-2.0），将全书 10 章原理、实验证据与原附带 skills 的缺陷修复整合为 8 个自包含工程包：
+
+1. `auditing-agent-skills` — 零依赖静态扫描器（`scripts/audit_skills.py`）、10 类缺陷分类学与四层收益漏斗诊断（强制 `PASS_SKILL_AUDIT / FIX_BEFORE_INSTALL` 输出契约）。
+2. `architecting-agent-context` — 无状态 API 循环、KV Cache 前缀冻结、各厂商思考块协议、代码状态栏成本估算器与五层压缩/隔离。
+3. `designing-agent-tools-mcp` — ACI 防呆工具 schema、Code Mode 取舍、Unicode 参数保真、MCP 供应链防御与百级工具两阶段主动发现。
+4. `hardening-agent-harness` — 附零依赖 Agent 代码库静态脆弱性扫描器（`scripts/scan_agent_repo.py`）与 `SHIP_HARNESS / BLOCK_HARNESS` 门禁，拦截超时硬编码假数据、流式静默卡死、退出钩子死亡螺旋、非幂等重发与跨厂商签名崩溃。
+5. `orchestrating-multi-agent-workflows` — 新信息判据（`KEEP_SINGLE_AGENT` 门禁）、`load_skill` vs 换 `system`、Proposer–Reviewer / LoopX / MEA 循环、SQLite 原子 CAS 抢锁级联取消与四区虚拟文件系统。
+6. `architecting-agent-memory-rag` — 双层用户记忆（`Advanced JSON Cards` + `User as Code` + 只增不改日志）、上下文感知混合 `BM25`/稠密 RRF 检索、`RAPTOR`/`GraphRAG`、检索层权限过滤与异源 PR 审核。
+7. `engineering-async-realtime-agents` — 统一事件接入层（先落盘秒回 ACK + 三进度分离）、快慢双脑实时语音、Computer Use 视觉定位与坐标反算，以及生成式 UI + 数据层 RLS。
+8. `evaluating-evolving-agents` — `Pass@k` / `Pass^k`、双控环境、McNemar/Bootstrap 配对显著性计算器、首错前缀回归与四载体/后训练分流。
+
 ## 结构
 
 ```text
@@ -898,6 +982,46 @@ polish/
 │   └── agents/openai.yaml
 ├── skills/mattpocock-writing-for-agents/
 │   ├── SKILL.md              # 面向 agent 文档的写作参考
+│   └── agents/openai.yaml
+├── skills/auditing-agent-skills/
+│   ├── SKILL.md              # SKILL.md / AGENTS.md 10 类缺陷审计与四层收益漏斗
+│   ├── references/           # 22 个上游 skill 实证审计与前后对比提炼法
+│   ├── scripts/              # 零依赖 audit_skills.py 扫描器
+│   ├── tests/                # 扫描器单元测试
+│   └── agents/openai.yaml
+├── skills/architecting-agent-context/
+│   ├── SKILL.md              # KV Cache 上下文架构、思考块协议与压缩
+│   ├── references/           # 各厂商思考回传规则与压缩实测基准
+│   ├── scripts/              # 状态栏替换 vs 追加缓存成本计算器
+│   ├── tests/                # 成本模型单元测试
+│   └── agents/openai.yaml
+├── skills/designing-agent-tools-mcp/
+│   ├── SKILL.md              # ACI 工具设计、参数保真、MCP 与主动发现
+│   ├── references/           # MCP 三原语、文件编辑与发现手册
+│   └── agents/openai.yaml
+├── skills/hardening-agent-harness/
+│   ├── SKILL.md              # 五支柱 Harness 脆弱性加固与容错恢复
+│   ├── references/           # 12 项生产脆弱点目录与主循环骨架
+│   ├── scripts/              # Agent 仓库静态脆弱扫描器 (scan_agent_repo.py)
+│   ├── tests/                # 脆弱扫描器单元测试
+│   └── agents/openai.yaml
+├── skills/orchestrating-multi-agent-workflows/
+│   ├── SKILL.md              # 新信息判据、Loop/MEA、VFS 与 A2A 编排
+│   ├── references/           # SQLite 原子 CAS 抢锁发件箱与拓扑模式
+│   └── agents/openai.yaml
+├── skills/architecting-agent-memory-rag/
+│   ├── SKILL.md              # 双层用户记忆、上下文混合 RAG 与 PR 治理
+│   ├── references/           # 记忆格式、ANNOY/HNSW 与 RAPTOR/GraphRAG 矩阵
+│   └── agents/openai.yaml
+├── skills/engineering-async-realtime-agents/
+│   ├── SKILL.md              # 统一事件接入层、快慢语音、GUI 定位与 GenUI
+│   ├── references/           # 统一信封、M/M/1 排队与坐标反算公式
+│   └── agents/openai.yaml
+├── skills/evaluating-evolving-agents/
+│   ├── SKILL.md              # Pass^k、配对统计、前缀回归与持续进化路由
+│   ├── references/           # 9 类归因、后训练矩阵与离线睡眠整理
+│   ├── scripts/              # 配对 McNemar/Bootstrap 与 Pass^k 计算器
+│   ├── tests/                # 统计脚本单元测试
 │   └── agents/openai.yaml
 ├── upstream-sources.json     # 面向 update-sync 的机器可读来源清单
 ├── THIRD_PARTY_NOTICES.md    # 固定上游版本与第三方许可说明

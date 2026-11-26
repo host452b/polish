@@ -1,0 +1,7 @@
+interface:
+  display_name: "evaluating-evolving-agents"
+  short_description: "Evaluate agents with paired stats, attribute failures, and route evolution"
+  default_prompt: "Use $evaluating-evolving-agents to design our evaluation harness, compute paired significance, attribute trajectory failures, and choose the right evolution or post-training path."
+
+policy:
+  allow_implicit_invocation: true

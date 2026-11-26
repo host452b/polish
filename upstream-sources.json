@@ -275,6 +275,72 @@
           "notes": "Multi-OS session store format specifications and schema invariants across coding agents."
         }
       ]
+    },
+    {
+      "id": "bojieli-ai-agent-book",
+      "repo": "bojieli/ai-agent-book",
+      "url": "https://github.com/bojieli/ai-agent-book",
+      "license": "Apache-2.0",
+      "commit": "40f4ce5778e6cc93e3606c3079bf8cf13a0c4d04",
+      "synced_at": "2026-11-25",
+      "entries": [
+        {
+          "skill": "auditing-agent-skills",
+          "local_path": "skills/auditing-agent-skills",
+          "upstream_path": "skills",
+          "mode": "adapted",
+          "notes": "Empirical 22-skill audit against book v3.0, Ch.9 4-layer benefit funnel, and standalone audit_skills.py scanner."
+        },
+        {
+          "skill": "architecting-agent-context",
+          "local_path": "skills/architecting-agent-context",
+          "upstream_path": "book/chapter2.md",
+          "mode": "adapted",
+          "notes": "Consolidates context-engineering, kv-cache-design, agent-state-bar, and context-compression with v3.0 experiments."
+        },
+        {
+          "skill": "designing-agent-tools-mcp",
+          "local_path": "skills/designing-agent-tools-mcp",
+          "upstream_path": "book/chapter4.md",
+          "mode": "adapted",
+          "notes": "Consolidates tool-design, tool-discovery, and mcp-skill-hub with Ch.4-5 parameter fidelity."
+        },
+        {
+          "skill": "hardening-agent-harness",
+          "local_path": "skills/hardening-agent-harness",
+          "upstream_path": "book/chapter5.md",
+          "mode": "adapted",
+          "notes": "Consolidates coding-agent-harness and error-recovery plus scan_agent_repo.py AST fragility scanner."
+        },
+        {
+          "skill": "orchestrating-multi-agent-workflows",
+          "local_path": "skills/orchestrating-multi-agent-workflows",
+          "upstream_path": "book/chapter10.md",
+          "mode": "adapted",
+          "notes": "Consolidates multi-agent-design and loop-engineering with atomic SQLite CAS + outbox."
+        },
+        {
+          "skill": "architecting-agent-memory-rag",
+          "local_path": "skills/architecting-agent-memory-rag",
+          "upstream_path": "book/chapter3.md",
+          "mode": "adapted",
+          "notes": "Consolidates memory-system, rag-pipeline, and knowledge-org with Dual-Layer Memory and Contextual RAG."
+        },
+        {
+          "skill": "engineering-async-realtime-agents",
+          "local_path": "skills/engineering-async-realtime-agents",
+          "upstream_path": "book/chapter6.md",
+          "mode": "adapted",
+          "notes": "Consolidates async-event-agent (v3.0 Unified Ingress), fast/slow voice, computer-use, and Ch.5 GenUI/RLS."
+        },
+        {
+          "skill": "evaluating-evolving-agents",
+          "local_path": "skills/evaluating-evolving-agents",
+          "upstream_path": "book/chapter7.md",
+          "mode": "adapted",
+          "notes": "Consolidates agent-evaluation, eval-dataset-design, post-training-strategy, reward-design, bad-case-to-dpo, and agent-evolution."
+        }
+      ]
     }
   ]
 }
