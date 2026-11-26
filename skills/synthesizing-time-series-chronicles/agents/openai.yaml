@@ -1,0 +1,4 @@
+interface:
+  display_name: "synthesizing-time-series-chronicles"
+  short_description: "Longitudinal time-series synthesis, conservation Sankey charts, and living chronicles"
+  default_prompt: "Use $synthesizing-time-series-chronicles to analyze this timestamped dataset across periods, render Sinkhorn Sankey and sub-signal velocity SVG charts, and assemble a living multi-chapter chronicle."

@@ -12,6 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
+- `synthesizing-time-series-chronicles` - turns timestamped corpora (event logs, changelogs, incident histories, release archives, or literature streams) into atomic 4-slot digests, Sinkhorn mass-conserving Sankey & sub-signal velocity SVG charts, and living multi-chapter chronicles/PDFs with rollover-safe `AUTO-SYNC` slots.
 - `benchmark-checklist` - checks measured throughput, latency, and speedup claims against completed work and run variability.
 - `takeover-agent-sessions` - reads local session stores across Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, and Devin on macOS, Windows, and Linux into a bounded 5-part Takeover Brief, reconciles against live `git status` / `git diff`, and resumes unfinished work from any host agent.
 - `analyzing-risk-decisions` - models uncertain options via joint state-wise net losses, CARA exponential utility ($CE_R$), and `VaR`/`ES` tail constraints, with deterministic threshold inversion ($p^*$, reservation price $P^*(R)$, indifference $R^*$) and preference calibration.
@@ -56,11 +57,11 @@ Currently included:
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **39** | Total `description` footprint: **11,901 chars** (avg **305 chars/skill**), keeping always-loaded context overhead compact |
+| Total skills | **40** | Total `description` footprint: **12,298 chars** (avg **307 chars/skill**), keeping always-loaded context overhead compact |
 | Functional orthogonality | **~90%** (~10% overlap) | Adjacent skills differ in method, target boundary, and output contract rather than duplicating workflows |
 | Trigger orthogonality | **~91%** (~9% overlap; raised from ~68%) | Overlapping clusters carry explicit mutual-routing pointers in `description` |
-| Standalone single-purpose skills | **11 / 39 (28.2%)** | Zero domain or trigger overlap (`prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
-| Pipeline & complementary cluster skills | **28 / 39 (71.8%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), agent docs/skills (3), and AI Agent & Harness engineering (7) |
+| Standalone single-purpose skills | **12 / 40 (30.0%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
+| Pipeline & complementary cluster skills | **28 / 40 (70.0%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), agent docs/skills (3), and AI Agent & Harness engineering (7) |
 
 Key routing boundaries across adjacent skills:
 
@@ -133,6 +134,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `synthesizing-time-series-chronicles`
+
+Use it when turning timestamped records of any domain (incident postmortems, git/release histories, RFC/ADR streams, telemetry archives, market/regulatory filings, or research corpora) into longitudinal trend analyses, conservation Sankey and velocity visualizations, or living multi-chapter chronicles and textbook-style PDFs. Point-in-time speedup or latency claims route to `benchmark-checklist`.
+
+Backed by a zero-dependency Python stdlib engine (`skills/synthesizing-time-series-chronicles/scripts/chronicle_engine.py`), it separates event-slice intensity from unique-entity landmarks, flags incomplete boundary periods (`*`), computes Sinkhorn mass-conserving inter-period flow matrices over multi-label co-occurrence, classifies micro sub-signal lifecycles (`igniting`, `peaking`, `high_plateau`, `maturing_infra`, `declining`), renders a collision-free 5-chart vector SVG suite, and updates rollover-safe `AUTO-SYNC` Markdown slots alongside a currency-safe Typst compiler helper.
+
+Example: `Use $synthesizing-time-series-chronicles to analyze three years of incident postmortems, render quarterly Sinkhorn Sankey and sub-signal velocity SVGs, and compile a living reliability chronicle PDF.` In Claude Code and Devin CLI, invoke `/polish:synthesizing-time-series-chronicles`.
+
+See [the skill](skills/synthesizing-time-series-chronicles/SKILL.md) and [visual grammar, schemas & Typst patterns](skills/synthesizing-time-series-chronicles/references/visual-grammar-and-typst.md).
 
 ### `takeover-agent-sessions`
 
@@ -526,6 +537,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
+- `synthesizing-time-series-chronicles` - 将任意领域的带时间戳数据流（事故复盘、版本变更、工单日志、市场/监管事件或文献库）提炼为单条四维摘要、质量守恒 Sinkhorn 桑基图与子信号速度热力图，以及带跨年安全 `AUTO-SYNC` 动态槽位的活体编年史章节与教材级矢量 PDF。
 - `benchmark-checklist` - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
 - `takeover-agent-sessions` - 跨 macOS、Windows、Linux（含 WSL）只读解析 Cursor、Windsurf、Claude Code、GitHub Copilot、Codex、Kiro、OpenCode、Zed 与 Devin 的本地会话记录，提炼五要素接盘简报并与当前 `git status` / `git diff` 对账，让任意 Agent 无缝接力其他 Agent 没干完的活。
 - `analyzing-risk-decisions` - 基于联合有限状态空间、增量净损失函数、CARA 指数效用（$CE_R$）与 `VaR`/`ES` 尾部约束做概率决策分析、切换阈值反推（$p^*$、最高可接受价格 $P^*(R)$、无差异 $R^*$）及风险偏好校准。
@@ -570,11 +582,11 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **39** | 全部 `description` 合计 **11,901 字符**（均值 **305 字符/个**），常驻上下文开销紧凑可控 |
+| Skill 总数 | **40** | 全部 `description` 合计 **12,298 字符**（均值 **307 字符/个**），常驻上下文开销紧凑可控 |
 | 功能正交率（方法论/产出不重复） | **~90%**（功能重叠率 ~10%） | 相邻 skill 在方法论、作用对象与强制输出契约上严格分界 |
 | 触发正交率（自动命中不打架） | **~91%**（由调优前 ~68% 提升） | 冲突簇已在 `description` 中建立显式互排与分流指针 |
-| 完全正交单点（0% 重叠） | **11 / 39（28.2%）** | 作用对象与目标完全独立（如 `prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
-| 同域流水线 / 正交协作 | **28 / 39（71.8%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档与 Skill 治理(3)、AI Agent 与 Harness 工程(7) |
+| 完全正交单点（0% 重叠） | **12 / 40（30.0%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
+| 同域流水线 / 正交协作 | **28 / 40（70.0%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档与 Skill 治理(3)、AI Agent 与 Harness 工程(7) |
 
 相邻 skill 的核心分流规则：
 
@@ -647,6 +659,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `synthesizing-time-series-chronicles`
+
+适用于把任意带时间戳的数据集或事件流（故障复盘记录、Git/发布演进日志、RFC/架构决策流、工单与用户反馈、行业/监管事件归档或论文专利库）系统提炼为跨期趋势研判、桑基流向与速度热力可视化，以及可持续增量更新的多章节编年史或欧美教材风合编 PDF。单次延迟/吞吐加速比验证则交由 `benchmark-checklist`。
+
+内置零第三方依赖的 Python 标准库引擎 `skills/synthesizing-time-series-chronicles/scripts/chronicle_engine.py`，自动区分「事件切片口径」与「唯一实体去重口径」、识别不完整首尾边界周期（`*`）、基于多标签共现计算质量守恒 Sinkhorn 跨期转移流矩阵、判定微观子信号生命周期状态（点燃、达峰、高位稳态、沉淀基建、衰退），输出零标签碰撞的 5 图正交矢量 SVG 套件，并提供跨年列动态扩展的 `AUTO-SYNC` 章节同步与金额安全的 Typst 排版转译。
+
+示例：`使用 $synthesizing-time-series-chronicles 分析过去三年的线上故障复盘记录，生成季度 Sinkhorn 桑基流向图与子根因热力图，并合编成活体可靠性编年史 PDF。` Claude Code 与 Devin CLI 中使用 `/polish:synthesizing-time-series-chronicles`。
+
+见 [skill 正文](skills/synthesizing-time-series-chronicles/SKILL.md) 和 [视觉语法、Schema 与 Typst 版式参考](skills/synthesizing-time-series-chronicles/references/visual-grammar-and-typst.md)。
 
 ### `takeover-agent-sessions`
 

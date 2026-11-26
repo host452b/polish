@@ -42,7 +42,7 @@ For the three pstack integrations (`prompt-polish`, `before-git-push`, and `proj
 
 ## Read the original and its history
 
-1. Fetch the named original repository into a separate checkout or temporary clone. Verify its remote URL and resolve its current default branch to a commit (`tip`). For each skill, use its last recorded full-sync commit as `base`, falling back to its original commit in the notices. Read the original skill and its referenced resources at both revisions, then read the local adaptation. Identify intentional local differences before evaluating updates.
+1. Run `python3 scripts/check_upstream_drift.py` (optionally `--skill <name>`) first to compare each pinned SHA in `upstream-sources.json` against its current upstream `HEAD`; entries reported as `UP_TO_DATE` have zero upstream commits since their recorded pin and can be skipped without cloning. For `DRIFTED` repositories, fetch the named original repository into a separate checkout or temporary clone. Verify its remote URL and resolve its current default branch to a commit (`tip`). For each skill, use its last recorded full-sync commit as `base`, falling back to its original commit in the notices. Read the original skill and its referenced resources at both revisions, then read the local adaptation. Identify intentional local differences before evaluating updates.
 2. Verify both Git objects and their ancestry. Inspect the full range since the base, including the files on which the skill depends. In the upstream checkout, start with:
 
    ```sh
