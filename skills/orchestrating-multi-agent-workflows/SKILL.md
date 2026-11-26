@@ -41,6 +41,13 @@ Design multi-agent workflows and autonomous loops only where collaboration intro
    6. **Understanding debt & cognitive surrender:** Require human-legible architecture/decision summaries and executable verification entrypoints with every multi-agent delivery.
    *Completion criterion:* All 6 failure modes explicitly addressed in runtime checks and review gates.
 
+## Output Contract
+
+When proposing or reviewing a workflow / multi-agent architecture, return these exact sections:
+1. **New-Information Verdict:** Explicit pass/fail check on whether each proposed extra agent adds **new external evidence**, **noisy-context isolation**, **privilege separation**, or **wall-clock parallelism** over a single agent (`▶︎▶︎KEEP_SINGLE_AGENT▶︎▶︎` if none apply).
+2. **Topology, Context & VFS Spec:** Table of `Role | Model Tier & Step Budget | Context Mode (Skill Load / Isolated) | VFS Zone Read/Write | Settlement / Lock Rule`.
+3. **Six-Failure-Mode Guard Table:** One concrete runtime check per mode (`File/Semantic Conflict`, `Cascading Distortion`, `Homogeneous Convergence`, `Turf War`, `Runaway Spawn`, `Understanding Debt`).
+
 ## Disclosed Reference
 
 - Read [references/multi-agent-topologies-and-protocols.md](references/multi-agent-topologies-and-protocols.md) for Proposer–Reviewer / LoopX / LongHorizon-Harness MEA code skeletons, atomic SQLite CAS + outbox patterns, and A2A vs. MCP boundaries.

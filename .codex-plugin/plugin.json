@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.5.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills for AI Agent & Harness engineering (context/KV-cache, MCP tools, harness hardening, multi-agent workflows, RAG/event apps, paired evaluation, skill auditing/authoring), prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills for AI Agent & Harness engineering (KV-cache context, MCP tools, AST-scanned harness hardening, multi-agent workflows, memory & RAG, async/voice/GUI ingress, paired evaluation, skill auditing), prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety.",
   "author": {
     "name": "host452b"
   },

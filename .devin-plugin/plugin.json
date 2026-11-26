@@ -1,7 +1,7 @@
 {
   "name": "polish",
   "version": "0.5.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills, including AI Agent & Harness engineering (context/KV-cache, Poka-yoke tools/MCP, fragility hardening, multi-agent workflows, memory/RAG/event-driven apps, paired evaluation & self-evolution, skill auditing/authoring), cross-agent session takeover, prompt rewriting, probabilistic risk threshold inversion, defect investigation, frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills.",
+  "description": "Personal collection of curated, self-made, and adapted agent skills, including AI Agent & Harness engineering (KV-cache context, Poka-yoke MCP tools, AST-scanned harness hardening, multi-agent workflows, dual-layer memory & RAG, async/voice/GUI ingress, paired evaluation & self-evolution, skill auditing), cross-agent session takeover, prompt rewriting, probabilistic risk threshold inversion, defect investigation, frontend design quality, prefixed Superpowers workflows, and prefixed Matt Pocock engineering skills.",
   "author": {
     "name": "host452b"
   },

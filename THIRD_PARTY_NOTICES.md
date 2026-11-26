@@ -236,9 +236,9 @@ SOFTWARE.
 ## AI Agents in Depth (`bojieli/ai-agent-book`)
 
 The eight AI Agent & Harness engineering skills (`auditing-agent-skills`,
-`authoring-agent-skills`, `architecting-agent-context`,
-`designing-agent-tools-mcp`, `hardening-agent-harness`,
-`orchestrating-multi-agent-workflows`, `building-agent-apps`, and
+`architecting-agent-context`, `designing-agent-tools-mcp`,
+`hardening-agent-harness`, `orchestrating-multi-agent-workflows`,
+`architecting-agent-memory-rag`, `engineering-async-realtime-agents`, and
 `evaluating-evolving-agents`) distill architectural patterns, v3.0 experimental
 evidence, and reworked skill guidance from
 [`bojieli/ai-agent-book`](https://github.com/bojieli/ai-agent-book) (forked at

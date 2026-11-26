@@ -9,6 +9,10 @@ Engineer the production **Harness** (`Agent = Model + Harness`, where `Harness =
 
 ## Harness Hardening Workflow
 
+0. **Run the deterministic static fragility scanner first (when a codebase exists).**
+   Execute `python3 scripts/scan_agent_repo.py <repo-or-file>` (resolved relative to this skill's directory) to surface `H001`–`H007` anti-patterns (`system`-prompt clock/UUID cache busting, missing stream idle watchdogs, unbounded loops, tool results in `user` role, `shell=True`, unguarded mutations, dropped `reasoning_content`) with exact `file:line` evidence.
+   *Completion criterion:* Scanner output recorded before manual architectural audit.
+
 1. **Enforce the 3-Layer Guardrail & Lethal-Quadruple Defense (`Constrain`).**
    When an agent combines **Private Data + Untrusted Input + Outbound Communication + Persistent Memory**, prompt instructions alone cannot hold the boundary:
    - **Context layer:** Wrap external data in Harness-generated provenance tags (`<external_content source="webpage">`) and strip forged role/status tags. Tag every persistent memory write with `{source, scope, verified_status}` so untrusted web/email text cannot plant sleeper instructions into `MEMORY.md`.
@@ -42,6 +46,14 @@ Engineer the production **Harness** (`Agent = Model + Harness`, where `Harness =
 - Letting the Coding Agent modify test files, evaluation scripts, or approval thresholds to make CI green.
 - Using Python `venv` or prompt wording as the sole barrier for untrusted code execution.
 
-## Disclosed Reference
+## Output Contract
 
-- Read [references/harness-fragility-catalog.md](references/harness-fragility-catalog.md) for the complete 12-item production fragility checklist, codebase referenceskeletons, and real postmortem cases from `ai-agent-book` v3.0.
+Every Harness audit or design review MUST return these exact sections in order:
+1. **Static Scan & Fragility Ledger:** Markdown table `Severity | Pillar (Context/Tools/Constrain/Verify/Correct) | Location (file:line) | Evidence ([VERIFIED]/[INFERRED]/[MISSING]) | Concrete Exploit or Failure Path | Fix`.
+2. **Self-Contrast (3 Counter-Checks):** List the 3 strongest failure scenarios that could still break the Harness after the proposed fixes (scored `1–5` for likelihood × blast radius).
+3. **Gate Verdict:** `▶︎▶︎SHIP_HARNESS▶︎▶︎` or `▶︎▶︎BLOCK_HARNESS▶︎▶︎` (default to `BLOCK_HARNESS` on any unmitigated `HIGH` finding or ungrounded completion gate, naming the #1 blocker on one line).
+
+## Disclosed Resources
+
+- Run `scripts/scan_agent_repo.py` for zero-dependency AST + pattern fragility scanning on Python/TS/JS agent repos.
+- Read [references/harness-fragility-catalog.md](references/harness-fragility-catalog.md) for the complete 12-item production fragility checklist, reference loop skeletons, and real postmortem cases from `ai-agent-book` v3.0.

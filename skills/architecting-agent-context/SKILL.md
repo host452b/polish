@@ -48,6 +48,12 @@ Design stateless LLM API requests (`messages` + `tools`) so the agent sees compl
 - **Executable business boundaries:** Replace vague prose ("pick appropriate fee") with boolean predicates, explicit units, rounding order, and boundary intervals (`>=60%`, `30%–60%`, `<30%`).
 - **Fixed few-shot sets:** Place 2–3 boundary-covering examples in a fixed order; dynamic per-turn example retrieval busts prefix cache and hurts reproducibility.
 
+## Output Contract
+
+When designing or auditing an agent's context window, return these exact sections:
+1. **Prefix & Cache Invariance Map:** Ordered layout table (`Slot | Mutability | Cache Boundary | Measured/Estimated Token Share`) with `file:line` citations for any prefix-busting interpolation (`[VERIFIED]/[INFERRED]`).
+2. **Thinking & Status-Bar Protocol Spec:** Exact provider reasoning-echo rule, status-bar `Replace vs. Append` cost calculation (`scripts/estimate_status_bar_cache_cost.py` output), and subagent-isolation vs. 5-tier batch-compression trigger thresholds.
+
 ## Disclosed Resources
 
 - Run `scripts/estimate_status_bar_cache_cost.py` to compute Replace vs. Append Prompt-Cache cost and inspect prefix breakpoints.

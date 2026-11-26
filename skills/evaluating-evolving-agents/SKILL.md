@@ -38,6 +38,13 @@ Turn agent iteration from anecdotal trajectory-reading into a scientific closed 
       - Expensive rollouts + available teacher (or privileged answer context) -> **On-Policy Distillation / OPSD** (~10× sample efficiency via dense per-token reverse KL on student prefixes).
    *Completion criterion:* Carrier selected via replay test ("can find rule" vs "can apply rule when given"), sampler/trainer parity verified for RL, and Boundary + Retention sets pass in staging.
 
+## Output Contract
+
+When designing an evaluation, analyzing benchmark deltas, or routing bad cases, return these exact sections:
+1. **Metric, Verifier & Paired Stats Report:** Target metric (`Pass@k` vs `Pass^k` + cost/success), deterministic state + communication assertions, and `scripts/paired_eval_stats.py` output (`gains`, `regressions`, `McNemar p-value`, `95% bootstrap CI`).
+2. **First-Divergence Attribution & Prefix Regression:** Step index of first error, root-cause layer (`Observation / Tool / Harness / Model`), acceptable action set, and forbidden action set.
+3. **Evolution Carrier & Release Gate:** Selected carrier (`Knowledge / Skill Diff / Harness Code / Mid-train / SFT / DPO / RLVR+RLVP / OPD`) justified by replay evidence, plus **Boundary Set + Retention Set** pass criteria.
+
 ## Disclosed Resources
 
 - Run `scripts/paired_eval_stats.py` to compute `Pass@k`, `Pass^k` (unbiased combinatorial estimator), Wilson CIs, paired gain/loss breakdowns, exact McNemar test, and paired bootstrap CIs.

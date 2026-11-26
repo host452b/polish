@@ -48,6 +48,13 @@ Design Agent-Computer Interfaces (ACI) across the five tool classes—**Percepti
 | Charts, UI layouts, spatial tables | Native VLM image view or on-demand `inspect_visual(file, question)` | Pure OCR scrambles bar-height/axis/quarter alignment (Exp 4-3) |
 | Text-only main model + occasional visual | Toolized multimodal sub-model (`analyze_image/pdf/audio`) | Keeps heavy visual patch tokens out of main trajectory |
 
+## Output Contract
+
+When designing or reviewing tools / MCP servers, return these exact sections:
+1. **Capability Form & Consolidation Table:** `Tool / Endpoint | Chosen Form (General Executor / Code Mode / Dedicated Tool / Skill) | Justification | Neighbor Boundary`.
+2. **Fidelity & Safety Audit:** Exact `file:line` or schema check for `Unicode/Byte Round-Trip`, `Error vs. Empty Distinction`, `Truncation (>200 lines / 10K chars)`, `Idempotency Key`, and `MCP Namespace/Version Pinning` (tagged `[VERIFIED]/[MISSING]`).
+3. **Discovery Token Budget:** Startup tool-schema token estimate and tail-append discovery strategy if catalog exceeds 30 tools.
+
 ## Disclosed Reference
 
 - Read [references/mcp-and-tool-discovery-playbook.md](references/mcp-and-tool-discovery-playbook.md) for MCP 3-primitive boundaries (`tools` / `resources` / `prompts`), file-editing tool trade-offs (`old_string -> new_string` vs `apply_patch` vs line numbers), and active discovery ablation diagnostics.

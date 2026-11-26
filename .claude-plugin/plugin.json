@@ -1,5 +1,5 @@
 {
   "name": "polish",
   "version": "0.5.0",
-  "description": "Personal collection of curated, self-made, and adapted agent skills. Includes an 8-skill AI Agent & Harness engineering suite (skill auditing/authoring, KV-cache context architecture, Poka-yoke MCP tools, harness fragility hardening, multi-agent workflows, memory/RAG/event apps, paired evaluation & self-evolution), cross-agent session takeover, prompt rewriting, probabilistic risk threshold inversion, defect investigation, frontend design workflows, prefixed Superpowers workflows, prefixed Matt Pocock engineering skills, git-commit-message, and consistent-term-translation-polish-guard."
+  "description": "Personal collection of curated, self-made, and adapted agent skills. Includes an 8-skill AI Agent & Harness engineering suite (skill auditing, KV-cache context architecture, Poka-yoke MCP tools, AST-scanned harness hardening, multi-agent workflows, dual-layer memory & RAG, async/voice/GUI ingress, paired evaluation & self-evolution), cross-agent session takeover, prompt rewriting, probabilistic risk threshold inversion, defect investigation, frontend design workflows, prefixed Superpowers workflows, prefixed Matt Pocock engineering skills, git-commit-message, and consistent-term-translation-polish-guard."
 }

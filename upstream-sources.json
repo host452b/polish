@@ -289,14 +289,7 @@
           "local_path": "skills/auditing-agent-skills",
           "upstream_path": "skills",
           "mode": "adapted",
-          "notes": "Empirical 22-skill audit against book v3.0 plus standalone audit_skills.py scanner."
-        },
-        {
-          "skill": "authoring-agent-skills",
-          "local_path": "skills/authoring-agent-skills",
-          "upstream_path": "book/chapter2.md",
-          "mode": "adapted",
-          "notes": "3-layer progressive disclosure and Ch.9 4-layer benefit funnel."
+          "notes": "Empirical 22-skill audit against book v3.0, Ch.9 4-layer benefit funnel, and standalone audit_skills.py scanner."
         },
         {
           "skill": "architecting-agent-context",
@@ -317,7 +310,7 @@
           "local_path": "skills/hardening-agent-harness",
           "upstream_path": "book/chapter5.md",
           "mode": "adapted",
-          "notes": "Consolidates coding-agent-harness and error-recovery plus Ch.1/5/9 fragility catalog."
+          "notes": "Consolidates coding-agent-harness and error-recovery plus scan_agent_repo.py AST fragility scanner."
         },
         {
           "skill": "orchestrating-multi-agent-workflows",
@@ -327,11 +320,18 @@
           "notes": "Consolidates multi-agent-design and loop-engineering with atomic SQLite CAS + outbox."
         },
         {
-          "skill": "building-agent-apps",
-          "local_path": "skills/building-agent-apps",
+          "skill": "architecting-agent-memory-rag",
+          "local_path": "skills/architecting-agent-memory-rag",
+          "upstream_path": "book/chapter3.md",
+          "mode": "adapted",
+          "notes": "Consolidates memory-system, rag-pipeline, and knowledge-org with Dual-Layer Memory and Contextual RAG."
+        },
+        {
+          "skill": "engineering-async-realtime-agents",
+          "local_path": "skills/engineering-async-realtime-agents",
           "upstream_path": "book/chapter6.md",
           "mode": "adapted",
-          "notes": "Consolidates memory-system, rag-pipeline, knowledge-org, async-event-agent (including v3.0 Unified Ingress), computer-use, and Ch.5 GenUI/RLS."
+          "notes": "Consolidates async-event-agent (v3.0 Unified Ingress), fast/slow voice, computer-use, and Ch.5 GenUI/RLS."
         },
         {
           "skill": "evaluating-evolving-agents",

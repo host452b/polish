@@ -1,0 +1,7 @@
+interface:
+  display_name: "architecting-agent-memory-rag"
+  short_description: "Architect dual-layer user memory, hybrid Contextual RAG, and PR updates"
+  default_prompt: "Use $architecting-agent-memory-rag to design or diagnose our user memory schema, hybrid RAG retrieval pipeline, and tenant ACL boundaries."
+
+policy:
+  allow_implicit_invocation: true

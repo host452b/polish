@@ -22,7 +22,12 @@ This reference documents concrete defects uncovered when auditing the 22 skills 
 | `tool-discovery` | Cites `35 tools = 3,857 tokens` | `book/chapter4.md` Exp 4-1: `127` MCP tools = `50,597` `o200k` tokens; active discovery appended `3,939 / 1,853 / 2,632` tokens; adds `selection_ablation.py` isolating token-padding length vs distractor-tool confusion | Distinguish context-length degradation from near-duplicate tool-confusion degradation |
 | `async-event-agent` | Duplicate step `6.` numbering; omits the entire v3.0 Unified Ingress Layer | `book/chapter6.md` "接入层：多种来源，一种事件": Unified Envelope (`dedupe_key`, `thread`, `correlation`, `kind`, `raw_ref`, `expires_at`), ACK-after-append (<3s Feishu / <5s WeCom), 3-progress separation (`source` / `dispatch` / `task` + `outbox`), state coalescing vs message batching, and `dsh-superagent` Main vs Executor session split | Without ACK-after-append and 3-progress separation, webhook retries and log replays trigger duplicate external side effects |
 
-## 3. High-Fragility Gaps Consolidated into `joe-nv-skill`
+## 3. Iterative Before/After Diff Extraction & 4-Layer Funnel (Ch.2 & Ch.9)
+
+- **Iterative Extraction from Human Edits (Exp 2-7):** Draft a 20-line v0 `SKILL.md` from 3–5 gold artifacts -> run on a fresh task -> diff `agent_draft` vs `human_edited_final` -> codify recurring deltas as `Scope + Action + Exception + Verification` tuples. Widen clarification gates when users say *"not what I meant"*; narrow them when users say *"too many questions"* on reversible edits.
+- **4-Layer Benefit Funnel (Table 9-3):** Separate *Proposal Validity* (force-injected replay) from *Activation Rate* (`description` routing), *Compliance Rate* (step completion), and *Boundary + Retention Holdout Gain* so a routing miss never causes you to delete valid domain rules.
+
+## 4. High-Fragility Gaps Consolidated from v3.0
 
 - **Silent Data Fabrication under Tool Failure** (`book/chapter1.md` Exp 1-3 CoinGecko timeout -> hardcoded 31 fake prices; `book/chapter7.md` T3A fabricated `Coffee $4.50` when image pixels were missing; Denario fabricated synthetic scientific data when file read failed).
 - **Unit-Scaling Rounding Amplification** (`book/chapter1.md` Exp 1-1: passing `2.1` instead of `2100000` to `convert_currency` magnified 2-decimal rounding by $10^6$, losing `$2,895.73`).
