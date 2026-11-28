@@ -24,46 +24,49 @@ Consult only the section matching the diagnosed defect class. Keep every edit mi
 
 ### Break Cross-Skill Cycles & `../sibling` Coupling (`D5`)
 - Extract shared contracts needed by two peer domain skills into a leaf foundation document with zero upward links.
-- Replace fragile `../other-skill/references/foo.md` relative filesystem jumps with canonical skill invocation so single-skill standalone installs (`npx skills add` or symlinks) remain intact.
+- Replace fragile `../other-skill/references/foo.md` relative filesystem jumps with canonical skill invocation so single-skill standalone installs remain intact.
 
 ## 2. Progressive Disclosure and Fast Paths
 
 ### Add Step-0 Fast Paths & Complexity Tracks (`D3`)
-- **Symptom:** The skill forces full multi-step reconstruction and heavy verification even when the user asks to run an unchanged template or adjust one copy string.
-- **Pattern:** Insert `## 0. Fast Path & Track Selection` at the top of `SKILL.md`:
-  - **No-op / Pristine Input Fast Path:** When input is already valid/complete and zero custom changes were requested, skip rebuild/re-test and deliver directly.
-  - **Fast Track vs. Full Track:** Route simple single-file/zero-external-asset tasks through a single combined check; reserve multi-stage planning and visual review for complex or multi-asset builds.
-  - **Delta Context Reads:** When task scope shifts mid-session, preserve locked user decisions and load only the set difference between newly required references and already-loaded references.
+- **No-op / Pristine Input Fast Path:** When input is already valid/complete and zero custom changes were requested, skip rebuild/re-test and deliver directly.
+- **Fast Track vs. Full Track:** Route simple single-file/zero-external-asset tasks through a single combined check; reserve multi-stage planning and visual review for complex builds.
+- **Delta Context Reads:** When task scope shifts mid-session, preserve locked user decisions and load only the difference between newly required references and already-loaded references.
 
-### Cure Body Sprawl (>350 Lines or >8,000-Char Routers)
-- Apply the **Branching Test**: keep ordered steps executed on *every* run inside `SKILL.md`; push branch-specific matrices, provider quirks, and >50-line schemas into `references/<branch>.md` behind a 3-column conditional routing table (`Dimension | Condition | Read Only When Matched`).
+### Isolate Heavy Outputs via Subagents or Script Aggregation
+- **Symptom:** Dumping raw test logs, multi-file diffs, API pagination payloads, or 20+ file scans into the main trajectory dilutes attention and burns context.
+- **Refactor:** Instruct the skill to delegate high-volume read/scan/log-triage tasks (`>200` lines / `>8 KB` or `>10` targets) to an isolated read-only **subagent** returning a bounded table (`target | status | file:line | minimal action`), or aggregate via a local script writing full raw output to a temp file and printing only summary counts + failing lines.
+
+### Prune to Decision-Changing Sentences Only (`>350` Lines or `>8,000`-Char Routers)
+- Apply the **Decision Test** sentence by sentence: *"Would removing this sentence change what a frontier model actually decides or executes?"* Delete generic exhortations ("be thorough", "write clean code", "handle edge cases carefully") outright rather than rewording them.
+- Push branch-specific matrices, provider quirks, and `>50`-line schemas into `references/<branch>.md` behind a 3-column conditional routing table (`Defect/Branch | Trigger Condition | Disclosed Slice`).
 
 ## 3. Deterministic Gates and Stop-Loss
 
-### Offload Prose Rules into Self-Locating `scripts/` (`D6`)
-- Replace prose instructions asking the LLM to count characters, check math/discounts, validate YAML/JSON schemas, or verify links/anchors with a zero-dependency script under `scripts/`.
+### Encode Rules into Structure on Second Write (`D6`, `D9`)
+- **The Second-Write Law:** Whenever the same constraint is written a second time—or governs counts, character budgets, naming formats, YAML/JSON schemas, `#anchor` links, or step order—**convert it into a linter, static type, JSON Schema, fixed CLI pipeline, or zero-dependency `scripts/` check, and delete the prose sentence**.
 - Bundled scripts must locate sibling files relative to themselves (`Path(__file__).resolve().parent` in Python, `new URL('.', import.meta.url)` in ESM) — never hardcode `/Users/...`, `/home/...`, or `~/.claude/skills/...`.
 
-### Pair Every Gate with Anti-Reward-Hacking & Stop-Loss
-- **Anti-Reward-Hacking (Hard Fails):** Explicitly forbid creating disconnected stub files just to satisfy a test runner, lowering assertion thresholds, deleting failing checks, or fabricating metrics after a tool timeout.
-- **Stop-Loss (Round Cap):**
-  - `P0` (crashes, corrupted state, violated invariants): block delivery; if the core mechanism fails `P0` across **2 consecutive rounds**, pivot the approach rather than tweaking parameters.
-  - `P1` (usability, layout, balance): cap at **3 fix rounds**, then hand off remaining items transparently.
-  - `P2` (minor polish): do not loop; log up to 5 highest-impact items under `Known gaps (P2)` for the user to choose.
+### Make Completion Provable on Real Artifacts (`D8`, `--verify-against`)
+- **Symptom:** Completion relies on fuzzy prose ("verify everything looks good") or trusts the Agent's self-reported summary.
+- **Refactor:**
+  1. Define **completion** upfront as explicit, machine-checkable predicates on real output files, exit codes, or state snapshots.
+  2. Pair every workflow with a reproducible verification script inspecting the actual produced artifact on disk (e.g., `--save-baseline` before edits -> `--verify-against` after edits).
+  3. **Anti-Reward-Hacking (Hard Fails):** Forbid creating disconnected stub files to fake green runs, relaxing thresholds/assertions, gutting trigger descriptions (`V004_DESCRIPTION_GUTTED`), deleting failing test cases, or fabricating metrics after tool timeouts.
+  4. **Stop-Loss (Round Cap):** Block on `P0` (pivot approach if the core mechanism fails `P0` across **2 consecutive rounds**); cap `P1` fixes at **3 rounds**; log `P2` polish items under `Known gaps (P2)` (max 5 items) without looping.
 
 ### Overlap Slow Async Jobs with Local Work
-- When a workflow dispatches slow external jobs (multimodal generation, remote builds, batch runs), submit independent jobs concurrently with deterministic `requestId` / idempotency keys immediately after authorization, build local logic while jobs run, and integrate/inspect in one consolidated pass.
+- Submit independent slow external jobs concurrently with deterministic `requestId` / idempotency keys immediately after authorization, build local logic while jobs run, and integrate/verify in one consolidated pass.
 
 ## 4. Interaction UX and Scaffolding Hygiene
 
-### Enforce Ask-Once Batching & Hard Spend/Publish Pauses
-1. **Scan workspace first:** Never ask questions already answered by `README.md`, `package.json`, git history, or config files.
-2. **Own technical defaults:** Specify a deterministic fallback chain for tool/provider/model choices (`Choose X yourself; do not ask the user to choose`).
-3. **One batched question + hard consent gate:** Combine genuine business ambiguities and paid/external/destructive approvals into **one single turn** (offering a `"you decide"` option on creative choices). Never bypass an unanswered spend/publish confirmation with silent local/mocked substitutes.
+### Gate Humans on Irreversible Actions Only (`D10`)
+- **Autonomous Reversible Execution:** Local file edits, git worktree branches, `references/` splits, `scripts/` creation, dry-runs, and test/linter runs are **reversible**—the Agent must advance them end-to-end without asking step-by-step permission or making the user pick technical defaults (`Choose providers/tools yourself; do not ask the user`).
+- **Single Batched Gate for Irreversible Actions:** Ask the human **only** before irreversible operations—breaking public skill/API identifiers, external publishing/pushing/messaging, paid credit/API spend, or deleting untracked/unrecoverable data. Combine any genuine business ambiguity with irreversible consent into **one** turn and wait; never bypass an unanswered spend/publish gate with silent mocked substitutes.
 
 ### Black-Box User Replies & Honest Evidence Split
 - Keep user-facing replies free of internal skill names, MCP tool identifiers, `references/` paths, or internal rule codes unless the user is explicitly auditing the skill itself.
-- Separate **Verified** (backed by observed command/tool output in the current session) from **Unverified** (human feel, subjective visual/audio quality, unexercised production environments).
+- Separate **Verified** (proved by reproducible script output on real artifacts in this session) from **Unverified** (human feel, subjective visual/audio taste, unexercised production environments).
 
 ### Tag Temporary Model Workarounds (`model-scaffolding`, `D7`)
 - Separate permanent **Domain Invariants** from temporary guardrails added for current model quirks using balanced, dated HTML comments:

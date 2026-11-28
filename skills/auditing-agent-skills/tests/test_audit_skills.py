@@ -169,6 +169,65 @@ class AuditSkillsTests(unittest.TestCase):
             )
             self.assertEqual(MOD.audit_single_skill(sd), [])
 
+    def test_detects_vague_completion_repeated_rules_and_reversible_nags(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            sd = Path(td) / "prose-heavy-skill"
+            sd.mkdir()
+            repeated = "- Never mutate output files without first reading the full source content."
+            (sd / "SKILL.md").write_text(
+                "---\nname: prose-heavy-skill\ndescription: Use when testing structural rule migration.\n---\n\n"
+                "# Prose Heavy\n\n"
+                f"{repeated}\n\n"
+                "1. Ask the user for confirmation before each file edit.\n"
+                "2. Iterate until everything looks good and high quality.\n\n"
+                "## Notes\n\n"
+                f"{repeated}\n",
+                encoding="utf-8",
+            )
+            rules = {f.rule for f in MOD.audit_single_skill(sd)}
+            self.assertIn("D8_VAGUE_COMPLETION", rules)
+            self.assertIn("D9_REPEATED_PROSE_RULE", rules)
+            self.assertIn("D10_REVERSIBLE_CONFIRMATION_NAG", rules)
+
+    def test_verify_against_baseline_blocks_relaxation_and_passes_genuine_fix(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            sd = root / "target-skill"
+            sd.mkdir()
+            (sd / "SKILL.md").write_text(
+                "---\nname: target-skill\ndescription: >-\n"
+                "  Use when auditing baseline verification across target skill artifacts and preventing silent trigger gutting during polish.\n"
+                "---\n\n# Target\n\nSee [broken](references/missing.md).\n",
+                encoding="utf-8",
+            )
+            baseline = MOD.build_report(root)
+            self.assertEqual(baseline["errors"], 1)
+
+            # Case 1: Agent fixes broken link by gutting description to a stub -> must FAIL V004_DESCRIPTION_GUTTED
+            (sd / "SKILL.md").write_text(
+                "---\nname: target-skill\ndescription: Use when testing.\n---\n\n# Target\n\n1. Run `scripts/check.py`.\n",
+                encoding="utf-8",
+            )
+            gutted_issues = MOD.verify_against_baseline(baseline, MOD.build_report(root))
+            self.assertIn("V004_DESCRIPTION_GUTTED", {i.rule for i in gutted_issues})
+
+            # Case 2: Agent fixes broken link and trims an 800-char bloated description to a valid 160-char trigger pointer -> must PASS ([])
+            (sd / "references").mkdir()
+            (sd / "references" / "missing.md").write_text("# Restored Reference\n", encoding="utf-8")
+            bloated_baseline = {
+                **baseline,
+                "warnings": 1,
+                "skills_meta": {"target-skill": {**baseline["skills_meta"]["target-skill"], "desc_len": 800}},
+            }
+            (sd / "SKILL.md").write_text(
+                "---\nname: target-skill\ndescription: >-\n"
+                "  Use when auditing baseline verification across target skill artifacts and preventing silent trigger gutting during polish runs.\n"
+                "---\n\n# Target\n\nSee [restored](references/missing.md).\n",
+                encoding="utf-8",
+            )
+            clean_issues = MOD.verify_against_baseline(bloated_baseline, MOD.build_report(root))
+            self.assertEqual(clean_issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()

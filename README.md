@@ -44,7 +44,7 @@ Currently included:
 - `mattpocock-code-review` - reviews changes since a fixed point in parallel along two separate axes: Standards and Spec.
 - `mattpocock-wizard` - generates an interactive bash wizard for manual setup, credential, or migration steps only a human can perform.
 - `mattpocock-writing-for-agents` - reference for structuring, sharpening, and pruning agent-consumed documents (`SKILL.md`, `AGENTS.md`, `CLAUDE.md`).
-- `auditing-agent-skills` - scans and surgically polishes `SKILL.md` / `AGENTS.md` packages across plain-YAML hazards, SDO shortcuts, broken links & `#anchors`, cross-skill DAG cycles, script path coupling, `model-scaffolding` expiry, stop-loss gates, and the 4-layer skill benefit funnel (`scripts/audit_skills.py`).
+- `auditing-agent-skills` - scans and surgically polishes `SKILL.md` / `AGENTS.md` packages across plain-YAML hazards, SDO shortcuts, `#anchors`, cross-skill DAG cycles, repeated prose rules (`D9`), vague completion / reversible confirmation nags (`D8`/`D10`), and provable `--verify-against` baseline checks (`scripts/audit_skills.py`).
 - `architecting-agent-context` - designs stateless LLM API loops, KV/Prompt Cache prefix invariance, provider thinking-block continuations, code-maintained Status Bars (`scripts/estimate_status_bar_cache_cost.py`), and 5-tier compression vs. subagent isolation.
 - `designing-agent-tools-mcp` - designs Poka-yoke ACI tools, Code Mode vs. dedicated interfaces, byte/Unicode parameter fidelity, MCP supply-chain defenses, and 2-stage active tool discovery.
 - `hardening-agent-harness` - scans Python/TS agent codebases for `H001`–`H007` fragility anti-patterns (`scripts/scan_agent_repo.py`) and hardens the 5-pillar Harness against silent data fabrication, hung streams, retry death spirals, non-idempotent replays, and cross-provider failover crashes.
@@ -57,7 +57,7 @@ Currently included:
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **40** | Total `description` footprint: **12,452 chars** (avg **311 chars/skill**), keeping always-loaded context overhead compact |
+| Total skills | **40** | Total `description` footprint: **12,422 chars** (avg **311 chars/skill**), keeping always-loaded context overhead compact |
 | Functional orthogonality | **~90%** (~10% overlap) | Adjacent skills differ in method, target boundary, and output contract rather than duplicating workflows |
 | Trigger orthogonality | **~91%** (~9% overlap; raised from ~68%) | Overlapping clusters carry explicit mutual-routing pointers in `description` |
 | Standalone single-purpose skills | **12 / 40 (30.0%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
@@ -346,7 +346,7 @@ See [the skill](skills/i-have-adhd-actionable-output/SKILL.md) and
 
 Distilled and restructured from *AI Agents in Depth* ([`bojieli/ai-agent-book`](https://github.com/bojieli/ai-agent-book) v3.0, Apache-2.0) into eight self-contained, verified skills:
 
-1. `auditing-agent-skills` — runs zero-dependency static compiler checks (`scripts/audit_skills.py`: plain-YAML hazards, SDO leaks, `#anchor` slugs, cross-skill DAG cycles, script self-location, and `model-scaffolding` tags), 4-layer benefit funnel diagnostics, and dual-mode (`Audit` / `Polish`) surgical refactoring (`PASS_SKILL_AUDIT / PASS_SKILL_POLISH / FIX_BEFORE_INSTALL`).
+1. `auditing-agent-skills` — runs zero-dependency compiler & baseline checks (`scripts/audit_skills.py`: plain-YAML hazards, SDO leaks, `#anchor` slugs, cross-skill DAG cycles, repeated prose rules, vague completion / reversible-work nags, and `--save-baseline` / `--verify-against` anti-relaxation gates), subagent heavy-output isolation, and dual-mode (`Audit` / `Polish`) surgical refactoring.
 2. `architecting-agent-context` — designs KV-cache-invariant message loops, provider-specific preserved-thinking continuations, code-computed Status Bars (`scripts/estimate_status_bar_cache_cost.py`), and 5-tier compression.
 3. `designing-agent-tools-mcp` — designs Poka-yoke ACI tools, Code Mode vs. dedicated tools, byte/Unicode parameter fidelity, MCP supply-chain checks, and 2-stage active tool discovery.
 4. `hardening-agent-harness` — runs AST/pattern fragility scans (`scripts/scan_agent_repo.py`) and hardens the 5-pillar Harness against silent data fabrication, hung streams, error-hook death spirals, non-idempotent retries, and cross-provider signature crashes (`SHIP_HARNESS / BLOCK_HARNESS` gate).
@@ -569,7 +569,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 - `mattpocock-code-review` - 基于指定 Git 基准并行执行 Standards 与 Spec 双轴评审。
 - `mattpocock-wizard` - 为必须人工执行的配置、凭证或迁移步骤生成交互式 bash 向导脚本。
 - `mattpocock-writing-for-agents` - 面向 agent 文档（`SKILL.md`、`AGENTS.md`、`CLAUDE.md`）的结构、指针与精简写作参考。
-- `auditing-agent-skills` - 扫描并以最小 Diff 重构改善 `SKILL.md` / `AGENTS.md`：覆盖 YAML 裸冒号陷阱、描述剧透跳步、失效链接与 `#anchor` 锚点、跨技能 DAG 环路、脚本硬编码路径、`model-scaffolding` 保质期注释、止损门禁与四层收益漏斗诊断（附零依赖 `scripts/audit_skills.py`）。
+- `auditing-agent-skills` - 扫描并以最小 Diff 改善 `SKILL.md` / `AGENTS.md`：覆盖 YAML 裸冒号、描述剧透、`#anchor` 锚点、跨技能 DAG 环路、重复文字规则转结构（`D9`）、模糊完成条件与可逆确认打扰（`D8`/`D10`），以及基于真实产物的 `--verify-against` 防放宽闭环验证（附 `scripts/audit_skills.py`）。
 - `architecting-agent-context` - 设计无状态消息循环、KV Cache 前缀不变性、各厂商思考块续接协议、代码状态栏成本计算（`scripts/estimate_status_bar_cache_cost.py`）与五层压缩/子 Agent 隔离。
 - `designing-agent-tools-mcp` - 设计 ACI 防呆工具、Code Mode 取舍、Unicode 参数保真、MCP 供应链三毒防御与百级工具两阶段主动发现。
 - `hardening-agent-harness` - 静态扫描 Python/TS Agent 仓库中的 `H001`–`H007` 脆弱反模式（`scripts/scan_agent_repo.py`），加固五支柱 Harness 防超时编造假数据、流式静默卡死、报错钩子死亡螺旋、非幂等重发与跨厂商签名崩溃。
@@ -582,7 +582,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **40** | 全部 `description` 合计 **12,452 字符**（均值 **311 字符/个**），常驻上下文开销紧凑可控 |
+| Skill 总数 | **40** | 全部 `description` 合计 **12,422 字符**（均值 **311 字符/个**），常驻上下文开销紧凑可控 |
 | 功能正交率（方法论/产出不重复） | **~90%**（功能重叠率 ~10%） | 相邻 skill 在方法论、作用对象与强制输出契约上严格分界 |
 | 触发正交率（自动命中不打架） | **~91%**（由调优前 ~68% 提升） | 冲突簇已在 `description` 中建立显式互排与分流指针 |
 | 完全正交单点（0% 重叠） | **12 / 40（30.0%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
@@ -865,7 +865,7 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 
 系统提炼与重构自《深入理解 AI Agent：设计原理与工程实践》（[`bojieli/ai-agent-book`](https://github.com/bojieli/ai-agent-book) v3.0，Apache-2.0），将全书 10 章原理、实验证据与原附带 skills 的缺陷修复整合为 8 个自包含工程包：
 
-1. `auditing-agent-skills` — 零依赖静态编译器（`scripts/audit_skills.py`：YAML 裸冒号、描述剧透、`#anchor` 锚点、跨技能 DAG 环路、脚本自定位路径与 `model-scaffolding` 标签校验）、四层收益漏斗诊断与 `Audit / Polish` 双模外科手术改善（`PASS_SKILL_AUDIT / PASS_SKILL_POLISH / FIX_BEFORE_INSTALL`）。
+1. `auditing-agent-skills` — 零依赖静态编译器与基线验证器（`scripts/audit_skills.py`：YAML 裸冒号、描述剧透、`#anchor` 锚点、跨技能 DAG 环路、重复文字规则转脚本、模糊完成条件/可逆操作打扰检测，以及 `--save-baseline` / `--verify-against` 真实产物防放宽验证）、大输出子 Agent 隔离与 `Audit / Polish` 双模改善。
 2. `architecting-agent-context` — 无状态 API 循环、KV Cache 前缀冻结、各厂商思考块协议、代码状态栏成本估算器与五层压缩/隔离。
 3. `designing-agent-tools-mcp` — ACI 防呆工具 schema、Code Mode 取舍、Unicode 参数保真、MCP 供应链防御与百级工具两阶段主动发现。
 4. `hardening-agent-harness` — 附零依赖 Agent 代码库静态脆弱性扫描器（`scripts/scan_agent_repo.py`）与 `SHIP_HARNESS / BLOCK_HARNESS` 门禁，拦截超时硬编码假数据、流式静默卡死、退出钩子死亡螺旋、非幂等重发与跨厂商签名崩溃。
