@@ -1,6 +1,6 @@
 {
   "name": "polish",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Personal collection of curated, self-made, and adapted agent skills for Fusion-enhanced multi-model deliberation and niche knowledge relay (model-council), AI Agent & Harness engineering (KV-cache context, MCP tools, AST-scanned harness hardening, multi-agent workflows, memory & RAG, async/voice/GUI ingress, paired evaluation, skill auditing), longitudinal time-series chronicle synthesis, prompt rewriting, defect investigation, project-wide contract exploration, domain modeling, deep-module design, frontend design quality, repository workflows, and release safety.",
   "author": {
     "name": "host452b"
