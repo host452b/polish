@@ -58,7 +58,7 @@ Currently included:
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **41** | Total `description` footprint: **12,911 chars** (avg **315 chars/skill**), keeping always-loaded context overhead compact |
+| Total skills | **41** | Total `description` footprint: **12,947 chars** (avg **316 chars/skill**), keeping always-loaded context overhead compact |
 | Functional orthogonality | **~90%** (~10% overlap) | Adjacent skills differ in method, target boundary, and output contract rather than duplicating workflows |
 | Trigger orthogonality | **~91%** (~9% overlap; raised from ~68%) | Overlapping clusters carry explicit mutual-routing pointers in `description` |
 | Standalone single-purpose skills | **12 / 41 (29.3%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
@@ -601,7 +601,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **41** | 全部 `description` 合计 **12,911 字符**（均值 **315 字符/个**），常驻上下文开销紧凑可控 |
+| Skill 总数 | **41** | 全部 `description` 合计 **12,947 字符**（均值 **316 字符/个**），常驻上下文开销紧凑可控 |
 | 功能正交率（方法论/产出不重复） | **~90%**（功能重叠率 ~10%） | 相邻 skill 在方法论、作用对象与强制输出契约上严格分界 |
 | 触发正交率（自动命中不打架） | **~91%**（由调优前 ~68% 提升） | 冲突簇已在 `description` 中建立显式互排与分流指针 |
 | 完全正交单点（0% 重叠） | **12 / 41（29.3%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
