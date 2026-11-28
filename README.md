@@ -12,6 +12,7 @@ Each skill uses one lowercase kebab-case name for its directory, `SKILL.md` fron
 
 Currently included:
 
+- `model-council` - runs blind cross-family multi-model deliberation, niche/long-tail knowledge-distribution relay (protecting `1/N` exact anchors from majority-vote erasure), and Devin Fusion `1x` neutral Fact Pack + spec-brief handoffs (`scripts/council_runner.py`).
 - `synthesizing-time-series-chronicles` - turns timestamped corpora (event logs, changelogs, incident histories, release archives, or literature streams) into atomic 4-slot digests, Sinkhorn mass-conserving Sankey & sub-signal velocity SVG charts, and living multi-chapter chronicles/PDFs with rollover-safe `AUTO-SYNC` slots.
 - `benchmark-checklist` - checks measured throughput, latency, and speedup claims against completed work and run variability.
 - `takeover-agent-sessions` - triages running, interrupted/post-reboot, waiting-for-user, and workspace-contended local sessions (`radar`) and extracts bounded 5-part Takeover Briefs across Cursor, Windsurf, Claude Code, GitHub Copilot, Codex, Kiro, OpenCode, Zed, and Devin on macOS, Windows, and Linux, reconciling against live `git status` / `git diff` to resume unfinished work.
@@ -57,19 +58,19 @@ Currently included:
 
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Total skills | **40** | Total `description` footprint: **12,422 chars** (avg **311 chars/skill**), keeping always-loaded context overhead compact |
+| Total skills | **41** | Total `description` footprint: **12,911 chars** (avg **315 chars/skill**), keeping always-loaded context overhead compact |
 | Functional orthogonality | **~90%** (~10% overlap) | Adjacent skills differ in method, target boundary, and output contract rather than duplicating workflows |
 | Trigger orthogonality | **~91%** (~9% overlap; raised from ~68%) | Overlapping clusters carry explicit mutual-routing pointers in `description` |
-| Standalone single-purpose skills | **12 / 40 (30.0%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
-| Pipeline & complementary cluster skills | **28 / 40 (70.0%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk (5), agent docs/skills (3), and AI Agent & Harness engineering (7) |
+| Standalone single-purpose skills | **12 / 41 (29.3%)** | Zero domain or trigger overlap (`synthesizing-time-series-chronicles`, `prompt-polish`, `file-singlify`, `takeover-agent-sessions`, `benchmark-checklist`, `mattpocock-wizard`, etc.) |
+| Pipeline & complementary cluster skills | **29 / 41 (70.7%)** | Stage-separated across UI (5), modeling/design (2), review/release (3), debugging (3), ideation/critique/risk/council (6), agent docs/skills (3), and AI Agent & Harness engineering (7) |
 
 Key routing boundaries across adjacent skills:
 
 - **Debugging**: surfaced logs/errors/issues → `superpowers-systematic-debugging`; exploratory repo-reading & uncertainty-gated defect audit → `find-a-bug`; full-repo C++/Python 7-contract sweep → `project-bug-hunting`.
 - **Ideation**: rapid multi-question frontier stress-test → `mattpocock-grilling`; step-by-step convergence into a committed design spec & plan → `superpowers-brainstorming`.
-- **Critique, blind spots & risk math**: product loops, market/business assumptions, and qualitative non-code critique → `yc-rejection-simulator`; unfamiliar codebase idioms, framework conventions, and engineering/ops blind spots → `find-blind-spots`; quantitative payoffs, tail constraints, CARA utility, and break-even / reservation-price / $R^*$ inversion → `analyzing-risk-decisions`.
+- **Critique, blind spots, multi-model council & risk math**: product loops, market/business assumptions, and qualitative non-code critique → `yc-rejection-simulator`; unfamiliar codebase idioms, framework conventions, and engineering/ops blind spots → `find-blind-spots`; live cross-model discussion/comparison, high-stakes judgment synthesis, or obscure/long-tail knowledge-distribution relay → `model-council`; quantitative payoffs, tail constraints, CARA utility, and break-even / reservation-price / $R^*$ inversion → `analyzing-risk-decisions`.
 - **Agent authoring & skill governance**: prose hierarchy, context pointers, and `AGENTS.md`/`CLAUDE.md` pruning → `mattpocock-writing-for-agents`; deterministic compiler linting (`#anchors`, YAML hazards, DAG cycles, script paths, `model-scaffolding`), 4-layer benefit funnel diagnosis, and minimal-diff surgical polishing of `SKILL.md`/`AGENTS.md` → `auditing-agent-skills`; subagent pressure-testing and loophole hardening → `superpowers-writing-skills`.
-- **AI Agent & Harness engineering**: prompt/KV-cache/status-bar/compression layout → `architecting-agent-context`; ACI tool schemas, MCP security, and active discovery → `designing-agent-tools-mcp`; AST fragility scanning (`scan_agent_repo.py`), anti-fabrication, watchdogs, idempotency, and neutral failover → `hardening-agent-harness`; multi-agent topologies, Loop/MEA verification, VFS locks, and A2A → `orchestrating-multi-agent-workflows`; dual-layer user memory, Contextual/Hybrid RAG, `RAPTOR`/`GraphRAG`, and index ACLs → `architecting-agent-memory-rag`; Unified Event Ingress, fast/slow voice, Computer Use grounding, and GenUI/RLS → `engineering-async-realtime-agents`; `Pass^k`, paired McNemar/bootstrap stats, prefix regressions, and post-training/evolution routing → `evaluating-evolving-agents`.
+- **AI Agent & Harness engineering**: prompt/KV-cache/status-bar/compression layout → `architecting-agent-context`; ACI tool schemas, MCP security, and active discovery → `designing-agent-tools-mcp`; AST fragility scanning (`scan_agent_repo.py`), anti-fabrication, watchdogs, idempotency, and neutral failover → `hardening-agent-harness`; multi-agent codebase topologies, Loop/MEA verification, VFS locks, and A2A (vs. live question deliberation in `model-council`) → `orchestrating-multi-agent-workflows`; dual-layer user memory, Contextual/Hybrid RAG, `RAPTOR`/`GraphRAG`, and index ACLs → `architecting-agent-memory-rag`; Unified Event Ingress, fast/slow voice, Computer Use grounding, and GenUI/RLS → `engineering-async-realtime-agents`; `Pass^k`, paired McNemar/bootstrap stats, prefix regressions, and post-training/evolution routing → `evaluating-evolving-agents`.
 
 ## Upstream maintenance
 
@@ -134,6 +135,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 Use plugin install when you want the whole collection as it grows. Use manual symlinks when you only want a specific skill in a specific tool or project.
 
 ## Skills
+
+### `model-council`
+
+Use it when asking for a synthesized multi-model discussion, querying how multiple models weigh in on a disputed technical or strategic question, or investigating an obscure/long-tail domain where no single model holds the full pretraining distribution and cross-model knowledge relay is needed. Designing multi-agent application architectures routes to `orchestrating-multi-agent-workflows`; quantitative payoff/CARA math routes to `analyzing-risk-decisions`.
+
+It fuses three complementary paradigms—**Model Council** (blind Round-1 cross-family runs mapped into Convergence, Fault Lines, and Unique `1/N` surfaces), **Multiagent** (bounded Round-1.5 cross-examination across partial domain seams), and **Devin Fusion** (`1x` opinion-free Fact Pack reconnaissance, KV-cache separation, and spec-grade `Lead -> Sidekick` execution briefs with ordered fallback ladders). Backed by a zero-dependency stdlib helper (`skills/model-council/scripts/council_runner.py`), it provides secret-safe CLI/provider `probe`, allowlisted `shell=False` parallel `dispatch` (with `--dry-run` neutrality linting), and an anti-majority-vote epistemic `ledger` that flags same-family echoes (`HOMOGENEOUS_ECHO_WARNING`), shields specific `1/N` anchors (`PROTECT_1_OF_N`), and blocks fake consensus under single-model fallbacks.
+
+Example: `Use $model-council to compare cross-family models on this obscure Amlogic CEC suspend race, verify 1/N register recalls against the driver tree, and output a Fusion execution brief.` In Claude Code and Devin CLI, invoke `/polish:model-council`.
+
+See [the skill](skills/model-council/SKILL.md), [bilingual architecture & flowcharts](skills/model-council/README.md), and [three-paradigm synthesis, prompt contracts & schemas](skills/model-council/references/paradigm-synthesis-and-schemas.md).
 
 ### `synthesizing-time-series-chronicles`
 
@@ -361,6 +372,13 @@ Distilled and restructured from *AI Agents in Depth* ([`bojieli/ai-agent-book`](
 polish/
 ├── docs/update-and-sync.md   # upstream adaptation review and sync workflow
 ├── references/strategies.md  # prompt-polish strategy library
+├── skills/model-council/
+│   ├── SKILL.md              # Fusion-enhanced multi-model deliberation & niche knowledge relay
+│   ├── README.md             # bilingual EN/ZH architecture & execution flowcharts
+│   ├── references/           # Model Council vs Multiagent vs Fusion synthesis & JSON schemas
+│   ├── scripts/              # zero-dependency CLI probe, blind dispatcher & epistemic ledger
+│   ├── tests/                # family diversity, secret safety & 1/N shield unit suite
+│   └── agents/openai.yaml
 ├── skills/benchmark-checklist/
 │   ├── SKILL.md              # throughput/latency/speedup claim checklist
 │   └── agents/openai.yaml
@@ -537,6 +555,7 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 当前包含：
 
+- `model-council` - 融合 Model Council 异构盲审、Multiagent 跨缝交叉核验与 Devin Fusion `1x` 中立 Fact Pack 侦察及契约式委派，支持多模型综合裁决、多模型看法对比与冷门长尾领域跨模型知识分布接力（内置 `scripts/council_runner.py` 保护 `1/N` 独有锚点免被多数票抹平，并拦截同族回声伪共识）。
 - `synthesizing-time-series-chronicles` - 将任意领域的带时间戳数据流（事故复盘、版本变更、工单日志、市场/监管事件或文献库）提炼为单条四维摘要、质量守恒 Sinkhorn 桑基图与子信号速度热力图，以及带跨年安全 `AUTO-SYNC` 动态槽位的活体编年史章节与教材级矢量 PDF。
 - `benchmark-checklist` - 核对延迟、吞吐和加速比的计时范围、实际完成量与波动。
 - `takeover-agent-sessions` - 跨 macOS、Windows、Linux（含 WSL）只读巡检所有本地会话态势（`radar`：识别运行中、重启/关窗中断遗留、等待用户拍板及同仓库并发撞车），解析 Cursor、Windsurf、Claude Code、GitHub Copilot、Codex、Kiro、OpenCode、Zed 与 Devin 会话并提炼五要素接盘简报，与实时 `git status` / `git diff` 对账后无缝续接。
@@ -582,19 +601,19 @@ When adding skills, keep each skill name stable under `skills/<skill-name>/`. Th
 
 | 指标 | 当前数值 | 解读 |
 | --- | --- | --- |
-| Skill 总数 | **40** | 全部 `description` 合计 **12,422 字符**（均值 **311 字符/个**），常驻上下文开销紧凑可控 |
+| Skill 总数 | **41** | 全部 `description` 合计 **12,911 字符**（均值 **315 字符/个**），常驻上下文开销紧凑可控 |
 | 功能正交率（方法论/产出不重复） | **~90%**（功能重叠率 ~10%） | 相邻 skill 在方法论、作用对象与强制输出契约上严格分界 |
 | 触发正交率（自动命中不打架） | **~91%**（由调优前 ~68% 提升） | 冲突簇已在 `description` 中建立显式互排与分流指针 |
-| 完全正交单点（0% 重叠） | **12 / 40（30.0%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
-| 同域流水线 / 正交协作 | **28 / 40（70.0%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/概率决策(5)、Agent 文档与 Skill 治理(3)、AI Agent 与 Harness 工程(7) |
+| 完全正交单点（0% 重叠） | **12 / 41（29.3%）** | 作用对象与目标完全独立（如 `synthesizing-time-series-chronicles`、`prompt-polish`、`file-singlify`、`takeover-agent-sessions`、`benchmark-checklist`、`mattpocock-wizard` 等） |
+| 同域流水线 / 正交协作 | **29 / 41（70.7%）** | 按阶段与切面分流：前端 UI(5)、领域与模块设计(2)、评审与发布门禁(3)、缺陷排查(3)、方案推敲/挑刺/多模型会诊/概率决策(6)、Agent 文档与 Skill 治理(3)、AI Agent 与 Harness 工程(7) |
 
 相邻 skill 的核心分流规则：
 
 - **缺陷排查三层分流**：有报错日志 / Issue 现象 → `superpowers-systematic-debugging`；从读 repo 出发按工程管理学/不确定性门禁做探索性找 bug → `find-a-bug`；C++/Python 全仓 7 类契约盘点 → `project-bug-hunting`。
 - **方案推敲双模式**：早期想法设计树分轮高密度拷问 → `mattpocock-grilling`；一步一问收敛并落盘正式设计 spec 与实施计划 → `superpowers-brainstorming`（两者互通长板）。
-- **挑刺、盲点与概率决策分工**：产品闭环、市场/商业假设与定性非代码决策挑刺 → `yc-rejection-simulator`；陌生领域代码习惯（idioms）、框架潜规则、行业工程惯例与架构上线盲区 → `find-blind-spots`；明确含成本/损失分布、尾部风险约束、CARA 效用与回本概率/保留价格/$R^*$ 切换边界反推 → `analyzing-risk-decisions`。
+- **挑刺、盲点、多模型会诊与概率决策分工**：产品闭环、市场/商业假设与定性非代码决策挑刺 → `yc-rejection-simulator`；陌生领域代码习惯（idioms）、框架潜规则、行业工程惯例与架构上线盲区 → `find-blind-spots`；需要多模型讨论综合结论、询问多个模型意见，或冷门长尾领域跨模型知识分布接力 → `model-council`；明确含成本/损失分布、尾部风险约束、CARA 效用与回本概率/保留价格/$R^*$ 切换边界反推 → `analyzing-risk-decisions`。
 - **Agent 文档与 Skill 治理分工**：文档信息架构、上下文指针与 `AGENTS.md`/`CLAUDE.md` 编写精简 → `mattpocock-writing-for-agents`；对现有 `SKILL.md`/`AGENTS.md` 做 YAML/`#anchor`/DAG/路径静态编译扫描、四层收益漏斗诊断与最小 Diff 外科手术改善 → `auditing-agent-skills`；子 agent 压力测试与防借口加固 → `superpowers-writing-skills`。
-- **AI Agent 与 Harness 工程七件套分工**：上下文/KV Cache/状态栏/压缩 → `architecting-agent-context`；ACI 工具/参数保真/MCP/主动发现 → `designing-agent-tools-mcp`；AST 仓库脆弱扫描（`scan_agent_repo.py`）与五支柱防造假/看门狗/死循环熔断/幂等/中立接管 → `hardening-agent-harness`；多 Agent 拓扑/Loop 互审/原子抢锁/四区文件系统/A2A → `orchestrating-multi-agent-workflows`；双层用户记忆、混合/上下文感知 RAG、`RAPTOR`/`GraphRAG` 与检索层权限 → `architecting-agent-memory-rag`；统一事件接入层、快慢双脑语音、Computer Use 视觉定位与生成式 UI+RLS → `engineering-async-realtime-agents`；`Pass^k`/配对统计检验/首错前缀回归/后训练与自进化分流 → `evaluating-evolving-agents`。
+- **AI Agent 与 Harness 工程七件套分工**：上下文/KV Cache/状态栏/压缩 → `architecting-agent-context`；ACI 工具/参数保真/MCP/主动发现 → `designing-agent-tools-mcp`；AST 仓库脆弱扫描（`scan_agent_repo.py`）与五支柱防造假/看门狗/死循环熔断/幂等/中立接管 → `hardening-agent-harness`；多 Agent 代码拓扑/Loop 互审/原子抢锁/四区文件系统/A2A（区别于面向具体问题执行多模型会诊的 `model-council`） → `orchestrating-multi-agent-workflows`；双层用户记忆、混合/上下文感知 RAG、`RAPTOR`/`GraphRAG` 与检索层权限 → `architecting-agent-memory-rag`；统一事件接入层、快慢双脑语音、Computer Use 视觉定位与生成式 UI+RLS → `engineering-async-realtime-agents`；`Pass^k`/配对统计检验/首错前缀回归/后训练与自进化分流 → `evaluating-evolving-agents`。
 
 ## 上游维护
 
@@ -659,6 +678,16 @@ ln -s "$(pwd)/polish/skills/prompt-polish" ~/.config/devin/skills/prompt-polish
 如果你想随着仓库扩展使用整个集合，优先用 plugin 安装；如果只想在某个工具或项目里启用单个 skill，再用手动软链。
 
 ## Skills
+
+### `model-council`
+
+适用于需要多模型讨论综合结果、询问多个模型对争议问题的看法，或面对冷门/长尾领域（底层寄存器/固件、生僻协议标准、跨学科边缘细节）需要跨模型预训练知识分布接力的场景。多 Agent 应用代码架构设计分流至 `orchestrating-multi-agent-workflows`；显式收益/损失概率与 CARA 数学反推分流至 `analyzing-risk-decisions`。
+
+深度融合三种多模型范式的互补长板：**Model Council**（首轮跨模型家族零串通盲审，结构化映射共识、冲突断层与 `1/N` 独有发现）、**Multiagent**（最多 1 轮跨知识缝隙交叉核验与片段拼接）与 **Devin Fusion**（`1x` 无倾向 Fact Pack 侦察避免 $N$ 倍重复扫仓、持久缓存隔离，以及带「按序尝试保留首个通过方案」阶梯的 `Lead -> Sidekick` 执行简报）。内置零第三方依赖脚本 `skills/model-council/scripts/council_runner.py`，提供密钥脱敏的本机多模型通道探测（`probe`）、白名单 `shell=False` 并行盲审派发（`dispatch`，含 `--dry-run` 倾向性污染静态检查）以及反多数票暴政认知账本（`ledger`，自动识别同族回声 `HOMOGENEOUS_ECHO_WARNING`、保护具体 `1/N` 长尾锚点 `PROTECT_1_OF_N`，并拦截单模型降级下的伪共识）。
+
+示例：`使用 $model-council 就这个冷门 Amlogic CEC 待机唤醒竞态组织异构多模型盲审与知识接力，核验 1/N 寄存器锚点并输出 Fusion 执行简报。` Claude Code 与 Devin CLI 中使用 `/polish:model-council`。
+
+见 [skill 正文](skills/model-council/SKILL.md)、[中英双语技术架构与流程图](skills/model-council/README.md) 和 [三范式融合原理、提示契约与 Schema 参考](skills/model-council/references/paradigm-synthesis-and-schemas.md)。
 
 ### `synthesizing-time-series-chronicles`
 
@@ -880,6 +909,13 @@ Claude Code 中使用 `/polish:i-have-adhd-actionable-output`。
 polish/
 ├── docs/update-and-sync.md   # 上游适配审查与同步工作流
 ├── references/strategies.md  # prompt-polish 策略库
+├── skills/model-council/
+│   ├── SKILL.md              # 融合 Fusion 的多模型盲审会诊与冷门知识分布接力
+│   ├── README.md             # 中英双语技术架构图与端到端执行流程图
+│   ├── references/           # Model Council / Multiagent / Fusion 融合矩阵与 Schema
+│   ├── scripts/              # 零依赖多模型探测、并行盲审派发与反多数票认知账本
+│   ├── tests/                # 异构家族识别、密钥脱敏与 1/N 保护单元测试
+│   └── agents/openai.yaml
 ├── skills/benchmark-checklist/
 │   ├── SKILL.md              # 吞吐/延迟/加速比测量核查清单
 │   └── agents/openai.yaml

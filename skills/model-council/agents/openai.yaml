@@ -1,0 +1,7 @@
+interface:
+  display_name: "model-council"
+  short_description: "Run blind multi-model synthesis, niche knowledge relay, and Fusion briefs"
+  default_prompt: "Use $model-council to run an independent multi-model deliberation on this question, surface consensus, fault lines, and verified 1/N long-tail insights, and emit an actionable execution brief."
+
+policy:
+  allow_implicit_invocation: true
