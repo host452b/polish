@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic compiler and auditor for SKILL.md packages and skill collections."""
+"""Deterministic compiler, baseline verifier, and auditor for SKILL.md packages."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ import re
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 from urllib.parse import unquote
 
 try:
@@ -41,6 +42,19 @@ UNCONDITIONAL_REF_PATTERNS = [
     r"read all (?:files|documents|references) in `?references",
     r"阅读\s*`?references/?`?\s*(?:下|目录)?的?所有",
 ]
+VAGUE_COMPLETION_RE = re.compile(
+    r"\b(?:until (?:everything |it )?(?:looks good|is clean|is high quality|feels right)(?:\s+and\s+high\s+quality)?|"
+    r"verify (?:that )?everything looks good|"
+    r"when you feel confident)\b|"
+    r"(?:直到|确认)(?:一切|结果)?(?:看起来不错|没有问题|足够好|满意为止)",
+    re.IGNORECASE,
+)
+REVERSIBLE_NAG_RE = re.compile(
+    r"\b(?:ask (?:the )?user (?:for (?:confirmation|permission|approval)|to confirm) before (?:each|every) (?:file|step|edit|change)|"
+    r"wait for (?:user )?(?:approval|confirmation) after (?:each|every) step)\b|"
+    r"(?:每一步|每次修改文件前)都(?:必须|需要)?(?:先)?(?:询问|征求)用户确认",
+    re.IGNORECASE,
+)
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 BACKTICK_PATH_RE = re.compile(r"`((?:chapter\d+|book|docs|references|scripts|assets)/[^`\s]+)`")
 HARDCODED_SCRIPT_PATH_RE = re.compile(
@@ -180,25 +194,37 @@ def github_heading_slugs(md_text: str) -> set[str]:
     return slugs
 
 
+def _normalize_prose_rule(line: str) -> str:
+    stripped = line.strip()
+    if not stripped or stripped.startswith(("#", "|", ">", "<!--", "---", "***")):
+        return ""
+    unbulleted = re.sub(r"^(?:[-*+]|\d+\.)\s+", "", stripped)
+    compact = re.sub(r"\s+", " ", unbulleted).strip().lower()
+    return compact if len(compact) >= 45 else ""
+
+
 def _audit_skill_with_edges(
     skill_dir: Path,
     strict_codex: bool = True,
     collection_root: Path | None = None,
-) -> tuple[list[Finding], set[str]]:
+) -> tuple[list[Finding], set[str], dict[str, Any]]:
     findings: list[Finding] = []
     cross_edges: set[str] = set()
     skill_name = skill_dir.name
     skill_md = skill_dir / "SKILL.md"
+    meta: dict[str, Any] = {"name": "", "desc_len": 0, "body_lines": 0, "errors": 0, "warnings": 0}
 
     if not skill_md.exists():
         findings.append(Finding("ERROR", "S001_MISSING_SKILL_MD", skill_name, str(skill_dir), "SKILL.md not found"))
-        return findings, cross_edges
+        meta["errors"] = 1
+        return findings, cross_edges, meta
 
-    text = skill_md.read_text(encoding="utf-8")
+    text = skill_md.read_text(encoding="utf-8", errors="replace")
     m = re.match(r"^---\n(.*?)\n---\n?", text, re.DOTALL)
     if not m:
         findings.append(Finding("ERROR", "S002_BAD_FRONTMATTER", skill_name, str(skill_md), "Missing or malformed YAML frontmatter"))
-        return findings, cross_edges
+        meta["errors"] = 1
+        return findings, cross_edges, meta
 
     fm_raw = m.group(1)
     hazard_findings = check_plain_yaml_hazards(fm_raw, skill_name, skill_md)
@@ -208,7 +234,8 @@ def _audit_skill_with_edges(
     except Exception as exc:
         if not hazard_findings:
             findings.append(Finding("ERROR", "S002_BAD_FRONTMATTER", skill_name, str(skill_md), f"YAML parse error: {exc}"))
-        return findings, cross_edges
+        meta["errors"] = sum(1 for f in findings if f.severity == "ERROR")
+        return findings, cross_edges, meta
 
     allowed = CODEX_STRICT_KEYS if strict_codex else ALLOWED_FRONTMATTER_KEYS
     extra = sorted(set(fm.keys()) - allowed)
@@ -219,6 +246,7 @@ def _audit_skill_with_edges(
         )
 
     name = str(fm.get("name", "")).strip()
+    meta["name"] = name
     if not name:
         findings.append(Finding("ERROR", "S004_MISSING_NAME", skill_name, str(skill_md), "Missing 'name' field"))
     else:
@@ -228,6 +256,7 @@ def _audit_skill_with_edges(
             findings.append(Finding("ERROR", "S006_INVALID_KEBAB_NAME", skill_name, str(skill_md), f"Invalid kebab-case name '{name}'"))
 
     desc = str(fm.get("description", "")).strip()
+    meta["desc_len"] = len(desc)
     if not desc:
         findings.append(Finding("ERROR", "S007_MISSING_DESC", skill_name, str(skill_md), "Missing 'description' field"))
     else:
@@ -246,6 +275,7 @@ def _audit_skill_with_edges(
 
     body = text[m.end():]
     lines = body.splitlines()
+    meta["body_lines"] = len(lines)
     fm_line_offset = text[: m.end()].count("\n")
 
     is_thin_router = bool(
@@ -265,6 +295,7 @@ def _audit_skill_with_edges(
             break
 
     slug_cache: dict[Path, set[str]] = {}
+    seen_prose_rules: dict[str, str] = {}
     resolved_skill_dir = skill_dir.resolve()
     resolved_collection = collection_root.resolve() if collection_root else None
 
@@ -300,6 +331,42 @@ def _audit_skill_with_edges(
                 findings.append(Finding("WARN", "D7_STALE_PLACEHOLDER", skill_name, f"{md_file}:{lineno}", "Stale placeholder or TODO marker in live instructions"))
 
             if md_file == skill_md:
+                if VAGUE_COMPLETION_RE.search(line_without_code):
+                    findings.append(
+                        Finding(
+                            "WARN",
+                            "D8_VAGUE_COMPLETION",
+                            skill_name,
+                            f"{skill_md}:{lineno}",
+                            "Vague self-reported completion phrase; define a checkable condition and verify real output via script",
+                        )
+                    )
+                if REVERSIBLE_NAG_RE.search(line_without_code):
+                    findings.append(
+                        Finding(
+                            "WARN",
+                            "D10_REVERSIBLE_CONFIRMATION_NAG",
+                            skill_name,
+                            f"{skill_md}:{lineno}",
+                            "Confirmation nag on reversible work; advance reversible steps autonomously and gate only irreversible actions",
+                        )
+                    )
+                norm_rule = _normalize_prose_rule(line_without_code)
+                if norm_rule:
+                    loc = f"{skill_md.name}:{lineno}"
+                    if norm_rule in seen_prose_rules:
+                        findings.append(
+                            Finding(
+                                "WARN",
+                                "D9_REPEATED_PROSE_RULE",
+                                skill_name,
+                                f"{skill_md}:{lineno}",
+                                f"Rule stated twice (first at {seen_prose_rules[norm_rule]}); encode into lint/type/script/schema and delete duplicate prose",
+                            )
+                        )
+                    else:
+                        seen_prose_rules[norm_rule] = loc
+
                 if line.startswith("#"):
                     prev_num = None
                 else:
@@ -391,7 +458,7 @@ def _audit_skill_with_edges(
     openai_yaml = skill_dir / "agents" / "openai.yaml"
     if openai_yaml.exists():
         try:
-            oy = parse_simple_yaml_mapping(openai_yaml.read_text(encoding="utf-8"))
+            oy = parse_simple_yaml_mapping(openai_yaml.read_text(encoding="utf-8", errors="replace"))
             if isinstance(oy, dict):
                 iface = oy.get("interface", {}) or {}
                 if isinstance(iface, dict):
@@ -406,11 +473,13 @@ def _audit_skill_with_edges(
         except Exception as exc:
             findings.append(Finding("ERROR", "S014_BAD_OPENAI_YAML", skill_name, str(openai_yaml), f"Invalid YAML: {exc}"))
 
-    return findings, cross_edges
+    meta["errors"] = sum(1 for f in findings if f.severity == "ERROR")
+    meta["warnings"] = sum(1 for f in findings if f.severity == "WARN")
+    return findings, cross_edges, meta
 
 
 def audit_single_skill(skill_dir: Path, strict_codex: bool = True, collection_root: Path | None = None) -> list[Finding]:
-    findings, _ = _audit_skill_with_edges(skill_dir, strict_codex=strict_codex, collection_root=collection_root)
+    findings, _, _ = _audit_skill_with_edges(skill_dir, strict_codex=strict_codex, collection_root=collection_root)
     return findings
 
 
@@ -447,7 +516,7 @@ def discover_skill_dirs(target: Path) -> list[Path]:
     return sorted({p.parent for p in target.rglob("SKILL.md")})
 
 
-def audit_collection(target: Path, strict_codex: bool = True) -> list[Finding]:
+def _collect_audit(target: Path, strict_codex: bool = True) -> tuple[list[Path], list[Finding], dict[str, dict[str, Any]]]:
     resolved = target.resolve()
     skill_dirs = discover_skill_dirs(resolved)
     col_root: Path | None = None
@@ -460,55 +529,152 @@ def audit_collection(target: Path, strict_codex: bool = True) -> list[Finding]:
 
     all_findings: list[Finding] = []
     dag: dict[str, set[str]] = {}
+    skills_meta: dict[str, dict[str, Any]] = {}
     for sd in skill_dirs:
-        f_list, edges = _audit_skill_with_edges(sd, strict_codex=strict_codex, collection_root=col_root)
+        f_list, edges, meta = _audit_skill_with_edges(sd, strict_codex=strict_codex, collection_root=col_root)
         all_findings.extend(f_list)
         dag[sd.name] = edges
+        skills_meta[sd.name] = meta
 
     for cyc in _detect_cycles(dag):
         chain = " -> ".join(cyc)
         all_findings.append(
             Finding("ERROR", "D5_SKILL_DAG_CYCLE", cyc[0], str(col_root or resolved), f"Circular cross-skill dependency: {chain}")
         )
-    return all_findings
+    return skill_dirs, all_findings, skills_meta
+
+
+def audit_collection(target: Path, strict_codex: bool = True) -> list[Finding]:
+    _, findings, _ = _collect_audit(target, strict_codex=strict_codex)
+    return findings
+
+
+def build_report(target: Path, strict_codex: bool = True) -> dict[str, Any]:
+    skill_dirs, all_findings, skills_meta = _collect_audit(target, strict_codex=strict_codex)
+    errors = sum(1 for f in all_findings if f.severity == "ERROR")
+    warns = sum(1 for f in all_findings if f.severity == "WARN")
+    return {
+        "scanned_skills": len(skill_dirs),
+        "errors": errors,
+        "warnings": warns,
+        "findings": [asdict(f) for f in all_findings],
+        "skills_meta": skills_meta,
+    }
+
+
+def verify_against_baseline(
+    baseline: dict[str, Any],
+    current: dict[str, Any],
+    allow_rename: bool = False,
+) -> list[Finding]:
+    """Verify real post-polish disk artifacts against pre-polish baseline without trusting self-reports."""
+    issues: list[Finding] = []
+    cur_errors = int(current.get("errors", 0))
+    if cur_errors > 0:
+        issues.append(
+            Finding("ERROR", "V001_UNRESOLVED_ERRORS", "*", "post-polish", f"Target still has {cur_errors} structural ERROR(s)")
+        )
+
+    base_warns = int(baseline.get("warnings", 0))
+    cur_warns = int(current.get("warnings", 0))
+    if cur_warns > base_warns:
+        issues.append(
+            Finding("ERROR", "V002_WARNING_REGRESSION", "*", "post-polish", f"Warning count regressed from {base_warns} to {cur_warns}")
+        )
+
+    base_meta: dict[str, Any] = baseline.get("skills_meta", {}) or {}
+    cur_meta: dict[str, Any] = current.get("skills_meta", {}) or {}
+    for s_key, b_info in sorted(base_meta.items()):
+        c_info = cur_meta.get(s_key)
+        if c_info is None:
+            if not allow_rename:
+                issues.append(
+                    Finding("ERROR", "V003_SKILL_DROPPED_OR_RENAMED", s_key, "post-polish", f"Skill '{s_key}' vanished after polish without --allow-rename")
+                )
+            continue
+        if not allow_rename and b_info.get("name") and c_info.get("name") != b_info.get("name"):
+            issues.append(
+                Finding(
+                    "ERROR",
+                    "V003_SKILL_DROPPED_OR_RENAMED",
+                    s_key,
+                    "post-polish",
+                    f"Skill frontmatter name changed '{b_info.get('name')}' -> '{c_info.get('name')}' without --allow-rename",
+                )
+            )
+        b_len = int(b_info.get("desc_len", 0))
+        c_len = int(c_info.get("desc_len", 0))
+        min_retained = max(60, int(min(b_len, 220) * 0.5))
+        if b_len >= 80 and c_len < min_retained:
+            issues.append(
+                Finding(
+                    "ERROR",
+                    "V004_DESCRIPTION_GUTTED",
+                    s_key,
+                    "post-polish",
+                    f"Description shrank from {b_len} to {c_len} chars (<{min_retained} floor); do not gut triggers to game length/SDO checks",
+                )
+            )
+    return issues
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit SKILL.md directories for structural, routing, DAG, cache, and portability defects.")
+    parser = argparse.ArgumentParser(description="Audit SKILL.md directories and verify provable post-polish improvements.")
     parser.add_argument("target", type=Path, help="Skill folder or parent directory containing skills")
     parser.add_argument("--json", action="store_true", help="Emit JSON report")
     parser.add_argument("--allow-devin-keys", "--allow-host-keys", dest="allow_host_keys", action="store_true", help="Allow extended host frontmatter keys without WARN")
+    parser.add_argument("--save-baseline", type=Path, help="Write pre-polish baseline JSON to path and exit 0")
+    parser.add_argument("--verify-against", type=Path, help="Verify real post-polish artifacts against a saved baseline JSON")
+    parser.add_argument("--allow-rename", action="store_true", help="Allow intentional skill renames during --verify-against")
     args = parser.parse_args()
 
     resolved = args.target.resolve()
-    skill_dirs = discover_skill_dirs(resolved)
-    if not skill_dirs:
+    if not discover_skill_dirs(resolved):
         print(f"No SKILL.md files found under {args.target}", file=sys.stderr)
         return 2
 
-    all_findings = audit_collection(resolved, strict_codex=not args.allow_host_keys)
-    errors = sum(1 for f in all_findings if f.severity == "ERROR")
-    warns = sum(1 for f in all_findings if f.severity == "WARN")
+    report = build_report(resolved, strict_codex=not args.allow_host_keys)
+
+    if args.save_baseline:
+        args.save_baseline.parent.mkdir(parents=True, exist_ok=True)
+        args.save_baseline.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(
+            f"Saved baseline ({report['scanned_skills']} skill(s), {report['errors']} ERROR(s), {report['warnings']} WARN(s)) -> {args.save_baseline}"
+        )
+        return 0
+
+    if args.verify_against:
+        baseline = json.loads(args.verify_against.read_text(encoding="utf-8"))
+        v_issues = verify_against_baseline(baseline, report, allow_rename=args.allow_rename)
+        if args.json:
+            print(
+                json.dumps(
+                    {**report, "verification_passed": len(v_issues) == 0, "verification_issues": [asdict(i) for i in v_issues]},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+        else:
+            print(
+                f"Scanned {report['scanned_skills']} skill(s): {report['errors']} ERROR(s), {report['warnings']} WARN(s) "
+                f"(baseline: {baseline.get('errors', 0)} ERROR(s), {baseline.get('warnings', 0)} WARN(s))"
+            )
+            for f in report["findings"]:
+                print(f"[{f['severity']}] {f['skill']} ({f['rule']}) -> {f['message']} [{f['file']}]")
+            for vi in v_issues:
+                print(f"[{vi.severity}] {vi.skill} ({vi.rule}) -> {vi.message} [{vi.file}]")
+            if not v_issues:
+                print("PASS_POLISH_VERIFICATION")
+        return 1 if v_issues else 0
 
     if args.json:
-        print(
-            json.dumps(
-                {
-                    "scanned_skills": len(skill_dirs),
-                    "errors": errors,
-                    "warnings": warns,
-                    "findings": [asdict(f) for f in all_findings],
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
+        print(json.dumps(report, ensure_ascii=False, indent=2))
     else:
-        print(f"Scanned {len(skill_dirs)} skill(s): {errors} ERROR(s), {warns} WARN(s)")
-        for f in all_findings:
-            print(f"[{f.severity}] {f.skill} ({f.rule}) -> {f.message} [{f.file}]")
+        print(f"Scanned {report['scanned_skills']} skill(s): {report['errors']} ERROR(s), {report['warnings']} WARN(s)")
+        for f in report["findings"]:
+            print(f"[{f['severity']}] {f['skill']} ({f['rule']}) -> {f['message']} [{f['file']}]")
 
-    return 1 if errors > 0 else 0
+    return 1 if report["errors"] > 0 else 0
 
 
 if __name__ == "__main__":
