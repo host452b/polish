@@ -1,6 +1,6 @@
 ---
 name: orchestrating-multi-agent-workflows
-description: Use when deciding between a single agent, deterministic workflow, or multi-agent system, designing Agent-to-Agent orchestration topologies, building Proposer-Reviewer or Manage-Execute-Audit loops, configuring multi-agent virtual filesystems or A2A protocols, or debugging multi-agent conflicts, cascading distortion, homogeneous convergence, or runaway spawning (Agent与Agent工作流编排、多Agent拓扑选型、Loop工程与防扯皮冲突).
+description: Use when deciding between a single agent, deterministic workflow, or multi-agent system, designing Agent-to-Agent orchestration topologies, building Proposer-Reviewer or Manage-Execute-Audit loops, configuring multi-agent virtual filesystems or A2A protocols, or debugging multi-agent conflicts, cascading distortion, homogeneous convergence, or runaway spawning (Agent与Agent工作流编排、多Agent拓扑选型、Loop工程与防扯皮冲突). For live multi-model answers or niche knowledge relay, use model-council.
 ---
 
 # Orchestrating Multi-Agent Workflows and Loops
