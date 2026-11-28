@@ -341,6 +341,23 @@
           "notes": "Consolidates agent-evaluation, eval-dataset-design, post-training-strategy, reward-design, bad-case-to-dpo, and agent-evolution."
         }
       ]
+    },
+    {
+      "id": "nexu-io-opengame",
+      "repo": "nexu-io/opengame",
+      "url": "https://github.com/nexu-io/opengame",
+      "license": "Apache-2.0",
+      "commit": "f17151f3cc7838ddbe13d9b94392e0f983fc341b",
+      "synced_at": "2026-11-28",
+      "entries": [
+        {
+          "skill": "auditing-agent-skills",
+          "local_path": "skills/auditing-agent-skills/references/refactor-patterns.md",
+          "upstream_path": "scripts/check.ts",
+          "mode": "cherry-pick",
+          "notes": "Generalized skill-compiler rules (plain-YAML colon/# hazards, Markdown #anchor verification, 8K thin-router budget, cross-skill DAG checks, self-locating scripts, model-scaffolding expiry comments, Step-0 fast paths, ask-once gates, and paired anti-hacking stop-loss caps) from scripts/check.ts and skills/."
+        }
+      ]
     }
   ]
 }

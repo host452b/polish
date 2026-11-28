@@ -254,3 +254,23 @@ a copy of the License at `http://www.apache.org/licenses/LICENSE-2.0`.
 Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied.
+
+## OpenGame / OpenMotion skill-engineering patterns (`nexu-io/opengame`)
+
+`skills/auditing-agent-skills` (`SKILL.md`, `references/refactor-patterns.md`,
+and the YAML-scalar, Markdown-anchor, 8,000-character router-budget, cross-skill
+DAG, self-locating script, and `model-scaffolding` checks in
+`scripts/audit_skills.py`) incorporates generalized skill-architecture and
+static-verification patterns studied in
+[`nexu-io/opengame`](https://github.com/nexu-io/opengame) at commit
+`f17151f3cc7838ddbe13d9b94392e0f983fc341b` (`scripts/check.ts` and `skills/`).
+All prose and Python implementations in `polish` are original rewrites with zero
+copied runtime code or media assets.
+
+Copyright 2026 OpenDesign (nexu-io)
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may obtain
+a copy of the License at `http://www.apache.org/licenses/LICENSE-2.0`.
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.
